@@ -11,7 +11,7 @@ import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleA
 import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import Image from 'next/image';
-import logoColor from '/images/logo-lawslane-transparent-color.png';
+// import logoColor from '/images/logo-lawslane-transparent-color.png';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -33,7 +33,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { TurnstileWidget } from '@/components/turnstile-widget';
-import { validateTurnstile } from '@/app/actions/turnstile';
+import { verifyTurnstileToken } from '@/app/actions/turnstile';
 
 const formSchema = z.object({
     name: z.string().min(2, { message: 'กรุณาระบุชื่ออย่างน้อย 2 ตัวอักษร' }),
@@ -133,7 +133,7 @@ export default function EducationSignupPage() {
         setIsLoading(true);
         try {
             // 1. Validate Turnstile
-            const validation = await validateTurnstile(turnstileToken);
+            const validation = await verifyTurnstileToken(turnstileToken);
             if (!validation.success) throw new Error('การยืนยันตัวตนล้มเหลว');
 
             // 2. Create Auth User
@@ -186,7 +186,7 @@ export default function EducationSignupPage() {
                     <CardHeader className="text-center space-y-4 pt-10">
                         <div className="flex flex-col items-center justify-center mb-4 gap-3">
                             <Image
-                                src={logoColor}
+                                src="/images/logo-lawslane-transparent-color.png"
                                 alt="Lawslane Logo"
                                 width={60}
                                 height={60}
@@ -293,7 +293,7 @@ export default function EducationSignupPage() {
                                         />
                                     </div>
 
-                                    <TurnstileWidget onVerify={setTurnstileToken} />
+                                    <TurnstileWidget onSuccess={setTurnstileToken} />
 
                                     <Button type="submit" className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-lg font-medium shadow-md shadow-indigo-200" disabled={isLoading}>
                                         {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}

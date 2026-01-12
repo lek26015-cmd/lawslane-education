@@ -28,7 +28,7 @@ export default function MyLearningPage() {
     const router = useRouter();
     const { auth, firestore } = useFirebase();
     const [isLoading, setIsLoading] = useState(true);
-    const [examHistory, setExamHistory] = useState<ExamResult[]>([]);
+    const [examHistory, setExamHistory] = useState<any[]>([]);
     const [articles, setArticles] = useState<Article[]>([]);
     const [ebooks, setEbooks] = useState<any[]>([]); // New E-Books state
 

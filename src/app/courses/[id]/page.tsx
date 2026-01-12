@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlayCircle, Clock, BookOpen, Star, CheckCircle, ChevronLeft, Lock } from "lucide-react";
-import { CourseActionButtons } from "../components/course-action-buttons";
+import { CourseActionButtons } from "@/components/education/course-action-buttons";
 
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {

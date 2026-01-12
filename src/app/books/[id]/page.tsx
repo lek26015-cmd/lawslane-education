@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BookPurchaseSection } from "../../components/book-purchase-section";
+import { BookPurchaseSection } from "@/components/education/book-purchase-section";
 import { getBookById, getAllBooks } from "@/lib/education-data-admin";
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {

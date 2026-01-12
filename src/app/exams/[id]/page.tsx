@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, HelpCircle, CheckCircle, AlertTriangle, PlayCircle, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { StartExamButton } from "../components/start-exam-button";
+import { StartExamButton } from "@/components/education/start-exam-button";
 
 const MOCK_EXAM: Exam = {
     id: "exam-1",

@@ -1,7 +1,7 @@
 import { Book } from "@/lib/education-types";
 import { getAllBooks } from "@/lib/education-data-admin";
-import { AnimatedBookGrid } from "../components/animated-book-grid";
-import { PageHeader } from "../components/page-header";
+import { AnimatedBookGrid } from "@/components/education/animated-book-grid";
+import { PageHeader } from "@/components/education/page-header";
 
 export default async function BookListingPage() {
     const books = await getAllBooks();

@@ -1,7 +1,7 @@
 
 import { getAllCourses } from "@/lib/education-data-admin";
-import { PageHeader } from "../components/page-header";
-import { AnimatedCourseGrid } from "../components/animated-course-grid";
+import { PageHeader } from "@/components/education/page-header";
+import { AnimatedCourseGrid } from "@/components/education/animated-course-grid";
 
 export default async function CourseListingPage() {
     const courses = await getAllCourses();

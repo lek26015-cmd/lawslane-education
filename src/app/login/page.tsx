@@ -12,7 +12,7 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import Image from 'next/image';
-import logoColor from '/images/logo-lawslane-transparent-color.png';
+// import logoColor from '/images/logo-lawslane-transparent-color.png';
 
 
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { TurnstileWidget } from '@/components/turnstile-widget';
-import { validateTurnstile } from '@/app/actions/turnstile';
+import { verifyTurnstileToken } from '@/app/actions/turnstile';
 
 const formSchema = z.object({
     email: z.string().email({ message: 'รูปแบบอีเมลไม่ถูกต้อง' }),
@@ -111,7 +111,7 @@ export default function EducationLoginPage() {
         setIsLoading(true);
         try {
             if (turnstileToken) {
-                const validation = await validateTurnstile(turnstileToken);
+                const validation = await verifyTurnstileToken(turnstileToken);
                 if (!validation.success) throw new Error('การยืนยันตัวตนล้มเหลว');
             }
 
@@ -154,7 +154,7 @@ export default function EducationLoginPage() {
                 <div className="relative z-20 flex flex-col justify-between h-full p-12">
                     <div className="flex items-center gap-3">
                         <Image
-                            src={logoColor}
+                            src="/images/logo-lawslane-transparent-color.png"
                             alt="Lawlanes Logo"
                             width={40}
                             height={40}
@@ -182,7 +182,7 @@ export default function EducationLoginPage() {
                     <div className="flex flex-col space-y-2 text-center">
                         <div className="mx-auto mb-4 bg-slate-100 p-3 rounded-full lg:hidden">
                             <Image
-                                src={logoColor}
+                                src="/images/logo-lawslane-transparent-color.png"
                                 alt="Lawslane Logo"
                                 width={40}
                                 height={40}
@@ -255,7 +255,7 @@ export default function EducationLoginPage() {
                                     )}
                                 />
 
-                                <TurnstileWidget onVerify={setTurnstileToken} />
+                                <TurnstileWidget onSuccess={setTurnstileToken} />
 
                                 <Button type="submit" className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-lg font-medium shadow-md shadow-indigo-200" disabled={isLoading}>
                                     {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}

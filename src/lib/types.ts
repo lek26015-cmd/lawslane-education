@@ -1,5 +1,6 @@
 
-import { ChatResponse } from "@/ai/flows/chat-flow";
+// import { ChatResponse } from "@/ai/flows/chat-flow";
+export type ChatResponse = any;
 import { ReactElement } from "react";
 
 export interface UserProfile {
