@@ -176,7 +176,7 @@ export default function ExamListingPage() {
                 description="ฝึกฝนให้มั่นใจกับระบบจำลองสอบเสมือนจริง ทั้งข้อสอบปรนัยและอัตนัยพร้อมธงคำตอบ"
                 icon="GraduationCap"
                 theme="indigo"
-                backLink="/education"
+                backLink="/"
                 backLabel="กลับหน้าหลัก"
                 badge={`${filteredExams.length} ชุดข้อสอบ`}
             />
@@ -299,8 +299,8 @@ export default function ExamListingPage() {
                                         />
                                         <div className="absolute top-2 left-2">
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded shadow-sm uppercase ${exam.difficulty === 'hard' ? 'bg-red-500 text-white' :
-                                                    exam.difficulty === 'medium' ? 'bg-yellow-500 text-white' :
-                                                        'bg-green-500 text-white'
+                                                exam.difficulty === 'medium' ? 'bg-yellow-500 text-white' :
+                                                    'bg-green-500 text-white'
                                                 }`}>
                                                 {exam.difficulty}
                                             </span>
@@ -350,7 +350,7 @@ export default function ExamListingPage() {
                                     </div>
 
                                     <div className="flex flex-row sm:flex-col items-center sm:justify-center border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-6 gap-3">
-                                        <Link href={`/education/exams/${exam.id}`} className="w-full sm:w-auto">
+                                        <Link href={`/exams/${exam.id}`} className="w-full sm:w-auto">
                                             <Button className="w-full sm:w-32 bg-purple-600 hover:bg-purple-700">
                                                 เริ่มทำข้อสอบ
                                             </Button>

@@ -21,7 +21,7 @@ export function CourseActionButtons({ course }: CourseActionButtonsProps) {
             coverUrl: course.coverUrl,
             type: 'COURSE'
         });
-        router.push(`/education/checkout?${params.toString()}`);
+        router.push(`/checkout?${params.toString()}`);
     };
 
     return (

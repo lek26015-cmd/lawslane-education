@@ -148,10 +148,10 @@ export function TestimonialsAnimated() {
 // Exam Categories with Animation
 export function ExamCategoriesAnimated() {
     const categories = [
-        { name: "กฎหมายแพ่ง", count: "25 ชุด", href: "/education/exams?category=civil", colors: "from-blue-50 to-blue-100 border-blue-200 hover:border-blue-400", iconBg: "bg-blue-500", textColor: "text-blue-900", countColor: "text-blue-600" },
-        { name: "วิ.แพ่ง", count: "18 ชุด", href: "/education/exams?category=civil-procedure", colors: "from-green-50 to-green-100 border-green-200 hover:border-green-400", iconBg: "bg-green-500", textColor: "text-green-900", countColor: "text-green-600" },
-        { name: "กฎหมายอาญา", count: "22 ชุด", href: "/education/exams?category=criminal", colors: "from-red-50 to-red-100 border-red-200 hover:border-red-400", iconBg: "bg-red-500", textColor: "text-red-900", countColor: "text-red-600" },
-        { name: "วิ.อาญา", count: "20 ชุด", href: "/education/exams?category=criminal-procedure", colors: "from-purple-50 to-purple-100 border-purple-200 hover:border-purple-400", iconBg: "bg-purple-500", textColor: "text-purple-900", countColor: "text-purple-600" }
+        { name: "กฎหมายแพ่ง", count: "25 ชุด", href: "/exams?category=civil", colors: "from-blue-50 to-blue-100 border-blue-200 hover:border-blue-400", iconBg: "bg-blue-500", textColor: "text-blue-900", countColor: "text-blue-600" },
+        { name: "วิ.แพ่ง", count: "18 ชุด", href: "/exams?category=civil-procedure", colors: "from-green-50 to-green-100 border-green-200 hover:border-green-400", iconBg: "bg-green-500", textColor: "text-green-900", countColor: "text-green-600" },
+        { name: "กฎหมายอาญา", count: "22 ชุด", href: "/exams?category=criminal", colors: "from-red-50 to-red-100 border-red-200 hover:border-red-400", iconBg: "bg-red-500", textColor: "text-red-900", countColor: "text-red-600" },
+        { name: "วิ.อาญา", count: "20 ชุด", href: "/exams?category=criminal-procedure", colors: "from-purple-50 to-purple-100 border-purple-200 hover:border-purple-400", iconBg: "bg-purple-500", textColor: "text-purple-900", countColor: "text-purple-600" }
     ];
 
     return (
@@ -189,7 +189,7 @@ export function SampleExamsAnimated() {
             instructorImage: profileLawyer,
             badge: "แนะนำ",
             category: "ตั๋วทนาย",
-            href: "/education/exams/1"
+            href: "/exams/1"
         },
         {
             id: 2,
@@ -201,7 +201,7 @@ export function SampleExamsAnimated() {
             badge: "ขายดี",
             rating: "4.9/5",
             category: "เนติบัณฑิต",
-            href: "/education/exams/2"
+            href: "/exams/2"
         },
         {
             id: 3,
@@ -213,7 +213,7 @@ export function SampleExamsAnimated() {
             badge: "PREMIUM",
             rating: "HOT",
             category: "กฎหมายแพ่ง",
-            href: "/education/exams/3"
+            href: "/exams/3"
         },
         {
             id: 4,
@@ -223,7 +223,7 @@ export function SampleExamsAnimated() {
             instructorName: "อ.สมชาย (ผู้เชี่ยวชาญ)",
             instructorImage: profileLawyer,
             category: "วิ.แพ่ง",
-            href: "/education/exams/4"
+            href: "/exams/4"
         }
     ];
 

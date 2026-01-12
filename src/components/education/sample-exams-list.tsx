@@ -18,7 +18,7 @@ export function SampleExamsList() {
             badge: "ฟรี",
             category: "ปี 1",
             rating: "easy",
-            href: "/education/exams/exam-1"
+            href: "/exams/exam-1"
         },
         {
             id: 2,
@@ -29,7 +29,7 @@ export function SampleExamsList() {
             badge: "฿99",
             rating: "medium",
             category: "ปี 2",
-            href: "/education/exams/exam-2"
+            href: "/exams/exam-2"
         },
         {
             id: 4,
@@ -40,7 +40,7 @@ export function SampleExamsList() {
             badge: "฿150",
             rating: "hard",
             category: "ปี 3",
-            href: "/education/exams/exam-4"
+            href: "/exams/exam-4"
         },
         {
             id: 6,
@@ -51,7 +51,7 @@ export function SampleExamsList() {
             badge: "ฟรี",
             rating: "hard",
             category: "ใบอนุญาต",
-            href: "/education/exams/exam-6"
+            href: "/exams/exam-6"
         }
     ];
 

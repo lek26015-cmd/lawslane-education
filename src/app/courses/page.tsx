@@ -13,7 +13,7 @@ export default async function CourseListingPage() {
                 description="เรียนรู้กฎหมายได้ทุกที่ทุกเวลา กับคอร์สเรียนออนไลน์คุณภาพจากติวเตอร์ชั้นนำ"
                 icon="PlayCircle"
                 theme="indigo"
-                backLink="/education"
+                backLink="/"
                 backLabel="กลับหน้าหลัก"
                 badge={`${courses.length} คอร์สเรียน`}
             />

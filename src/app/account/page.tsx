@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function AccountRedirectPage() {
-    redirect('/education/profile');
+    redirect('/profile');
 }

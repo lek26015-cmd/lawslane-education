@@ -19,10 +19,10 @@ export default function EducationNavigation() {
     const [isOpen, setIsOpen] = useState(false);
 
     const NAV_LINKS = [
-        { href: "/education/exams", label: "คลังข้อสอบ" },
-        { href: "/education/books", label: "หนังสือ" },
-        { href: "/education/courses", label: "คอร์สเรียน" },
-        { href: "/education/articles", label: "บทความ" },
+        { href: "/exams", label: "คลังข้อสอบ" },
+        { href: "/books", label: "หนังสือ" },
+        { href: "/courses", label: "คอร์สเรียน" },
+        { href: "/articles", label: "บทความ" },
     ];
 
     return (

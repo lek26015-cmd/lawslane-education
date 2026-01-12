@@ -186,7 +186,7 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                                     <span className="text-lg font-bold text-indigo-700">
                                         ฿{book.price.toLocaleString()}
                                     </span>
-                                    <Link href={`/education/books/${book.id}`}>
+                                    <Link href={`/books/${book.id}`}>
                                         <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
                                             ดูรายละเอียด
                                         </Button>

@@ -14,7 +14,7 @@ interface CourseCardProps {
 
 export function CourseCard({ course, href }: CourseCardProps) {
     return (
-        <Link href={href || `/education/courses/${course.id}`} className="group block h-full">
+        <Link href={href || `/courses/${course.id}`} className="group block h-full">
             <div className="flex flex-col h-full bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 {/* Cover Image */}
                 <div className="relative aspect-video w-full overflow-hidden bg-slate-100">

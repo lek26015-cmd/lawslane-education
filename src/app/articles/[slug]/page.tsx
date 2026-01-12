@@ -117,7 +117,7 @@ export default function EducationArticlePage() {
                     <h2 className="text-xl font-bold text-slate-900">บทความอื่นๆ</h2>
                     <div className="space-y-4">
                         {otherArticles.map((other) => (
-                            <Link key={other.id} href={`/education/articles/${other.slug}`} className="block group">
+                            <Link key={other.id} href={`/articles/${other.slug}`} className="block group">
                                 <Card className="overflow-hidden transition-shadow hover:shadow-md">
                                     <div className="flex items-center gap-4 p-3">
                                         <div className="relative w-24 h-24 flex-shrink-0">

@@ -74,7 +74,7 @@ export default function ProfilePage() {
                 description="จัดการข้อมูลส่วนตัวและการเข้าสู่ระบบของคุณ"
                 icon={Settings}
                 theme="slate"
-                backLink="/education"
+                backLink="/"
                 backLabel="กลับหน้าหลัก"
             />
 

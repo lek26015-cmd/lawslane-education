@@ -321,7 +321,7 @@ function ExamTakeContent({ examId }: { examId: string }) {
                                                     <p className="text-xs text-slate-500 mt-1 line-clamp-2">{book.reason}</p>
                                                     <div className="flex items-center justify-between mt-3">
                                                         <span className="font-bold text-green-700">฿{book.price}</span>
-                                                        <Link href={`/education/books/${book.id}`}>
+                                                        <Link href={`/books/${book.id}`}>
                                                             <Button size="sm" className="bg-green-600 hover:bg-green-700 h-8 text-xs">
                                                                 <ShoppingCart className="w-3 h-3 mr-1" />
                                                                 ดูรายละเอียด

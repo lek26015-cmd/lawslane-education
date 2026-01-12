@@ -51,7 +51,7 @@ export default function EducationArticlesPage() {
                 description="รวมบทความกฎหมายที่น่าสนใจสำหรับนักศึกษาและทนายความ พร้อมเคล็ดลับการเตรียมสอบ"
                 icon={BookOpen}
                 theme="emerald"
-                backLink="/education"
+                backLink="/"
                 backLabel="กลับหน้าหลัก"
                 badge={`${articles.length} บทความ`}
             >
@@ -124,7 +124,7 @@ export default function EducationArticlesPage() {
                             transition={{ duration: 0.3 }}
                         >
                             <Card className="overflow-hidden h-full flex flex-col group rounded-2xl shadow-sm hover:shadow-lg transition-all">
-                                <Link href={`/education/articles/${article.slug}`} className="block">
+                                <Link href={`/articles/${article.slug}`} className="block">
                                     <div className="relative h-48 w-full overflow-hidden">
                                         <Image
                                             src={article.imageUrl}
@@ -139,7 +139,7 @@ export default function EducationArticlesPage() {
                                 </Link>
                                 <CardHeader className="pb-2">
                                     <CardTitle className="line-clamp-2 text-lg">
-                                        <Link href={`/education/articles/${article.slug}`} className="hover:text-primary transition-colors">
+                                        <Link href={`/articles/${article.slug}`} className="hover:text-primary transition-colors">
                                             {article.title}
                                         </Link>
                                     </CardTitle>
@@ -148,7 +148,7 @@ export default function EducationArticlesPage() {
                                     <CardDescription className="line-clamp-2">{article.description}</CardDescription>
                                 </CardContent>
                                 <div className="p-6 pt-0">
-                                    <Link href={`/education/articles/${article.slug}`}>
+                                    <Link href={`/articles/${article.slug}`}>
                                         <Button variant="link" className="p-0 text-slate-600 hover:text-primary">
                                             อ่านต่อ <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>

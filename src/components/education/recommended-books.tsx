@@ -48,7 +48,7 @@ export async function RecommendedBooksSection() {
                                                     { text: "ยอดนิยม", color: "text-blue-500" }
                                     ]}
                                     isEbook={book.isDigital}
-                                    href={`/education/books/${book.id}`}
+                                    href={`/books/${book.id}`}
                                     author={book.author}
                                     description={book.description}
                                     level={book.level}

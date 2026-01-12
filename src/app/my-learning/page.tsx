@@ -158,7 +158,7 @@ export default function MyLearningPage() {
                 description="ติดตามสถานะการเรียน สมรรถนะ และประวัติการทำข้อสอบของคุณ"
                 icon={Award}
                 theme="indigo"
-                backLink="/education"
+                backLink="/"
                 backLabel="กลับหน้าหลัก"
                 badge={`${examHistory.length} ผลสอบ`}
             />
@@ -453,7 +453,7 @@ export default function MyLearningPage() {
                     <div className="grid md:grid-cols-3 gap-4">
                         {articles.length > 0 ? (
                             articles.map((article, idx) => (
-                                <Link href={`/education/articles/${article.slug}`} key={idx} className="flex gap-3 items-start bg-white p-4 rounded-xl border border-indigo-50 shadow-sm hover:shadow-md transition-shadow group cursor-pointer h-full">
+                                <Link href={`/articles/${article.slug}`} key={idx} className="flex gap-3 items-start bg-white p-4 rounded-xl border border-indigo-50 shadow-sm hover:shadow-md transition-shadow group cursor-pointer h-full">
                                     <div className="mt-1 bg-indigo-100 p-2 rounded-lg text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                                         <BookOpen className="w-5 h-5" />
                                     </div>

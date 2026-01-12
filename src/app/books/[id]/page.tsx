@@ -103,7 +103,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         {relatedBooks.map((relatedBook) => (
-                            <Link key={relatedBook.id} href={`/education/books/${relatedBook.id}`} className="group">
+                            <Link key={relatedBook.id} href={`/books/${relatedBook.id}`} className="group">
                                 <div className="relative aspect-[2/3] w-full bg-slate-100 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
                                     <img
                                         src={relatedBook.coverUrl}

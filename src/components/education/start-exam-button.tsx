@@ -25,7 +25,7 @@ export function StartExamButton({ examId }: StartExamButtonProps) {
 
     if (!user) {
         return (
-            <Link href={`/education/login?redirect=${pathname}`}>
+            <Link href={`/login?redirect=${pathname}`}>
                 <Button size="lg" className="h-14 px-8 text-lg bg-slate-800 hover:bg-slate-900 shadow-md">
                     <Lock className="mr-2 w-5 h-5" />
                     เข้าสู่ระบบเพื่อเริ่มทำข้อสอบ
@@ -35,7 +35,7 @@ export function StartExamButton({ examId }: StartExamButtonProps) {
     }
 
     return (
-        <Link href={`/education/exams/${examId}/take`}>
+        <Link href={`/exams/${examId}/take`}>
             <Button size="lg" className="h-14 px-8 text-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-200">
                 <PlayCircle className="mr-2 w-6 h-6" />
                 เริ่มทำข้อสอบทันที

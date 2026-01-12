@@ -71,7 +71,7 @@ export function EducationArticles() {
                 {articles.map((article) => (
                     <Link
                         key={article.id}
-                        href={`/education/articles/${article.slug}`}
+                        href={`/articles/${article.slug}`}
                         className="group block"
                     >
                         <Card className="border shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden h-full">

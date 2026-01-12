@@ -153,7 +153,7 @@ export default function OrderHistoryPage() {
                             </CardContent>
                             <CardFooter className="bg-slate-50/30 border-t p-4 flex justify-end">
                                 <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50" asChild>
-                                    <Link href={`/education/profile/orders/${order.id}`}>
+                                    <Link href={`/profile/orders/${order.id}`}>
                                         ดูรายละเอียด & ติดตามพัสดุ <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>
                                 </Button>

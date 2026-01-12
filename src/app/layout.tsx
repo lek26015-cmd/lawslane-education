@@ -1,4 +1,4 @@
-import { Inter } from 'next/font/google';
+import { Prompt } from 'next/font/google';
 import { EducationToasterWrapper } from '@/components/education/education-toaster-wrapper';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,7 +11,11 @@ import { EducationHeaderActions } from '@/components/education/header-actions';
 import EducationNavigation from '@/components/education/education-nav';
 import { PageAnimationWrapper } from '@/components/education/page-animation';
 
-const inter = Inter({ subsets: ['latin'] });
+const prompt = Prompt({
+  subsets: ['latin', 'thai'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-prompt',
+});
 
 export const metadata = {
   title: 'Lawslane Education | หนังสือและคลังข้อสอบทนาย',
@@ -25,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="th">
-      <body className={`min-h-screen bg-slate-50 overflow-x-hidden ${inter.className}`}>
+      <body className={`min-h-screen bg-slate-50 overflow-x-hidden ${prompt.className}`}>
         <FirebaseClientProvider>
           <CartProvider>
             {/* Simple Header for Education Portal */}
