@@ -90,6 +90,37 @@ export interface Question {
     updatedAt: string;
 }
 
+export interface AnswerResult {
+    questionId: string;
+    questionText: string;
+    questionType: 'MULTIPLE_CHOICE' | 'ESSAY';
+    studentAnswer: string | number;
+    correctAnswer?: string | number;
+    isCorrect?: boolean;
+    aiScore?: number;
+    aiFeedback?: string;
+    aiStrengths?: string[];
+    aiWeaknesses?: string[];
+    aiSuggestions?: string[];
+}
+
+export interface ExamAttempt {
+    id: string;
+    examId: string;
+    examTitle: string;
+    userId?: string;
+    userName?: string;
+    startedAt: string;
+    completedAt?: string;
+    status: 'IN_PROGRESS' | 'COMPLETED' | 'TIMEOUT';
+    totalScore: number;
+    maxScore: number;
+    passingScore: number;
+    passed: boolean;
+    answers: AnswerResult[];
+    createdAt: string;
+}
+
 // ============================================================================
 // SEED DATA
 // ============================================================================
@@ -657,3 +688,55 @@ export function deleteQuestion(id: string): boolean {
 
     return true;
 }
+
+// ============================================================================
+// EXAM ATTEMPTS (for storing exam submissions)
+// ============================================================================
+
+let examAttempts: ExamAttempt[] = [];
+
+export function getAllAttempts(): ExamAttempt[] {
+    return examAttempts;
+}
+
+export function getAttemptsByExamId(examId: string): ExamAttempt[] {
+    return examAttempts.filter(a => a.examId === examId);
+}
+
+export function getAttemptById(id: string): ExamAttempt | undefined {
+    return examAttempts.find(a => a.id === id);
+}
+
+export function createAttempt(data: Omit<ExamAttempt, 'id' | 'createdAt'>): ExamAttempt {
+    const now = new Date().toISOString();
+    const newAttempt: ExamAttempt = {
+        ...data,
+        id: `attempt-${Date.now()}`,
+        createdAt: now
+    };
+    examAttempts.unshift(newAttempt);
+    return newAttempt;
+}
+
+export function updateAttempt(id: string, data: Partial<ExamAttempt>): ExamAttempt | null {
+    const index = examAttempts.findIndex(a => a.id === id);
+    if (index === -1) return null;
+
+    examAttempts[index] = {
+        ...examAttempts[index],
+        ...data
+    };
+    return examAttempts[index];
+}
+
+export function getAttemptStats() {
+    return {
+        totalAttempts: examAttempts.length,
+        completedAttempts: examAttempts.filter(a => a.status === 'COMPLETED').length,
+        passedAttempts: examAttempts.filter(a => a.passed).length,
+        averageScore: examAttempts.length > 0
+            ? examAttempts.reduce((sum, a) => sum + a.totalScore, 0) / examAttempts.length
+            : 0
+    };
+}
+

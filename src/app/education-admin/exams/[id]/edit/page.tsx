@@ -3,7 +3,7 @@
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Eye, Plus, Edit, Trash2, Loader2, GripVertical } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Plus, Edit, Trash2, Loader2, GripVertical, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -78,6 +78,13 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
     const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+
+    // AI Generation
+    const [aiDialogOpen, setAiDialogOpen] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [aiTopic, setAiTopic] = useState('');
+    const [aiQuestionType, setAiQuestionType] = useState<'MIXED' | 'MULTIPLE_CHOICE' | 'ESSAY'>('MIXED');
+    const [aiCount, setAiCount] = useState(5);
 
     const [newQuestion, setNewQuestion] = useState<Partial<Question>>({
         text: '',
@@ -232,6 +239,60 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
         }
     };
 
+    const handleGenerateWithAI = async () => {
+        if (!aiTopic.trim()) {
+            toast({ title: "กรุณาระบุหัวข้อ", variant: "destructive" });
+            return;
+        }
+
+        setIsGenerating(true);
+
+        try {
+            const response = await fetch('/api/education/generate-questions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    topic: aiTopic,
+                    category: formData.category,
+                    difficulty: formData.difficulty,
+                    questionType: aiQuestionType,
+                    count: aiCount
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Add each generated question to the exam
+                for (const q of data.questions) {
+                    const res = await fetch(`/api/education/exams/${id}/questions`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(q)
+                    });
+
+                    if (res.ok) {
+                        const created = await res.json();
+                        setQuestions(prev => [...prev, created]);
+                    }
+                }
+
+                toast({
+                    title: "สร้างคำถามสำเร็จ",
+                    description: `เพิ่ม ${data.questions.length} คำถามจาก AI`
+                });
+                setAiDialogOpen(false);
+                setAiTopic('');
+            } else {
+                throw new Error('Failed');
+            }
+        } catch (error) {
+            toast({ title: "ไม่สามารถสร้างคำถามได้", variant: "destructive" });
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-12">
@@ -318,6 +379,9 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
                     </div>
                     <Button onClick={openAddQuestion}>
                         <Plus className="w-4 h-4 mr-2" />เพิ่มคำถาม
+                    </Button>
+                    <Button onClick={() => setAiDialogOpen(true)} variant="outline" className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100">
+                        <Sparkles className="w-4 h-4 mr-2" />สร้างด้วย AI
                     </Button>
                 </div>
 
@@ -454,6 +518,82 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* AI Generation Dialog */}
+            <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-purple-600" />
+                            สร้างคำถามด้วย AI
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">หัวข้อ/เนื้อหาที่ต้องการ *</label>
+                            <Textarea
+                                rows={3}
+                                placeholder="เช่น กฎหมายแพ่งเรื่องสัญญา, ความรับผิดทางละเมิด, หลักกฎหมายอาญา มาตรา 59..."
+                                value={aiTopic}
+                                onChange={(e) => setAiTopic(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">ประเภทคำถาม</label>
+                                <Select value={aiQuestionType} onValueChange={(v: any) => setAiQuestionType(v)}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="MIXED">ผสม (ปรนัย+อัตนัย)</SelectItem>
+                                        <SelectItem value="MULTIPLE_CHOICE">ปรนัยเท่านั้น</SelectItem>
+                                        <SelectItem value="ESSAY">อัตนัยเท่านั้น</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">จำนวนข้อ</label>
+                                <Select value={aiCount.toString()} onValueChange={(v) => setAiCount(Number(v))}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="3">3 ข้อ</SelectItem>
+                                        <SelectItem value="5">5 ข้อ</SelectItem>
+                                        <SelectItem value="10">10 ข้อ</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="bg-purple-50 rounded-lg p-3 text-sm text-purple-700">
+                            <p className="font-medium mb-1">💡 Tips:</p>
+                            <ul className="list-disc list-inside space-y-1 text-xs">
+                                <li>ระบุหัวข้อให้ชัดเจน จะได้คำถามตรงประเด็น</li>
+                                <li>AI จะสร้างธงคำตอบให้อัตโนมัติ</li>
+                                <li>สามารถแก้ไขคำถามที่สร้างได้ภายหลัง</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setAiDialogOpen(false)}>ยกเลิก</Button>
+                        <Button onClick={handleGenerateWithAI} disabled={isGenerating} className="bg-purple-600 hover:bg-purple-700">
+                            {isGenerating ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    กำลังสร้าง...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="w-4 h-4 mr-2" />
+                                    สร้างคำถาม
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
+

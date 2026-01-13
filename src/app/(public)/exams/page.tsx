@@ -1,384 +1,201 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Clock, CheckCircle2, AlertCircle, Filter, X, ArrowLeft, GraduationCap } from "lucide-react";
-import Link from "next/link";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { PageHeader } from '@/components/education/page-header';
+import { Clock, FileText, Target, Play, BookOpen, Sparkles, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
-// Types
 interface Exam {
     id: string;
     title: string;
     description: string;
-    price: number;
     durationMinutes: number;
     passingScore: number;
     totalQuestions: number;
-    yearLevel: string; // ปี 1, ปี 2, ปี 3, ปี 4, ใบอนุญาต, เนติ
-    subject: string; // หัวข้อข้อสอบ
-    lawCategory: string; // แพ่ง, วิแพ่ง, อาญา, วิอาญา
-    difficulty: 'easy' | 'medium' | 'hard';
-    coverUrl?: string;
+    category: string;
+    difficulty: string;
+    coverImage: string;
 }
 
-// MOCK DATA with expanded fields
-const MOCK_EXAMS: Exam[] = [
-    {
-        id: "exam-1",
-        title: "ข้อสอบกฎหมายแพ่ง: นิติกรรมและสัญญา",
-        description: "ทดสอบความเข้าใจเรื่องนิติกรรม สัญญา และผลของสัญญา",
-        price: 0,
-        durationMinutes: 60,
-        passingScore: 30,
-        totalQuestions: 50,
-        yearLevel: "ปี 1",
-        subject: "นิติกรรมและสัญญา",
-        lawCategory: "แพ่ง",
-        difficulty: 'easy',
-        coverUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "exam-2",
-        title: "ข้อสอบกฎหมายแพ่ง: ทรัพย์สินและที่ดิน",
-        description: "เน้นเรื่องกรรมสิทธิ์ ครอบครอง ภาระจำยอม และสิทธิเหนือที่ดิน",
-        price: 99,
-        durationMinutes: 90,
-        passingScore: 40,
-        totalQuestions: 60,
-        yearLevel: "ปี 2",
-        subject: "ทรัพย์สินและที่ดิน",
-        lawCategory: "แพ่ง",
-        difficulty: 'medium',
-        coverUrl: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "exam-3",
-        title: "ข้อสอบกฎหมายอาญา: ความผิดเกี่ยวกับชีวิตและร่างกาย",
-        description: "ทดสอบความรู้เรื่องฆ่าคนตาย ทำร้ายร่างกาย และความผิดเกี่ยวกับชีวิต",
-        price: 0,
-        durationMinutes: 60,
-        passingScore: 25,
-        totalQuestions: 40,
-        yearLevel: "ปี 2",
-        subject: "ความผิดเกี่ยวกับชีวิตและร่างกาย",
-        lawCategory: "อาญา",
-        difficulty: 'medium',
-        coverUrl: "https://images.unsplash.com/photo-1453928582365-b6ad33cbcf64?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "exam-4",
-        title: "ข้อสอบวิธีพิจารณาความแพ่ง: การดำเนินคดี",
-        description: "ขั้นตอนการฟ้องคดี การส่งหมาย พยานหลักฐาน และการบังคับคดี",
-        price: 150,
-        durationMinutes: 120,
-        passingScore: 50,
-        totalQuestions: 80,
-        yearLevel: "ปี 3",
-        subject: "การดำเนินคดีแพ่ง",
-        lawCategory: "วิแพ่ง",
-        difficulty: 'hard',
-        coverUrl: "https://images.unsplash.com/photo-1589578527966-fd7105698a39?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "exam-5",
-        title: "ข้อสอบวิธีพิจารณาความอาญา: สิทธิผู้ต้องหา",
-        description: "สิทธิของผู้ต้องหา การสอบสวน การฝากขัง และการประกันตัว",
-        price: 0,
-        durationMinutes: 60,
-        passingScore: 30,
-        totalQuestions: 45,
-        yearLevel: "ปี 3",
-        subject: "สิทธิผู้ต้องหา",
-        lawCategory: "วิอาญา",
-        difficulty: 'medium',
-        coverUrl: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "exam-6",
-        title: "จำลองสอบใบอนุญาตว่าความ (ภาคทฤษฎี) ชุดที่ 1",
-        description: "ข้อสอบเสมือนจริง 100 ข้อ จำกัดเวลา 4 ชั่วโมง",
-        price: 0,
-        durationMinutes: 240,
-        passingScore: 50,
-        totalQuestions: 100,
-        yearLevel: "ใบอนุญาต",
-        subject: "ข้อสอบรวม",
-        lawCategory: "แพ่ง",
-        difficulty: 'hard',
-        coverUrl: "https://images.unsplash.com/photo-1479142506502-19b3a3b7ff33?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "exam-7",
-        title: "จำลองสอบเนติบัณฑิต (กลุ่มกฎหมายแพ่ง)",
-        description: "เตรียมสอบเนติบัณฑิตด้วยข้อสอบอัตนัยพร้อมธงคำตอบ",
-        price: 299,
-        durationMinutes: 180,
-        passingScore: 60,
-        totalQuestions: 10,
-        yearLevel: "เนติ",
-        subject: "ข้อสอบเนติกลุ่มแพ่ง",
-        lawCategory: "แพ่ง",
-        difficulty: 'hard',
-        coverUrl: "https://images.unsplash.com/photo-1593115057345-2ba7216f0662?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-        id: "exam-8",
-        title: "ข้อสอบกฎหมายอาญา: ความผิดเกี่ยวกับทรัพย์",
-        description: "ลักทรัพย์ ยักยอก ฉ้อโกง และความผิดเกี่ยวกับทรัพย์อื่นๆ",
-        price: 0,
-        durationMinutes: 60,
-        passingScore: 30,
-        totalQuestions: 50,
-        yearLevel: "ปี 2",
-        subject: "ความผิดเกี่ยวกับทรัพย์",
-        lawCategory: "อาญา",
-        difficulty: 'medium',
-        coverUrl: "https://images.unsplash.com/photo-1589216532380-1d9740262d46?auto=format&fit=crop&q=80&w=400",
-    },
-];
+const CATEGORY_LABELS: Record<string, string> = {
+    license: 'ใบอนุญาตว่าความ',
+    prosecutor: 'อัยการ',
+    judge: 'ผู้พิพากษา',
+    university: 'มหาวิทยาลัย',
+    other: 'อื่นๆ'
+};
 
-// Filter Options
-const YEAR_LEVELS = ['ทั้งหมด', 'ปี 1', 'ปี 2', 'ปี 3', 'ปี 4', 'ใบอนุญาต', 'เนติ'];
-const LAW_CATEGORIES = ['ทั้งหมด', 'แพ่ง', 'วิแพ่ง', 'อาญา', 'วิอาญา'];
-const DIFFICULTIES = ['ทั้งหมด', 'easy', 'medium', 'hard'];
+const DIFFICULTY_LABELS: Record<string, { label: string; color: string }> = {
+    easy: { label: 'ง่าย', color: 'bg-green-100 text-green-700' },
+    medium: { label: 'ปานกลาง', color: 'bg-amber-100 text-amber-700' },
+    hard: { label: 'ยาก', color: 'bg-red-100 text-red-700' }
+};
 
 export default function ExamListingPage() {
-    const [yearFilter, setYearFilter] = useState('ทั้งหมด');
-    const [lawCategoryFilter, setLawCategoryFilter] = useState('ทั้งหมด');
-    const [difficultyFilter, setDifficultyFilter] = useState('ทั้งหมด');
+    const [exams, setExams] = useState<Exam[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-    const filteredExams = useMemo(() => {
-        return MOCK_EXAMS.filter(exam => {
-            const matchYear = yearFilter === 'ทั้งหมด' || exam.yearLevel === yearFilter;
-            const matchLaw = lawCategoryFilter === 'ทั้งหมด' || exam.lawCategory === lawCategoryFilter;
-            const matchDiff = difficultyFilter === 'ทั้งหมด' || exam.difficulty === difficultyFilter;
-            return matchYear && matchLaw && matchDiff;
-        });
-    }, [yearFilter, lawCategoryFilter, difficultyFilter]);
+    useEffect(() => {
+        const fetchExams = async () => {
+            try {
+                const response = await fetch('/api/education/exams');
+                if (response.ok) {
+                    const data = await response.json();
+                    setExams(data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchExams();
+    }, []);
 
-    const clearFilters = () => {
-        setYearFilter('ทั้งหมด');
-        setLawCategoryFilter('ทั้งหมด');
-        setDifficultyFilter('ทั้งหมด');
-    };
+    const filteredExams = exams.filter(exam => {
+        const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            exam.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === 'all' || exam.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
 
-    const hasActiveFilters = yearFilter !== 'ทั้งหมด' || lawCategoryFilter !== 'ทั้งหมด' || difficultyFilter !== 'ทั้งหมด';
+    const categories = ['all', ...new Set(exams.map(e => e.category))];
 
     return (
-        <div className="flex flex-col gap-6">
-            {/* Beautiful Page Header */}
-            <PageHeader
-                title="คลังข้อสอบ"
-                description="ฝึกฝนให้มั่นใจกับระบบจำลองสอบเสมือนจริง ทั้งข้อสอบปรนัยและอัตนัยพร้อมธงคำตอบ"
-                icon="GraduationCap"
-                theme="purple"
-                backLink="/"
-                backLabel="กลับหน้าหลัก"
-                badge={`${filteredExams.length} ชุดข้อสอบ`}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                {/* Sidebar Filters */}
-                <div className="space-y-6">
-                    <div className="bg-white rounded-xl p-4 border shadow-sm sticky top-24">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                                <Filter className="w-5 h-5 text-slate-600" />
-                                <span className="font-semibold text-slate-900">ตัวกรอง</span>
-                            </div>
-                            {hasActiveFilters && (
-                                <button
-                                    onClick={clearFilters}
-                                    className="text-xs text-slate-500 hover:text-red-600 flex items-center gap-1 transition-colors"
-                                >
-                                    <X className="w-3 h-3" /> ล้าง
-                                </button>
-                            )}
-                        </div>
-
-                        <div className="space-y-4">
-                            {/* Year Level Filter */}
-                            <div>
-                                <label className="text-sm font-medium text-slate-700 mb-1.5 block">ระดับชั้นปี</label>
-                                <Select value={yearFilter} onValueChange={setYearFilter}>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="เลือกระดับ" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {YEAR_LEVELS.map(year => (
-                                            <SelectItem key={year} value={year}>{year}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Law Category Filter */}
-                            <div>
-                                <label className="text-sm font-medium text-slate-700 mb-1.5 block">ประเภทกฎหมาย</label>
-                                <Select value={lawCategoryFilter} onValueChange={setLawCategoryFilter}>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="เลือกประเภท" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {LAW_CATEGORIES.map(cat => (
-                                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Difficulty Filter */}
-                            <div>
-                                <label className="text-sm font-medium text-slate-700 mb-1.5 block">ระดับความยาก</label>
-                                <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="เลือกระดับ" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {DIFFICULTIES.map(diff => (
-                                            <SelectItem key={diff} value={diff}>
-                                                {diff === 'ทั้งหมด' ? 'ทั้งหมด' : diff === 'easy' ? 'ง่าย' : diff === 'medium' ? 'ปานกลาง' : 'ยาก'}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        {/* Quick Filter Pills - Moved here or kept? Let's keep them as quick toggles or remove to clean up? 
-                            User asked for "like Lawyer Search" which usually just has sidebar. 
-                            I'll remove the pills to keep it clean, or maybe simplify. 
-                            Let's keep them but simpler. Actually, the Select above covers it. 
-                        */}
-                    </div>
+        <div className="max-w-6xl mx-auto space-y-8">
+            {/* Hero */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-8"
+            >
+                <div className="flex items-center justify-center gap-2 mb-4">
+                    <Sparkles className="w-6 h-6 text-indigo-500" />
+                    <Badge className="bg-indigo-100 text-indigo-700">AI ตรวจอัตนัย</Badge>
                 </div>
+                <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+                    ฝึกทำข้อสอบกฎหมาย
+                </h1>
+                <p className="text-slate-600 max-w-2xl mx-auto">
+                    ข้อสอบจำลองพร้อมระบบ AI ตรวจคำตอบอัตนัย เปรียบเทียบกับธงคำตอบ
+                    พร้อม feedback ละเอียดช่วยให้คุณพัฒนาการเขียนตอบได้ดีขึ้น
+                </p>
+            </motion.div>
 
-                {/* Main Content */}
-                <div className="md:col-span-3 space-y-6">
-                    {/* Results Count */}
-                    <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg border">
-                        <p className="text-sm text-slate-600">
-                            พบทั้งหมด <strong>{filteredExams.length}</strong> รายการ
-                        </p>
-                    </div>
+            {/* Search & Filter */}
+            <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <Input
+                        placeholder="ค้นหาข้อสอบ..."
+                        className="pl-10 h-12"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                    {categories.map(cat => (
+                        <Button
+                            key={cat}
+                            variant={selectedCategory === cat ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setSelectedCategory(cat)}
+                            className="whitespace-nowrap"
+                        >
+                            {cat === 'all' ? 'ทั้งหมด' : CATEGORY_LABELS[cat] || cat}
+                        </Button>
+                    ))}
+                </div>
+            </div>
 
-                    {/* Exam List */}
-                    <motion.div
-                        className="space-y-4"
-                        initial="hidden"
-                        animate="visible"
-                        variants={{
-                            hidden: { opacity: 0 },
-                            visible: {
-                                opacity: 1,
-                                transition: { staggerChildren: 0.1 }
-                            }
-                        }}
-                    >
-                        {filteredExams.length > 0 ? (
-                            filteredExams.map((exam) => (
-                                <motion.div
-                                    key={exam.id}
-                                    variants={{
-                                        hidden: { opacity: 0, x: -20 },
-                                        visible: { opacity: 1, x: 0 }
-                                    }}
-                                    whileHover={{ x: 5 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="group relative flex flex-col sm:flex-row gap-6 p-6 border rounded-xl bg-white hover:border-purple-300 transition-all hover:shadow-md"
-                                >
-                                    <div className="w-full sm:w-40 md:w-48 h-48 sm:h-auto rounded-lg overflow-hidden bg-slate-100 shrink-0 relative">
-                                        <img
-                                            src={exam.coverUrl || "https://placehold.co/400x300?text=Exam"}
-                                            alt={exam.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                        <div className="absolute top-2 left-2">
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded shadow-sm uppercase ${exam.difficulty === 'hard' ? 'bg-red-500 text-white' :
-                                                exam.difficulty === 'medium' ? 'bg-yellow-500 text-white' :
-                                                    'bg-green-500 text-white'
-                                                }`}>
-                                                {exam.difficulty}
-                                            </span>
+            {/* Exam Grid */}
+            {isLoading ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="bg-white rounded-2xl border h-80 animate-pulse" />
+                    ))}
+                </div>
+            ) : filteredExams.length === 0 ? (
+                <div className="text-center py-16">
+                    <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-500">ยังไม่มีข้อสอบในขณะนี้</p>
+                </div>
+            ) : (
+                <motion.div
+                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                        hidden: {},
+                        visible: { transition: { staggerChildren: 0.1 } }
+                    }}
+                >
+                    {filteredExams.map((exam, idx) => (
+                        <motion.div
+                            key={exam.id}
+                            variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                visible: { opacity: 1, y: 0 }
+                            }}
+                        >
+                            <Link href={`/exams/${exam.id}/take`} className="group block">
+                                <div className="bg-white rounded-2xl border hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden h-full">
+                                    {/* Cover */}
+                                    <div className="relative aspect-video bg-gradient-to-br from-indigo-500 to-purple-600">
+                                        {exam.coverImage ? (
+                                            <Image src={exam.coverImage} alt={exam.title} fill className="object-cover" />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <BookOpen className="w-16 h-16 text-white/30" />
+                                            </div>
+                                        )}
+                                        <div className="absolute top-3 left-3 flex gap-2">
+                                            <Badge className={DIFFICULTY_LABELS[exam.difficulty]?.color || 'bg-slate-100'}>
+                                                {DIFFICULTY_LABELS[exam.difficulty]?.label || exam.difficulty}
+                                            </Badge>
+                                        </div>
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                            <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                                <Play className="w-7 h-7 text-indigo-600 ml-1" />
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex-1 space-y-3">
-                                        <div className="flex flex-wrap items-center gap-2">
-                                            <Badge variant={exam.price === 0 ? "default" : "outline"} className={exam.price === 0 ? "bg-green-600 hover:bg-green-700" : ""}>
-                                                {exam.price === 0 ? "ฟรี" : `฿${exam.price}`}
-                                            </Badge>
-                                            <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                                                {exam.yearLevel}
-                                            </Badge>
-                                            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                                                {exam.lawCategory}
-                                            </Badge>
-                                            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${exam.difficulty === 'hard' ? 'bg-red-100 text-red-700' :
-                                                exam.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-green-100 text-green-700'
-                                                }`}>
-                                                {exam.difficulty === 'easy' ? 'ง่าย' : exam.difficulty === 'medium' ? 'ปานกลาง' : 'ยาก'}
-                                            </span>
-                                        </div>
-
-                                        <h3 className="text-xl font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
+                                    {/* Content */}
+                                    <div className="p-5">
+                                        <Badge variant="outline" className="mb-2">{CATEGORY_LABELS[exam.category] || exam.category}</Badge>
+                                        <h3 className="font-bold text-lg text-slate-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
                                             {exam.title}
                                         </h3>
-                                        <p className="text-slate-500">
-                                            {exam.description}
-                                        </p>
+                                        <p className="text-sm text-slate-500 line-clamp-2 mb-4">{exam.description}</p>
 
-                                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-                                            <div className="flex items-center gap-1.5">
+                                        <div className="flex items-center justify-between text-sm text-slate-500">
+                                            <div className="flex items-center gap-1">
+                                                <FileText className="w-4 h-4" />
+                                                <span>{exam.totalQuestions} ข้อ</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
                                                 <Clock className="w-4 h-4" />
                                                 <span>{exam.durationMinutes} นาที</span>
                                             </div>
-                                            <div className="flex items-center gap-1.5">
-                                                <AlertCircle className="w-4 h-4" />
-                                                <span>{exam.totalQuestions} ข้อ</span>
-                                            </div>
-                                            <div className="flex items-center gap-1.5">
-                                                <CheckCircle2 className="w-4 h-4" />
-                                                <span>เกณฑ์ผ่าน {exam.passingScore} คะแนน</span>
+                                            <div className="flex items-center gap-1">
+                                                <Target className="w-4 h-4" />
+                                                <span>{exam.passingScore}%</span>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="flex flex-row sm:flex-col items-center sm:justify-center border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-6 gap-3">
-                                        <Link href={`/exams/${exam.id}`} className="w-full sm:w-auto">
-                                            <Button className="w-full sm:w-32 bg-purple-600 hover:bg-purple-700">
-                                                เริ่มทำข้อสอบ
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </motion.div>
-                            ))
-                        ) : (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="text-center py-16 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200"
-                            >
-                                <div className="bg-white p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                    <Filter className="h-8 w-8 text-slate-400" />
                                 </div>
-                                <h3 className="mt-2 text-lg font-semibold text-slate-900">ไม่พบข้อสอบที่ตรงกับเงื่อนไข</h3>
-                                <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
-                                    ลองปรับเปลี่ยนตัวกรองด้านซ้ายมือ หรือล้างตัวกรองเพื่อดูรายการทั้งหมด
-                                </p>
-                                <Button variant="outline" className="mt-6" onClick={clearFilters}>
-                                    ล้างตัวกรองทั้งหมด
-                                </Button>
-                            </motion.div>
-                        )}
-                    </motion.div>
-                </div>
-            </div>
+                            </Link>
+                        </motion.div>
+                    ))}
+                </motion.div>
+            )}
         </div>
     );
 }
