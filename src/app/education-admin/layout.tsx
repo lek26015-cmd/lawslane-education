@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard,
     FileText,
@@ -14,20 +14,58 @@ import {
     X,
     ChevronRight,
     GraduationCap,
-    Globe
+    Globe,
+    ClipboardList,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AdminAuthProvider, useAdminAuth } from '@/contexts/admin-auth-context';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const router = useRouter();
+    const { isAuthenticated, isLoading, logout } = useAdminAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+    // Skip auth check for login page
+    const isLoginPage = pathname === '/education-admin/login';
+
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated && !isLoginPage) {
+            router.push('/education-admin/login');
+        }
+    }, [isAuthenticated, isLoading, isLoginPage, router]);
+
+    // Show loading state
+    if (isLoading && !isLoginPage) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-100">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            </div>
+        );
+    }
+
+    // Show login page without sidebar
+    if (isLoginPage) {
+        return <>{children}</>;
+    }
+
+    // Redirect if not authenticated
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-100">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            </div>
+        );
+    }
 
     const NAV_ITEMS = [
         { href: '/education-admin', label: 'ภาพรวม (Dashboard)', icon: LayoutDashboard },
         { href: '/education-admin/articles', label: 'จัดการบทความ', icon: FileText },
         { href: '/education-admin/courses', label: 'จัดการคอร์สเรียน', icon: GraduationCap },
         { href: '/education-admin/books', label: 'จัดการหนังสือ', icon: BookOpen },
+        { href: '/education-admin/exams', label: 'จัดการข้อสอบ', icon: ClipboardList },
         { href: '/education-admin/users', label: 'ผู้ใช้งาน', icon: Users },
         { href: '/education-admin/settings', label: 'ตั้งค่าระบบ', icon: Settings },
     ];
@@ -35,6 +73,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const isActive = (path: string) => {
         if (path === '/education-admin') return pathname === path;
         return pathname.startsWith(path);
+    };
+
+    const handleLogout = () => {
+        logout();
+        router.push('/education-admin/login');
     };
 
     return (
@@ -99,7 +142,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 กลับสู่หน้าหลัก
                             </Button>
                         </Link>
-                        <Button variant="outline" className="w-full border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white h-9 text-xs">
+                        <Button
+                            variant="outline"
+                            className="w-full border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white h-9 text-xs"
+                            onClick={handleLogout}
+                        >
                             <LogOut className="w-3 h-3 mr-2" />
                             ออกจากระบบ
                         </Button>
@@ -124,5 +171,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </main>
             </div>
         </div>
+    );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <AdminAuthProvider>
+            <AdminLayoutContent>{children}</AdminLayoutContent>
+        </AdminAuthProvider>
     );
 }

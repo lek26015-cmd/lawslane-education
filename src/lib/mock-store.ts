@@ -60,6 +60,36 @@ export interface Book {
     updatedAt: string;
 }
 
+export interface Exam {
+    id: string;
+    title: string;
+    description: string;
+    durationMinutes: number;
+    passingScore: number;
+    totalQuestions: number;
+    category: 'license' | 'prosecutor' | 'judge' | 'university' | 'other';
+    difficulty: 'easy' | 'medium' | 'hard';
+    coverImage: string;
+    status: 'draft' | 'published';
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Question {
+    id: string;
+    examId: string;
+    text: string;
+    type: 'MULTIPLE_CHOICE' | 'ESSAY';
+    options?: string[];
+    correctOptionIndex?: number;
+    correctAnswerText?: string;
+    explanation?: string;
+    order: number;
+    subject?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 // ============================================================================
 // SEED DATA
 // ============================================================================
@@ -208,6 +238,143 @@ const initialBooks: Book[] = [
     }
 ];
 
+const initialExams: Exam[] = [
+    {
+        id: 'exam-1',
+        title: 'แบบทดสอบกฎหมายแพ่ง ชุดที่ 1',
+        description: 'ข้อสอบปรนัยกฎหมายแพ่งและพาณิชย์ เน้นเรื่องนิติกรรมสัญญา',
+        durationMinutes: 60,
+        passingScore: 60,
+        totalQuestions: 20,
+        category: 'license',
+        difficulty: 'medium',
+        coverImage: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=600',
+        status: 'published',
+        createdAt: '2025-01-01T00:00:00Z',
+        updatedAt: '2025-01-01T00:00:00Z'
+    },
+    {
+        id: 'exam-2',
+        title: 'แบบทดสอบกฎหมายอาญา ชุดที่ 1',
+        description: 'ข้อสอบปรนัยกฎหมายอาญา เน้นภาคทั่วไปและความผิดต่อชีวิต',
+        durationMinutes: 90,
+        passingScore: 70,
+        totalQuestions: 30,
+        category: 'license',
+        difficulty: 'hard',
+        coverImage: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600',
+        status: 'published',
+        createdAt: '2025-01-02T00:00:00Z',
+        updatedAt: '2025-01-02T00:00:00Z'
+    },
+    {
+        id: 'exam-3',
+        title: 'แบบทดสอบอัตนัย - ธงคำตอบกฎหมายแพ่ง',
+        description: 'ข้อสอบอัตนัยพร้อมธงคำตอบ ฝึกเขียนตอบแบบมืออาชีพ',
+        durationMinutes: 120,
+        passingScore: 50,
+        totalQuestions: 5,
+        category: 'prosecutor',
+        difficulty: 'hard',
+        coverImage: 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=600',
+        status: 'published',
+        createdAt: '2025-01-03T00:00:00Z',
+        updatedAt: '2025-01-03T00:00:00Z'
+    }
+];
+
+const initialQuestions: Question[] = [
+    // Exam 1 Questions (Multiple Choice)
+    {
+        id: 'q-1-1',
+        examId: 'exam-1',
+        text: 'นิติกรรมที่ทำโดยผู้เยาว์โดยไม่ได้รับความยินยอมจากผู้แทนโดยชอบธรรม มีผลเป็นอย่างไร?',
+        type: 'MULTIPLE_CHOICE',
+        options: ['โมฆะ', 'โมฆียะ', 'สมบูรณ์', 'ใช้บังคับได้เฉพาะบางส่วน'],
+        correctOptionIndex: 1,
+        explanation: 'ตาม ป.พ.พ. มาตรา 21 นิติกรรมที่ผู้เยาว์ทำโดยไม่ได้รับความยินยอมเป็นโมฆียะ',
+        order: 1,
+        subject: 'กฎหมายแพ่ง',
+        createdAt: '2025-01-01T00:00:00Z',
+        updatedAt: '2025-01-01T00:00:00Z'
+    },
+    {
+        id: 'q-1-2',
+        examId: 'exam-1',
+        text: 'สัญญาใดต่อไปนี้ต้องทำเป็นหนังสือและจดทะเบียนต่อพนักงานเจ้าหน้าที่?',
+        type: 'MULTIPLE_CHOICE',
+        options: ['สัญญาเช่าซื้อ', 'สัญญาซื้อขายที่ดิน', 'สัญญากู้ยืมเงิน', 'สัญญาจ้างแรงงาน'],
+        correctOptionIndex: 1,
+        explanation: 'สัญญาซื้อขายอสังหาริมทรัพย์ต้องทำเป็นหนังสือและจดทะเบียนต่อพนักงานเจ้าหน้าที่ ตาม ป.พ.พ. มาตรา 456',
+        order: 2,
+        subject: 'กฎหมายแพ่ง',
+        createdAt: '2025-01-01T00:00:00Z',
+        updatedAt: '2025-01-01T00:00:00Z'
+    },
+    {
+        id: 'q-1-3',
+        examId: 'exam-1',
+        text: 'อายุความทั่วไปตามประมวลกฎหมายแพ่งและพาณิชย์คือกี่ปี?',
+        type: 'MULTIPLE_CHOICE',
+        options: ['5 ปี', '10 ปี', '15 ปี', '20 ปี'],
+        correctOptionIndex: 1,
+        explanation: 'ตาม ป.พ.พ. มาตรา 193/30 อายุความทั่วไปคือ 10 ปี',
+        order: 3,
+        subject: 'กฎหมายแพ่ง',
+        createdAt: '2025-01-01T00:00:00Z',
+        updatedAt: '2025-01-01T00:00:00Z'
+    },
+    // Exam 2 Questions (Multiple Choice)
+    {
+        id: 'q-2-1',
+        examId: 'exam-2',
+        text: 'การกระทำโดยป้องกันตามกฎหมายอาญา ต้องเป็นการกระทำเพื่อป้องกันสิทธิของใคร?',
+        type: 'MULTIPLE_CHOICE',
+        options: ['ตนเองเท่านั้น', 'ตนเองหรือผู้อื่น', 'ผู้อื่นเท่านั้น', 'รัฐเท่านั้น'],
+        correctOptionIndex: 1,
+        explanation: 'ตาม ป.อาญา มาตรา 68 การป้องกันโดยชอบด้วยกฎหมายป้องกันได้ทั้งสิทธิของตนเองและผู้อื่น',
+        order: 1,
+        subject: 'กฎหมายอาญา',
+        createdAt: '2025-01-02T00:00:00Z',
+        updatedAt: '2025-01-02T00:00:00Z'
+    },
+    {
+        id: 'q-2-2',
+        examId: 'exam-2',
+        text: 'ความผิดฐานฆ่าคนตายโดยเจตนา มีโทษอย่างไร?',
+        type: 'MULTIPLE_CHOICE',
+        options: ['จำคุก 1-10 ปี', 'จำคุก 10-20 ปี', 'จำคุก 15-20 ปี หรือจำคุกตลอดชีวิต หรือประหารชีวิต', 'จำคุกตลอดชีวิตเท่านั้น'],
+        correctOptionIndex: 2,
+        explanation: 'ตาม ป.อาญา มาตรา 288 ผู้ใดฆ่าคนตาย ต้องระวางโทษประหารชีวิต จำคุกตลอดชีวิต หรือจำคุก 15-20 ปี',
+        order: 2,
+        subject: 'กฎหมายอาญา',
+        createdAt: '2025-01-02T00:00:00Z',
+        updatedAt: '2025-01-02T00:00:00Z'
+    },
+    // Exam 3 Questions (Essay)
+    {
+        id: 'q-3-1',
+        examId: 'exam-3',
+        text: 'นาย ก. ตกลงขายที่ดินให้นาย ข. โดยทำสัญญาเป็นหนังสือแต่ไม่ได้จดทะเบียน ต่อมานาย ก. เปลี่ยนใจไม่ยอมโอน นาย ข. จะฟ้องบังคับให้นาย ก. โอนที่ดินได้หรือไม่ เพราะเหตุใด?',
+        type: 'ESSAY',
+        correctAnswerText: `ธงคำตอบ:
+        
+นาย ข. ไม่สามารถฟ้องบังคับให้นาย ก. โอนที่ดินได้
+
+เหตุผล:
+1. ตามประมวลกฎหมายแพ่งและพาณิชย์ มาตรา 456 วรรคหนึ่ง กำหนดว่า การซื้อขายอสังหาริมทรัพย์ ถ้ามิได้ทำเป็นหนังสือและจดทะเบียนต่อพนักงานเจ้าหน้าที่ ท่านว่าเป็นโมฆะ
+
+2. แม้นาย ก. และนาย ข. จะทำสัญญาเป็นหนังสือแล้ว แต่ยังไม่ได้จดทะเบียนต่อพนักงานเจ้าหน้าที่ สัญญาซื้อขายที่ดินจึงเป็นโมฆะ
+
+3. เมื่อสัญญาเป็นโมฆะ ย่อมไม่ก่อให้เกิดสิทธิและหน้าที่ตามสัญญา นาย ข. จึงไม่มีสิทธิฟ้องบังคับให้นาย ก. โอนที่ดินได้`,
+        explanation: 'เป็นข้อสอบเกี่ยวกับแบบของสัญญาซื้อขายอสังหาริมทรัพย์',
+        order: 1,
+        subject: 'กฎหมายแพ่ง',
+        createdAt: '2025-01-03T00:00:00Z',
+        updatedAt: '2025-01-03T00:00:00Z'
+    }
+];
+
 // ============================================================================
 // IN-MEMORY STORE
 // ============================================================================
@@ -215,6 +382,8 @@ const initialBooks: Book[] = [
 let articles: Article[] = [...initialArticles];
 let courses: Course[] = [...initialCourses];
 let books: Book[] = [...initialBooks];
+let exams: Exam[] = [...initialExams];
+let questions: Question[] = [...initialQuestions];
 
 // ============================================================================
 // ARTICLES CRUD
@@ -374,6 +543,117 @@ export function getStats() {
         publishedCourses: courses.filter(c => c.status === 'published').length,
         totalBooks: books.length,
         publishedBooks: books.filter(b => b.status === 'published').length,
+        totalExams: exams.length,
+        publishedExams: exams.filter(e => e.status === 'published').length,
+        totalQuestions: questions.length,
         totalViews: articles.reduce((sum, a) => sum + a.views, 0)
     };
+}
+
+// ============================================================================
+// EXAMS CRUD
+// ============================================================================
+
+export function getExams(): Exam[] {
+    return exams.filter(e => e.status === 'published');
+}
+
+export function getAllExams(): Exam[] {
+    return exams;
+}
+
+export function getExamById(id: string): Exam | undefined {
+    return exams.find(e => e.id === id);
+}
+
+export function createExam(data: Omit<Exam, 'id' | 'createdAt' | 'updatedAt'>): Exam {
+    const now = new Date().toISOString();
+    const newExam: Exam = {
+        ...data,
+        id: `exam-${Date.now()}`,
+        createdAt: now,
+        updatedAt: now
+    };
+    exams.unshift(newExam);
+    return newExam;
+}
+
+export function updateExam(id: string, data: Partial<Exam>): Exam | null {
+    const index = exams.findIndex(e => e.id === id);
+    if (index === -1) return null;
+
+    exams[index] = {
+        ...exams[index],
+        ...data,
+        updatedAt: new Date().toISOString()
+    };
+    return exams[index];
+}
+
+export function deleteExam(id: string): boolean {
+    const index = exams.findIndex(e => e.id === id);
+    if (index === -1) return false;
+    exams.splice(index, 1);
+    // Also delete associated questions
+    questions = questions.filter(q => q.examId !== id);
+    return true;
+}
+
+// ============================================================================
+// QUESTIONS CRUD
+// ============================================================================
+
+export function getQuestionsByExamId(examId: string): Question[] {
+    return questions.filter(q => q.examId === examId).sort((a, b) => a.order - b.order);
+}
+
+export function getQuestionById(id: string): Question | undefined {
+    return questions.find(q => q.id === id);
+}
+
+export function createQuestion(data: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>): Question {
+    const now = new Date().toISOString();
+    const newQuestion: Question = {
+        ...data,
+        id: `q-${Date.now()}`,
+        createdAt: now,
+        updatedAt: now
+    };
+    questions.push(newQuestion);
+
+    // Update exam's totalQuestions count
+    const exam = exams.find(e => e.id === data.examId);
+    if (exam) {
+        exam.totalQuestions = questions.filter(q => q.examId === data.examId).length;
+    }
+
+    return newQuestion;
+}
+
+export function updateQuestion(id: string, data: Partial<Question>): Question | null {
+    const index = questions.findIndex(q => q.id === id);
+    if (index === -1) return null;
+
+    questions[index] = {
+        ...questions[index],
+        ...data,
+        updatedAt: new Date().toISOString()
+    };
+    return questions[index];
+}
+
+export function deleteQuestion(id: string): boolean {
+    const question = questions.find(q => q.id === id);
+    if (!question) return false;
+
+    const examId = question.examId;
+    questions = questions.filter(q => q.id !== id);
+
+    // Update exam's totalQuestions count
+    const exam = exams.find(e => e.id === examId);
+    if (exam) {
+        exam.totalQuestions = questions.filter(q => q.examId === examId).length;
+    }
+
+    return true;
 }

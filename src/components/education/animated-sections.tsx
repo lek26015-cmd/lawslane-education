@@ -1,9 +1,9 @@
 'use client';
 
 import Link from "next/link";
-import Image from "next/image";
+import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { Book, GraduationCap, ChevronRight, Clock, Target, Award, FileText, Quote, Star } from "lucide-react";
+import { Clock, Target, Award, FileText, Quote } from "lucide-react";
 import {
     Carousel,
     CarouselContent,
@@ -19,52 +19,7 @@ const profileLawyer = "/images/profile-lawyer.jpg";
 const educationHero = "/images/education-hero.png";
 const lawlanesHero = "/images/Lawlanes-Hero-cover.jpg";
 
-// Animated wrapper components using Tailwind CSS
-// Using Tailwind's animate-in features for hydration-safe animations
-
-export function HeroFadeIn({ children }: { children: ReactNode }) {
-    return (
-        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-forwards">
-            {children}
-        </div>
-    );
-}
-
-export function SectionFadeIn({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
-    // Note: Tailwind arbitrary values for delay might not work dynamically for all values, 
-    // but we can map common ones or just rely on CSS variables style if needed.
-    // For simplicity, we use a standard delay for now or style attribute.
-
-    return (
-        <div
-            className="animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-forwards"
-            style={{ animationDelay: `${delay}s` }}
-        >
-            {children}
-        </div>
-    );
-}
-
-export function AnimatedGrid({ children, className = '' }: { children: ReactNode; className?: string }) {
-    return (
-        <div className={`animate-in fade-in slide-in-from-bottom-4 duration-500 ${className}`}>
-            {children}
-        </div>
-    );
-}
-
-export function AnimatedCard({ children, className = '', index = 0 }: { children: ReactNode; className?: string; index?: number }) {
-    return (
-        <div
-            className={`animate-in fade-in slide-in-from-bottom-4 duration-500 hover:-translate-y-1 transition-transform ${className}`}
-            style={{ animationDelay: `${index * 0.1}s` }}
-        >
-            {children}
-        </div>
-    );
-}
-
-// Feature Cards with Animation
+// Feature Cards with Framer Motion Animation
 export function FeatureCardsAnimated() {
     const features = [
         { icon: FileText, title: "ข้อสอบครบทุกวิชา", desc: "แพ่ง วิแพ่ง อาญา วิอาญา และอื่นๆ" },
@@ -73,26 +28,56 @@ export function FeatureCardsAnimated() {
         { icon: Award, title: "ประวัติการสอบ", desc: "ดูพัฒนาการและจุดอ่อนของตัวเอง" }
     ];
 
+    const containerVariants = {
+        hidden: {},
+        visible: {
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5, ease: "easeOut" }
+        }
+    };
+
     return (
-        <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.section
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+        >
             {features.map((feature, idx) => (
-                <div
+                <motion.div
                     key={idx}
-                    className="animate-in fade-in slide-in-from-bottom-6 duration-700 bg-white border rounded-xl p-6 text-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] transition-all"
-                    style={{ animationDelay: `${idx * 0.1}s`, animationFillMode: 'both' }}
+                    variants={itemVariants}
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-white border rounded-xl p-6 text-center cursor-pointer shadow-sm hover:shadow-lg"
                 >
-                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform">
+                    <motion.div
+                        className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                        whileHover={{ rotate: 10, scale: 1.1 }}
+                        transition={{ duration: 0.3 }}
+                    >
                         <feature.icon className="w-6 h-6 text-slate-600" />
-                    </div>
+                    </motion.div>
                     <h3 className="font-bold text-lg mb-1 text-slate-900">{feature.title}</h3>
                     <p className="text-sm text-slate-600">{feature.desc}</p>
-                </div>
+                </motion.div>
             ))}
-        </section>
+        </motion.section>
     );
 }
 
-// Testimonials with Animation
+// Testimonials with Framer Motion Animation
 export function TestimonialsAnimated() {
     const testimonials = [
         {
@@ -102,7 +87,7 @@ export function TestimonialsAnimated() {
             initial: "ก"
         },
         {
-            quote: "เหมาะมากสำหรับนักศึกษาที่ต้องการฝึกทำข้อสอบก่อนสอบปลายภาค ข้อสอบทายช่วยทบทวนความรู้ได้ดี",
+            quote: "เหมาะมากสำหรับนักศึกษาที่ต้องการฝึกทำข้อสอบก่อนสอบปลายภาค ข้อสอบดีช่วยทบทวนความรู้ได้ดี",
             name: "คุณปิยะ",
             role: "นักศึกษานิติศาสตร์ ปี 3",
             initial: "ป"
@@ -115,37 +100,76 @@ export function TestimonialsAnimated() {
         }
     ];
 
+    const containerVariants = {
+        hidden: {},
+        visible: {
+            transition: {
+                staggerChildren: 0.15
+            }
+        }
+    };
+
+    const cardVariants = {
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6 }
+        }
+    };
+
     return (
         <section className="py-8">
-            <h2 className="text-2xl font-bold text-center mb-8 text-slate-900 animate-in fade-in zoom-in duration-500">
+            <motion.h2
+                className="text-2xl font-bold text-center mb-8 text-slate-900"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+            >
                 รีวิวจากผู้ใช้งานจริง
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            </motion.h2>
+            <motion.div
+                className="grid md:grid-cols-3 gap-6"
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+            >
                 {testimonials.map((t, idx) => (
-                    <div
+                    <motion.div
                         key={idx}
-                        className="bg-white border rounded-2xl p-6 hover:-translate-y-1 transition-transform animate-in fade-in slide-in-from-bottom-6 duration-700"
-                        style={{ animationDelay: `${idx * 0.1}s`, animationFillMode: 'both' }}
+                        variants={cardVariants}
+                        whileHover={{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
+                        className="bg-white border rounded-2xl p-6 transition-shadow"
                     >
-                        <Quote className="w-8 h-8 text-slate-300 mb-4" />
+                        <motion.div
+                            initial={{ rotate: 0 }}
+                            whileHover={{ rotate: -5 }}
+                        >
+                            <Quote className="w-8 h-8 text-indigo-200 mb-4" />
+                        </motion.div>
                         <p className="text-slate-600 mb-4">"{t.quote}"</p>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium hover:scale-110 transition-transform">
+                            <motion.div
+                                className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-medium"
+                                whileHover={{ scale: 1.1 }}
+                            >
                                 {t.initial}
-                            </div>
+                            </motion.div>
                             <div>
                                 <p className="font-medium text-slate-900">{t.name}</p>
                                 <p className="text-sm text-slate-500">{t.role}</p>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
-            </div>
+            </motion.div>
         </section>
     );
 }
 
-// Exam Categories with Animation
+// Exam Categories with Framer Motion Animation
 export function ExamCategoriesAnimated() {
     const categories = [
         { name: "กฎหมายแพ่ง", count: "25 ชุด", href: "/exams?category=civil", colors: "from-blue-50 to-blue-100 border-blue-200 hover:border-blue-400", iconBg: "bg-blue-500", textColor: "text-blue-900", countColor: "text-blue-600" },
@@ -154,26 +178,57 @@ export function ExamCategoriesAnimated() {
         { name: "วิ.อาญา", count: "20 ชุด", href: "/exams?category=criminal-procedure", colors: "from-purple-50 to-purple-100 border-purple-200 hover:border-purple-400", iconBg: "bg-purple-500", textColor: "text-purple-900", countColor: "text-purple-600" }
     ];
 
+    const containerVariants = {
+        hidden: {},
+        visible: {
+            transition: {
+                staggerChildren: 0.08
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, scale: 0.9 },
+        visible: {
+            opacity: 1,
+            scale: 1,
+            transition: { duration: 0.4 }
+        }
+    };
+
     return (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <motion.div
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-30px" }}
+        >
             {categories.map((cat, idx) => (
-                <div key={idx} className="animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${idx * 0.05}s`, animationFillMode: 'both' }}>
+                <motion.div key={idx} variants={itemVariants}>
                     <Link href={cat.href} className="group block">
-                        <div className={`bg-gradient-to-br ${cat.colors} border rounded-xl p-4 transition-all hover:scale-[1.03] hover:-translate-y-1`}>
+                        <motion.div
+                            className={`bg-gradient-to-br ${cat.colors} border rounded-xl p-4 transition-all`}
+                            whileHover={{ scale: 1.05, y: -4 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
                             <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 ${cat.iconBg} rounded-lg flex items-center justify-center text-white`}>
+                                <motion.div
+                                    className={`w-10 h-10 ${cat.iconBg} rounded-lg flex items-center justify-center text-white`}
+                                    whileHover={{ rotate: 10 }}
+                                >
                                     <FileText className="w-5 h-5" />
-                                </div>
+                                </motion.div>
                                 <div>
                                     <h3 className={`font-bold ${cat.textColor}`}>{cat.name}</h3>
                                     <p className={`text-xs ${cat.countColor}`}>{cat.count}ข้อสอบ</p>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     </Link>
-                </div>
+                </motion.div>
             ))}
-        </div>
+        </motion.div>
     );
 }
 
@@ -228,7 +283,13 @@ export function SampleExamsAnimated() {
     ];
 
     return (
-        <div className="w-full px-4 md:px-12 relative animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-forwards">
+        <motion.div
+            className="w-full px-4 md:px-12 relative"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+        >
             <Carousel
                 opts={{
                     align: "start",
@@ -239,9 +300,7 @@ export function SampleExamsAnimated() {
                 <CarouselContent className="-ml-4 pb-4">
                     {exams.map((exam) => (
                         <CarouselItem key={exam.id} className="pl-4 basis-[85%] sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/5">
-
-
-                            <div className="h-full py-2"> {/* Added py-2 to prevent shadow clip */}
+                            <div className="h-full py-2">
                                 <CourseCard
                                     href={exam.href}
                                     course={{
@@ -273,7 +332,6 @@ export function SampleExamsAnimated() {
                 <CarouselPrevious className="-left-4 lg:-left-12 h-12 w-12 bg-white shadow-lg border-0 text-slate-800 hover:bg-slate-50 hover:text-primary" />
                 <CarouselNext className="-right-4 lg:-right-12 h-12 w-12 bg-white shadow-lg border-0 text-slate-800 hover:bg-slate-50 hover:text-primary" />
             </Carousel>
-        </div>
+        </motion.div>
     );
 }
-

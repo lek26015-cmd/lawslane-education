@@ -18,12 +18,18 @@ export function CourseCard({ course, href }: CourseCardProps) {
             <div className="flex flex-col h-full bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 {/* Cover Image */}
                 <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
-                    <Image
-                        src={course.coverUrl}
-                        alt={course.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    {course.coverUrl ? (
+                        <Image
+                            src={course.coverUrl}
+                            alt={course.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
+                            <PlayCircle className="w-12 h-12 text-slate-400" />
+                        </div>
+                    )}
                     {/* Badge Overlay */}
                     <div className="absolute top-3 left-3">
                         <div className="bg-[#FF6B2C] text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1">
@@ -66,24 +72,26 @@ export function CourseCard({ course, href }: CourseCardProps) {
                     )}
 
                     {/* Instructor */}
-                    <div className="flex items-center gap-2 mt-auto pt-2">
-                        {course.instructor.avatarUrl ? (
-                            <Image
-                                src={course.instructor.avatarUrl}
-                                alt={course.instructor.name}
-                                width={24}
-                                height={24}
-                                className="rounded-full bg-slate-100"
-                            />
-                        ) : (
-                            <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
-                                {course.instructor.name.charAt(0)}
-                            </div>
-                        )}
-                        <span className="text-xs text-slate-500 font-medium truncate">
-                            {course.instructor.name}
-                        </span>
-                    </div>
+                    {course.instructor && (
+                        <div className="flex items-center gap-2 mt-auto pt-2">
+                            {course.instructor.avatarUrl ? (
+                                <Image
+                                    src={course.instructor.avatarUrl}
+                                    alt={course.instructor.name}
+                                    width={24}
+                                    height={24}
+                                    className="rounded-full bg-slate-100"
+                                />
+                            ) : (
+                                <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
+                                    {course.instructor.name?.charAt(0) || '?'}
+                                </div>
+                            )}
+                            <span className="text-xs text-slate-500 font-medium truncate">
+                                {course.instructor.name || 'ไม่ระบุ'}
+                            </span>
+                        </div>
+                    )}
 
                     {/* Footer: Duration & Price */}
                     <div className="flex items-center justify-between pt-3 mt-1 border-t border-slate-50">

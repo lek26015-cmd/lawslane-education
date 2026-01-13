@@ -2,27 +2,25 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Newspaper } from 'lucide-react';
-import { useFirebase } from '@/firebase';
-import { getAllArticles } from '@/lib/data';
-import { Article } from '@/lib/types';
+import { Article } from '@/lib/mock-store';
 
 export function EducationArticles() {
-    const { firestore } = useFirebase();
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchArticles() {
-            if (!firestore) return;
             try {
-                const fetchedArticles = await getAllArticles(firestore);
-                // Filter for law-related articles and take first 3
-                setArticles(fetchedArticles.slice(0, 3));
+                // Fetch from our Education API (uses mock-store)
+                const response = await fetch('/api/education/articles');
+                if (response.ok) {
+                    const data = await response.json();
+                    setArticles(data.slice(0, 3)); // Take first 3
+                }
             } catch (error) {
                 console.error("Error fetching articles:", error);
             } finally {
@@ -31,7 +29,7 @@ export function EducationArticles() {
         }
 
         fetchArticles();
-    }, [firestore]);
+    }, []);
 
     if (loading) {
         return (
@@ -77,11 +75,10 @@ export function EducationArticles() {
                         <Card className="border shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden h-full">
                             <CardContent className="p-0">
                                 <div className="relative aspect-[16/10] overflow-hidden">
-                                    <Image
-                                        src={article.imageUrl}
+                                    <img
+                                        src={article.coverImage}
                                         alt={article.title}
-                                        fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                     />
                                     <div className="absolute top-3 left-3">
                                         <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm text-xs font-medium">
