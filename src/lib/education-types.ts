@@ -152,3 +152,5 @@ export interface Course {
 }
 
 
+export type Module = CourseModule;
+export type Lesson = CourseLesson;

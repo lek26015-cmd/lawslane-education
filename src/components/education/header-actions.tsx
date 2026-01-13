@@ -13,7 +13,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, User, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { LogOut, User, LayoutDashboard, ChevronDown, Shield } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { useFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
@@ -82,6 +82,11 @@ export function EducationHeaderActions() {
                 <DropdownMenuItem onClick={() => router.push('/profile')}>
                     <User className="mr-2 h-4 w-4" />
                     จัดการบัญชี
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => router.push('/education-admin')}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    ระบบจัดการ (Admin)
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">

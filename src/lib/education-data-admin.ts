@@ -61,7 +61,28 @@ const MOCK_COURSES: Course[] = [
         totalLessons: 20,
         rating: 4.9,
         reviewCount: 85,
-        modules: [],
+        modules: [
+            {
+                id: "m2-1",
+                title: "วิเคราะห์ข้อสอบเนติฯ ภาค 1 (สมัยที่ 70-72)",
+                lessons: [
+                    { id: "l2-1", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 70)", durationMinutes: 120, isFreePreview: true },
+                    { id: "l2-2", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 70)", durationMinutes: 120, isFreePreview: false },
+                    { id: "l2-3", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false },
+                    { id: "l2-4", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false }
+                ]
+            },
+            {
+                id: "m2-2",
+                title: "วิเคราะห์ข้อสอบเนติฯ ภาค 1 (สมัยที่ 73-75)",
+                lessons: [
+                    { id: "l2-5", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false },
+                    { id: "l2-6", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false },
+                    { id: "l2-7", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false },
+                    { id: "l2-8", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false }
+                ]
+            }
+        ],
         createdAt: new Date(),
         updatedAt: new Date(),
     }
@@ -258,6 +279,22 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
                     type: 'EXAM',
                     price: 199,
                     quantity: 1
+                },
+                {
+                    id: 'course-2',
+                    title: 'คอร์สตะลุยโจทย์เนติบัณฑิต ภาค 1',
+                    type: 'COURSE',
+                    price: 2500,
+                    quantity: 1,
+                    coverUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=500&fit=crop'
+                },
+                {
+                    id: 'course-1',
+                    title: 'ติวสรุปกฎหมายแพ่งและพาณิชย์ (ฉบับรวบรัด)',
+                    type: 'COURSE',
+                    price: 1500,
+                    quantity: 1,
+                    coverUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=500&fit=crop"
                 }
             ],
             totalAmount: 849,
