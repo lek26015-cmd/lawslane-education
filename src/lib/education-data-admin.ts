@@ -35,9 +35,10 @@ const MOCK_COURSES: Course[] = [
             {
                 id: "m1",
                 title: "บทนำและนิติกรรม",
+                items: [],
                 lessons: [
-                    { id: "l1", title: "ภาพรวมกฎหมายแพ่ง", durationMinutes: 45, isFreePreview: true, videoUrl: "https://example.com/video1" },
-                    { id: "l2", title: "หลักนิติกรรมสัญญา", durationMinutes: 60, isFreePreview: false }
+                    { id: "l1", type: 'lesson' as const, title: "ภาพรวมกฎหมายแพ่ง", durationMinutes: 45, isFreePreview: true, videoUrl: "https://example.com/video1", order: 0 },
+                    { id: "l2", type: 'lesson' as const, title: "หลักนิติกรรมสัญญา", durationMinutes: 60, isFreePreview: false, order: 1 }
                 ]
             }
         ],
@@ -65,21 +66,23 @@ const MOCK_COURSES: Course[] = [
             {
                 id: "m2-1",
                 title: "วิเคราะห์ข้อสอบเนติฯ ภาค 1 (สมัยที่ 70-72)",
+                items: [],
                 lessons: [
-                    { id: "l2-1", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 70)", durationMinutes: 120, isFreePreview: true },
-                    { id: "l2-2", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 70)", durationMinutes: 120, isFreePreview: false },
-                    { id: "l2-3", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false },
-                    { id: "l2-4", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false }
+                    { id: "l2-1", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 70)", durationMinutes: 120, isFreePreview: true, order: 0 },
+                    { id: "l2-2", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 70)", durationMinutes: 120, isFreePreview: false, order: 1 },
+                    { id: "l2-3", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false, order: 2 },
+                    { id: "l2-4", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false, order: 3 }
                 ]
             },
             {
                 id: "m2-2",
                 title: "วิเคราะห์ข้อสอบเนติฯ ภาค 1 (สมัยที่ 73-75)",
+                items: [],
                 lessons: [
-                    { id: "l2-5", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false },
-                    { id: "l2-6", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false },
-                    { id: "l2-7", title: "ข้อสอบกฎหมายอาญา (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false },
-                    { id: "l2-8", title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false }
+                    { id: "l2-5", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false, order: 0 },
+                    { id: "l2-6", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false, order: 1 },
+                    { id: "l2-7", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false, order: 2 },
+                    { id: "l2-8", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false, order: 3 }
                 ]
             }
         ],
@@ -91,7 +94,7 @@ const MOCK_COURSES: Course[] = [
 // Mock books for development
 const MOCK_BOOKS: Book[] = [
     {
-        id: "1",
+        id: "book-1",
         title: "คู่มือเตรียมสอบใบอนุญาตว่าความ",
         description: "สรุปเนื้อหาสำคัญสำหรับสอบภาคทฤษฎี ครบถ้วน เข้าใจง่าย พร้อมตัวอย่างข้อสอบจริงจากสนามสอบ 5 ปีล่าสุด เหมาะสำหรับผู้ที่เตรียมตัวสอบใบอนุญาตว่าความ ภาคทฤษฎี",
         price: 350,
@@ -105,7 +108,7 @@ const MOCK_BOOKS: Book[] = [
         updatedAt: new Date(),
     },
     {
-        id: "2",
+        id: "book-2",
         title: "รวมข้อสอบตั๋วทนาย 10 ปี",
         description: "เจาะลึกข้อสอบเก่า พร้อมเฉลยละเอียด ครบทุกสนามสอบ รวมคำถามกว่า 500 ข้อ พร้อมวิเคราะห์แนวโน้มข้อสอบ",
         price: 450,
@@ -119,7 +122,7 @@ const MOCK_BOOKS: Book[] = [
         updatedAt: new Date(),
     },
     {
-        id: "3",
+        id: "book-3",
         title: "เทคนิคการร่างฟ้องและคำร้อง",
         description: "เทคนิคระดับมือโปรสำหรับการร่างเอกสารทางกฎหมาย รูปแบบ PDF พร้อมตัวอย่างคำฟ้องจริงกว่า 50 แบบ",
         price: 199,
@@ -133,7 +136,7 @@ const MOCK_BOOKS: Book[] = [
         updatedAt: new Date(),
     },
     {
-        id: "4",
+        id: "book-4",
         title: "กฎหมายแพ่งว่าด้วยสัญญา",
         description: "หลักกฎหมายสัญญาฉบับสมบูรณ์ อธิบายทุกมาตราพร้อมคำพิพากษาศาลฎีกาที่สำคัญ",
         price: 280,
@@ -147,7 +150,7 @@ const MOCK_BOOKS: Book[] = [
         updatedAt: new Date(),
     },
     {
-        id: "5",
+        id: "book-5",
         title: "ป.วิ.อาญา ฉบับอ่านง่าย",
         description: "วิธีพิจารณาความอาญา สรุปเข้าใจง่าย พร้อมแผนภูมิกระบวนการและ Flowchart",
         price: 320,
@@ -161,7 +164,7 @@ const MOCK_BOOKS: Book[] = [
         updatedAt: new Date(),
     },
     {
-        id: "6",
+        id: "book-6",
         title: "ถาม-ตอบ กฎหมายลักษณะพยาน",
         description: "รวม Q&A กฎหมายพยานหลักฐาน 500 ข้อ พร้อมเฉลยละเอียด เหมาะสำหรับทบทวนก่อนสอบ",
         price: 250,

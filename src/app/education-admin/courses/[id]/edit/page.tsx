@@ -3,10 +3,11 @@
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Eye, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Loader2, BookOpen, Video, FileQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     Select,
     SelectContent,
@@ -15,6 +16,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
+import { CourseModuleEditor } from '@/components/education-admin/course-module-editor';
+import { CourseExamLinker } from '@/components/education-admin/course-exam-linker';
+import { CourseModule } from '@/lib/education-types';
 
 const CATEGORIES = ['เตรียมสอบ', 'กฎหมายแพ่ง', 'กฎหมายอาญา', 'กฎหมายมหาชน', 'กฎหมายธุรกิจ', 'ทั่วไป'];
 const LEVELS = [
@@ -29,6 +33,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [activeTab, setActiveTab] = useState('general');
 
     const [formData, setFormData] = useState({
         title: '',
@@ -43,6 +48,9 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
         category: 'ทั่วไป',
         status: 'draft' as 'draft' | 'published'
     });
+
+    const [modules, setModules] = useState<CourseModule[]>([]);
+    const [linkedExamIds, setLinkedExamIds] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -63,6 +71,8 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                         category: course.category || 'ทั่วไป',
                         status: course.status
                     });
+                    setModules(course.modules || []);
+                    setLinkedExamIds(course.linkedExamIds || []);
                 } else {
                     toast({ title: "ไม่พบคอร์ส", variant: "destructive" });
                     router.push('/education-admin/courses');
@@ -84,11 +94,24 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
         setIsSubmitting(true);
 
+        // Calculate total lessons from modules
+        const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
+        const totalDuration = modules.reduce((sum, m) =>
+            sum + m.lessons.reduce((ls, l) => ls + (l.durationMinutes || 0), 0), 0
+        );
+
         try {
             const response = await fetch(`/api/education/courses/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, status })
+                body: JSON.stringify({
+                    ...formData,
+                    status,
+                    modules,
+                    linkedExamIds,
+                    lessons: totalLessons,
+                    duration: `${Math.round(totalDuration / 60)} ชั่วโมง`
+                })
             });
 
             if (response.ok) {
@@ -113,7 +136,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-5xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link href="/education-admin/courses">
@@ -134,74 +157,112 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm p-6 space-y-6">
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">ชื่อคอร์ส *</label>
-                    <Input value={formData.title} onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))} />
-                </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+                <TabsList className="grid grid-cols-3 w-full max-w-md">
+                    <TabsTrigger value="general" className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        ข้อมูลทั่วไป
+                    </TabsTrigger>
+                    <TabsTrigger value="lessons" className="flex items-center gap-2">
+                        <Video className="w-4 h-4" />
+                        บทเรียน
+                    </TabsTrigger>
+                    <TabsTrigger value="exams" className="flex items-center gap-2">
+                        <FileQuestion className="w-4 h-4" />
+                        ข้อสอบ
+                    </TabsTrigger>
+                </TabsList>
 
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">รายละเอียด</label>
-                    <Textarea rows={4} value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">ราคา (บาท)</label>
-                        <Input type="number" value={formData.price} onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))} />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">ราคาเดิม (บาท)</label>
-                        <Input type="number" value={formData.originalPrice} onChange={(e) => setFormData(prev => ({ ...prev, originalPrice: Number(e.target.value) }))} />
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">ผู้สอน</label>
-                        <Input value={formData.instructor} onChange={(e) => setFormData(prev => ({ ...prev, instructor: e.target.value }))} />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">ระยะเวลา</label>
-                        <Input value={formData.duration} onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))} />
-                    </div>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-6">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">จำนวนบทเรียน</label>
-                        <Input type="number" value={formData.lessons} onChange={(e) => setFormData(prev => ({ ...prev, lessons: Number(e.target.value) }))} />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">ระดับ</label>
-                        <Select value={formData.level} onValueChange={(v: any) => setFormData(prev => ({ ...prev, level: v }))}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                {LEVELS.map(l => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">หมวดหมู่</label>
-                        <Select value={formData.category} onValueChange={(v) => setFormData(prev => ({ ...prev, category: v }))}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
-                    <Input value={formData.coverImage} onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))} />
-                    {formData.coverImage && (
-                        <div className="mt-2 rounded-lg overflow-hidden border w-64">
-                            <img src={formData.coverImage} alt="Preview" className="w-full h-36 object-cover" />
+                {/* General Info Tab */}
+                <TabsContent value="general">
+                    <div className="bg-white rounded-xl border shadow-sm p-6 space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700">ชื่อคอร์ส *</label>
+                            <Input value={formData.title} onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))} />
                         </div>
-                    )}
-                </div>
-            </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700">รายละเอียด</label>
+                            <Textarea rows={4} value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} />
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700">ราคา (บาท)</label>
+                                <Input type="number" value={formData.price} onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))} />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700">ราคาเดิม (บาท)</label>
+                                <Input type="number" value={formData.originalPrice} onChange={(e) => setFormData(prev => ({ ...prev, originalPrice: Number(e.target.value) }))} />
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700">ผู้สอน</label>
+                                <Input value={formData.instructor} onChange={(e) => setFormData(prev => ({ ...prev, instructor: e.target.value }))} />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700">ระยะเวลา</label>
+                                <Input value={formData.duration} onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))} placeholder="คำนวณอัตโนมัติจากบทเรียน" disabled />
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700">ระดับ</label>
+                                <Select value={formData.level} onValueChange={(v: any) => setFormData(prev => ({ ...prev, level: v }))}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {LEVELS.map(l => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700">หมวดหมู่</label>
+                                <Select value={formData.category} onValueChange={(v) => setFormData(prev => ({ ...prev, category: v }))}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
+                            <Input value={formData.coverImage} onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))} />
+                            {formData.coverImage && (
+                                <div className="mt-2 rounded-lg overflow-hidden border w-64">
+                                    <img src={formData.coverImage} alt="Preview" className="w-full h-36 object-cover" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </TabsContent>
+
+                {/* Lessons Tab */}
+                <TabsContent value="lessons">
+                    <div className="bg-white rounded-xl border shadow-sm p-6">
+                        <div className="mb-4">
+                            <h2 className="text-lg font-semibold text-slate-900">จัดการบทเรียน</h2>
+                            <p className="text-sm text-slate-500">เพิ่ม/แก้ไขบทเรียน วิดีโอ และเอกสารประกอบ</p>
+                        </div>
+                        <CourseModuleEditor modules={modules} onChange={setModules} />
+                    </div>
+                </TabsContent>
+
+                {/* Exams Tab */}
+                <TabsContent value="exams">
+                    <div className="bg-white rounded-xl border shadow-sm p-6">
+                        <div className="mb-4">
+                            <h2 className="text-lg font-semibold text-slate-900">เชื่อมต่อข้อสอบ</h2>
+                            <p className="text-sm text-slate-500">เลือกข้อสอบที่จะแนบมากับคอร์สนี้</p>
+                        </div>
+                        <CourseExamLinker linkedExamIds={linkedExamIds} onChange={setLinkedExamIds} />
+                    </div>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

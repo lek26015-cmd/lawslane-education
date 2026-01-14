@@ -40,6 +40,8 @@ export interface Course {
     level: 'beginner' | 'intermediate' | 'advanced';
     category: string;
     status: 'draft' | 'published';
+    modules?: any[]; // CourseModule[]
+    linkedExamIds?: string[];
     createdAt: string;
     updatedAt: string;
 }

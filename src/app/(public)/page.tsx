@@ -22,7 +22,7 @@ export default function EducationPage() {
         >
           <div className="relative z-20 max-w-2xl space-y-6 mx-auto lg:mx-0 text-center lg:text-left">
             <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight">
-              ฝึกทำข้อสอบ<br />
+              ฝึกทำข้อสอบกฎหมาย<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-200">
                 จนกว่าจะมั่นใจ
               </span>
@@ -128,11 +128,11 @@ export default function EducationPage() {
                   <div className="absolute -top-4 -right-4 w-24 h-24 bg-amber-100 rounded-full blur-2xl opacity-60" />
                   <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-teal-100 rounded-full blur-2xl opacity-60" />
 
-                  <div className="relative h-full w-full bg-slate-50 rounded-2xl border border-slate-100 p-2 shadow-sm group-hover:-translate-y-2 transition-transform duration-500">
+                  <div className="relative h-full w-full rounded-3xl overflow-hidden group-hover:-translate-y-2 transition-transform duration-500 shadow-2xl">
                     <img
-                      src="/images/lawslane-education-catoon.png"
+                      src="/images/lawslane-education-book.png"
                       alt="Skill Score Dashboard"
-                      className="w-full h-full object-contain drop-shadow-md rounded-xl"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </div>

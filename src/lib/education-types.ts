@@ -112,20 +112,42 @@ export interface Order {
 }
 
 // Course Types
+export interface CourseLessonAttachment {
+    id: string;
+    name: string;
+    url: string;
+    type: 'pdf' | 'doc' | 'link' | 'other';
+}
+
 export interface CourseLesson {
     id: string;
+    type: 'lesson';
     title: string;
     durationMinutes: number;
     videoUrl?: string; // For streaming
     isFreePreview: boolean; // Can watch without buying
     completed?: boolean; // For user progress
+    attachments?: CourseLessonAttachment[];
+    order: number;
 }
+
+export interface CourseQuizItem {
+    id: string;
+    type: 'quiz';
+    title: string;
+    examId: string; // Link to an existing exam
+    passingRequired: boolean; // Must pass to continue
+    order: number;
+}
+
+export type CourseModuleItem = CourseLesson | CourseQuizItem;
 
 export interface CourseModule {
     id: string;
     title: string;
     description?: string;
-    lessons: CourseLesson[];
+    items: CourseModuleItem[]; // Mixed lessons and quizzes
+    lessons: CourseLesson[]; // Deprecated, kept for backward compatibility
 }
 
 export interface Course {

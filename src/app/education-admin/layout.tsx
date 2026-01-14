@@ -136,18 +136,18 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                                 <p className="text-xs text-slate-500 truncate">admin@lawlanes.com</p>
                             </div>
                         </div>
-                        <Link href="/" className="mb-2 block">
-                            <Button variant="outline" className="w-full border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white h-9 text-xs">
-                                <Globe className="w-3 h-3 mr-2" />
+                        <Link href="/" className="mb-1 block">
+                            <Button variant="ghost" className="w-full justify-start text-slate-500 hover:bg-slate-800 hover:text-slate-300 h-9 text-xs font-normal">
+                                <Globe className="w-3.5 h-3.5 mr-2 opacity-60" />
                                 กลับสู่หน้าหลัก
                             </Button>
                         </Link>
                         <Button
-                            variant="outline"
-                            className="w-full border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white h-9 text-xs"
+                            variant="ghost"
+                            className="w-full justify-start text-slate-500 hover:bg-slate-800 hover:text-slate-300 h-9 text-xs font-normal"
                             onClick={handleLogout}
                         >
-                            <LogOut className="w-3 h-3 mr-2" />
+                            <LogOut className="w-3.5 h-3.5 mr-2 opacity-60" />
                             ออกจากระบบ
                         </Button>
                     </div>

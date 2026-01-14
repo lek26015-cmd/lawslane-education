@@ -41,7 +41,9 @@ export async function PUT(
             lessons: body.lessons,
             level: body.level,
             category: body.category,
-            status: body.status
+            status: body.status,
+            modules: body.modules || [],
+            linkedExamIds: body.linkedExamIds || []
         });
 
         if (!updated) {
