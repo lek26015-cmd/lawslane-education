@@ -33,7 +33,7 @@ export default function CreateCoursePage() {
         description: '',
         price: 0,
         originalPrice: 0,
-        coverImage: '',
+        coverUrl: '',
         instructor: '',
         duration: '',
         lessons: 0,
@@ -54,7 +54,13 @@ export default function CreateCoursePage() {
             const response = await fetch('/api/education/courses', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, status })
+                body: JSON.stringify({
+                    ...formData,
+                    status,
+                    instructor: { name: formData.instructor },
+                    totalLessons: formData.lessons,
+                    totalDurationMinutes: Number(formData.duration) || 0
+                })
             });
 
             if (response.ok) {
@@ -143,7 +149,8 @@ export default function CreateCoursePage() {
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-700">ระยะเวลา</label>
                         <Input
-                            placeholder="เช่น 40 ชั่วโมง"
+                            placeholder="ระบุเป็นนาที (เช่น 2400)"
+                            type="number"
                             value={formData.duration}
                             onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
                         />
@@ -182,12 +189,12 @@ export default function CreateCoursePage() {
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
                     <Input
-                        value={formData.coverImage}
-                        onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))}
+                        value={formData.coverUrl}
+                        onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))}
                     />
-                    {formData.coverImage && (
+                    {formData.coverUrl && (
                         <div className="mt-2 rounded-lg overflow-hidden border w-64">
-                            <img src={formData.coverImage} alt="Preview" className="w-full h-36 object-cover" />
+                            <img src={formData.coverUrl} alt="Preview" className="w-full h-36 object-cover" />
                         </div>
                     )}
                 </div>

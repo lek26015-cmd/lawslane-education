@@ -16,7 +16,9 @@ import {
     GraduationCap,
     Globe,
     ClipboardList,
-    Loader2
+    CreditCard,
+    Loader2,
+    Truck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -66,6 +68,8 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         { href: '/education-admin/courses', label: 'จัดการคอร์สเรียน', icon: GraduationCap },
         { href: '/education-admin/books', label: 'จัดการหนังสือ', icon: BookOpen },
         { href: '/education-admin/exams', label: 'จัดการข้อสอบ', icon: ClipboardList },
+        { href: '/education-admin/finance', label: 'การเงิน', icon: CreditCard },
+        { href: '/education-admin/shipping', label: 'การจัดส่ง', icon: Truck },
         { href: '/education-admin/users', label: 'ผู้ใช้งาน', icon: Users },
         { href: '/education-admin/settings', label: 'ตั้งค่าระบบ', icon: Settings },
     ];

@@ -40,7 +40,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
         description: '',
         price: 0,
         originalPrice: 0,
-        coverImage: '',
+        coverUrl: '',
         instructor: '',
         duration: '',
         lessons: 0,
@@ -63,7 +63,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                         description: course.description || '',
                         price: course.price,
                         originalPrice: course.originalPrice || 0,
-                        coverImage: course.coverImage || '',
+                        coverUrl: course.coverUrl || '',
                         instructor: course.instructor || '',
                         duration: course.duration || '',
                         lessons: course.lessons || 0,
@@ -109,8 +109,9 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                     status,
                     modules,
                     linkedExamIds,
-                    lessons: totalLessons,
-                    duration: `${Math.round(totalDuration / 60)} ชั่วโมง`
+                    totalLessons: totalLessons,
+                    totalDurationMinutes: totalDuration,
+                    instructor: { name: formData.instructor }
                 })
             });
 
@@ -231,10 +232,10 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
-                            <Input value={formData.coverImage} onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))} />
-                            {formData.coverImage && (
+                            <Input value={formData.coverUrl} onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))} />
+                            {formData.coverUrl && (
                                 <div className="mt-2 rounded-lg overflow-hidden border w-64">
-                                    <img src={formData.coverImage} alt="Preview" className="w-full h-36 object-cover" />
+                                    <img src={formData.coverUrl} alt="Preview" className="w-full h-36 object-cover" />
                                 </div>
                             )}
                         </div>

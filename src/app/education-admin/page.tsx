@@ -136,13 +136,13 @@ export default function AdminDashboardPage() {
                                 recentCourses.map((course) => (
                                     <div key={course.id} className="flex items-center gap-4 py-2 border-b last:border-0 border-slate-50">
                                         <div className="w-12 h-12 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden">
-                                            {course.coverImage && (
-                                                <img src={course.coverImage} alt="" className="w-full h-full object-cover" />
+                                            {course.coverUrl && (
+                                                <img src={course.coverUrl} alt="" className="w-full h-full object-cover" />
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="font-medium text-slate-900 truncate">{course.title}</p>
-                                            <p className="text-xs text-slate-500">{course.instructor} • {course.lessons} บท</p>
+                                            <p className="text-xs text-slate-500">{course.instructor?.name} • {course.totalLessons} บท</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="font-bold text-slate-900">฿{course.price.toLocaleString()}</p>

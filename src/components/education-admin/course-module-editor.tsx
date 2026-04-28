@@ -487,7 +487,7 @@ export function CourseModuleEditor({ modules, onChange }: CourseModuleEditorProp
         const items = getModuleItems(module);
         const newItems = items.map(item =>
             item.id === itemId ? { ...item, ...updates } : item
-        );
+        ) as CourseModuleItem[];
 
         updateModule(moduleId, {
             items: newItems,

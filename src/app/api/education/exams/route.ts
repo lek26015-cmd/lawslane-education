@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
             totalQuestions: body.totalQuestions || 0,
             category: body.category || 'other',
             difficulty: body.difficulty || 'medium',
-            coverImage: body.coverImage || '',
+            coverUrl: body.coverUrl || '',
             status: body.status || 'draft'
         });
 

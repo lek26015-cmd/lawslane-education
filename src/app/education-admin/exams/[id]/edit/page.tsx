@@ -69,7 +69,7 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
         passingScore: 60,
         category: 'license',
         difficulty: 'medium',
-        coverImage: '',
+        coverUrl: '',
         status: 'draft' as 'draft' | 'published'
     });
 
@@ -109,7 +109,7 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
                         passingScore: data.passingScore,
                         category: data.category,
                         difficulty: data.difficulty,
-                        coverImage: data.coverImage || '',
+                        coverUrl: data.coverUrl || '',
                         status: data.status
                     });
                     setQuestions(data.questions || []);
@@ -347,6 +347,16 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700">รายละเอียด</label>
                     <Textarea rows={2} value={formData.description} onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))} />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
+                    <Input value={formData.coverUrl} onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))} />
+                    {formData.coverUrl && (
+                        <div className="mt-2 rounded-lg overflow-hidden border w-64">
+                            <img src={formData.coverUrl} alt="Preview" className="w-full h-36 object-cover" />
+                        </div>
+                    )}
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6">

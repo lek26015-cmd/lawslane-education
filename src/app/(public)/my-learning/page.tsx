@@ -154,10 +154,10 @@ export default function MyLearningPage() {
         <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
             {/* Beautiful Page Header */}
             <PageHeader
-                title="การเรียนรู้ของฉัน"
+                title="แดชบอร์ด"
                 description="ติดตามสถานะการเรียน สมรรถนะ และประวัติการทำข้อสอบของคุณ"
                 icon={Award}
-                theme="indigo"
+                variant="minimal"
                 backLink="/"
                 backLabel="กลับหน้าหลัก"
                 badge={`${examHistory.length} ผลสอบ`}

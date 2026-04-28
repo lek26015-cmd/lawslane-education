@@ -27,9 +27,9 @@ export default function CreateBookPage() {
         description: '',
         price: 0,
         originalPrice: 0,
-        coverImage: '',
+        coverUrl: '',
         author: '',
-        pages: 0,
+        pageCount: 0,
         category: 'ทั่วไป',
         type: 'ebook' as 'ebook' | 'physical' | 'both',
         status: 'draft' as 'draft' | 'published'
@@ -114,7 +114,7 @@ export default function CreateBookPage() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-700">จำนวนหน้า</label>
-                        <Input type="number" value={formData.pages} onChange={(e) => setFormData(prev => ({ ...prev, pages: Number(e.target.value) }))} />
+                        <Input type="number" value={formData.pageCount} onChange={(e) => setFormData(prev => ({ ...prev, pageCount: Number(e.target.value) }))} />
                     </div>
                 </div>
 
@@ -141,10 +141,10 @@ export default function CreateBookPage() {
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
-                    <Input value={formData.coverImage} onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))} />
-                    {formData.coverImage && (
+                    <Input value={formData.coverUrl} onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))} />
+                    {formData.coverUrl && (
                         <div className="mt-2 rounded-lg overflow-hidden border w-48">
-                            <img src={formData.coverImage} alt="Preview" className="w-full h-64 object-cover" />
+                            <img src={formData.coverUrl} alt="Preview" className="w-full h-64 object-cover" />
                         </div>
                     )}
                 </div>

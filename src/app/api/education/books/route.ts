@@ -35,11 +35,12 @@ export async function POST(request: NextRequest) {
             description: body.description || '',
             price: body.price || 0,
             originalPrice: body.originalPrice,
-            coverImage: body.coverImage || '',
+            coverUrl: body.coverUrl || '',
             author: body.author || '',
-            pages: body.pages || 0,
+            pageCount: body.pageCount || 0,
             category: body.category || 'ทั่วไป',
             type: body.type || 'ebook',
+            isDigital: body.type === 'ebook' || body.type === 'both',
             status: body.status || 'draft'
         });
 

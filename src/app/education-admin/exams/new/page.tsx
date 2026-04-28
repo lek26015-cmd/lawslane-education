@@ -36,7 +36,7 @@ export default function CreateExamPage() {
         passingScore: 60,
         category: 'license',
         difficulty: 'medium',
-        coverImage: '',
+        coverUrl: '',
         status: 'draft' as 'draft' | 'published'
     });
 
@@ -157,11 +157,11 @@ export default function CreateExamPage() {
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
                     <Input
-                        value={formData.coverImage}
-                        onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))}
+                        value={formData.coverUrl}
+                        onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))}
                     />
-                    {formData.coverImage && (
-                        <img src={formData.coverImage} alt="Preview" className="mt-2 w-48 h-32 object-cover rounded-lg border" />
+                    {formData.coverUrl && (
+                        <img src={formData.coverUrl} alt="Preview" className="mt-2 w-48 h-32 object-cover rounded-lg border" />
                     )}
                 </div>
             </div>

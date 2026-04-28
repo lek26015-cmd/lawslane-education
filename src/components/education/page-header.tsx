@@ -26,17 +26,18 @@ interface PageHeaderProps {
     badge?: string;
     badgeColor?: string;
     theme?: 'indigo' | 'emerald' | 'amber' | 'purple' | 'rose' | 'slate' | 'blue' | 'cyan';
+    variant?: 'gradient' | 'minimal';
 }
 
 const THEME_GRADIENTS = {
-    indigo: 'bg-gradient-to-r from-indigo-600 to-violet-600',
-    emerald: 'bg-gradient-to-r from-emerald-600 to-teal-600',
-    amber: 'bg-gradient-to-r from-amber-500 to-orange-600',
-    purple: 'bg-gradient-to-r from-purple-600 to-indigo-600', // The requested one
-    rose: 'bg-gradient-to-r from-rose-600 to-pink-600',
-    slate: 'bg-gradient-to-r from-slate-700 to-slate-900',
-    blue: 'bg-gradient-to-r from-blue-600 to-indigo-600',
-    cyan: 'bg-gradient-to-r from-cyan-600 to-blue-600'
+    indigo: 'from-indigo-900 via-indigo-800 to-slate-900',
+    emerald: 'from-emerald-900 via-emerald-800 to-slate-900',
+    amber: 'from-amber-800 via-amber-700 to-slate-900',
+    purple: 'from-purple-900 via-indigo-900 to-slate-900',
+    rose: 'from-rose-900 via-pink-800 to-slate-900',
+    slate: 'from-slate-800 via-slate-700 to-slate-900',
+    blue: 'from-blue-900 via-indigo-800 to-slate-900',
+    cyan: 'from-cyan-900 via-blue-800 to-slate-900'
 };
 
 export function PageHeader({
@@ -44,7 +45,8 @@ export function PageHeader({
     description,
     icon: iconProp,
     iconColor,
-    theme = 'purple', // Default is now purple as requested
+    theme = 'purple',
+    variant = 'gradient',
     backLink,
     backLabel = 'กลับ',
     children,
@@ -53,23 +55,108 @@ export function PageHeader({
 }: PageHeaderProps) {
     const Icon = typeof iconProp === 'string' ? ICON_MAP[iconProp] : iconProp;
 
-    // We now use a dark background (gradient), so text is white.
-    // Icon background should be semi-transparent white.
-    const containerClasses = `relative rounded-2xl p-6 md:p-8 mb-8 shadow-md text-white ${THEME_GRADIENTS[theme] || THEME_GRADIENTS.purple}`;
+    // Minimal variant - white background with purple/slate text
+    if (variant === 'minimal') {
+        return (
+            <div className="mb-8">
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    {backLink && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <Link
+                                href={backLink}
+                                className="inline-flex items-center text-slate-500 hover:text-purple-600 transition-colors mb-4 text-sm font-medium"
+                            >
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                {backLabel}
+                            </Link>
+                        </motion.div>
+                    )}
 
-    // For icon color, if not specified, we use white or a variation.
-    // Actually on a colored banner, white icon looks best.
+                    <div className="flex flex-col md:flex-row md:items-start gap-4">
+                        {Icon && (
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+                                className="w-14 h-14 md:w-16 md:h-16 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0"
+                            >
+                                <Icon className={`w-7 h-7 md:w-8 md:h-8 ${iconColor || 'text-purple-600'}`} />
+                            </motion.div>
+                        )}
+
+                        <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                                <motion.h1
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                    className="text-2xl md:text-3xl font-bold text-slate-900"
+                                >
+                                    {title}
+                                </motion.h1>
+
+                                {badge && (
+                                    <motion.span
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.25 }}
+                                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeColor || 'bg-purple-100 text-purple-700'}`}
+                                    >
+                                        {badge}
+                                    </motion.span>
+                                )}
+                            </div>
+
+                            {description && (
+                                <motion.p
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="text-slate-500 text-sm md:text-base max-w-3xl leading-relaxed"
+                                >
+                                    {description}
+                                </motion.p>
+                            )}
+                        </div>
+
+                        {children && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.4 }}
+                                className="flex-shrink-0"
+                            >
+                                {children}
+                            </motion.div>
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
+
+    // Gradient variant (default) - dark background with white text
+    const containerClasses = `relative overflow-hidden rounded-3xl p-8 md:p-12 mb-8 shadow-xl text-white bg-gradient-to-br ${THEME_GRADIENTS[theme] || THEME_GRADIENTS.purple}`;
+
     const finalIconColor = iconColor || 'text-white';
-
-    // Badge logic: standard white badge with colored text usually looks good on gradients,
-    // or a semi-transparent white badge.
-    const defaultBadgeClasses = 'bg-white/20 text-white border border-white/20 backdrop-blur-sm';
+    const defaultBadgeClasses = 'bg-white/20 text-white border-0 backdrop-blur-sm';
     const finalBadgeClasses = badgeColor || defaultBadgeClasses;
 
     return (
         <div className={containerClasses}>
-            {/* Background Pattern overlay (optional, for texture) */}
-            <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-2xl pointer-events-none"></div>
+            {/* Background decoration - matching exams page */}
+            <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+                <div className="absolute top-10 right-10 w-48 h-48 bg-purple-500 rounded-full blur-[80px]" />
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px]" />
+            </div>
 
             <motion.div
                 initial={{ opacity: 0, y: -20 }}

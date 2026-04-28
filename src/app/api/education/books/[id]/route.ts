@@ -35,11 +35,12 @@ export async function PUT(
             description: body.description,
             price: body.price,
             originalPrice: body.originalPrice,
-            coverImage: body.coverImage,
+            coverUrl: body.coverUrl,
             author: body.author,
-            pages: body.pages,
+            pageCount: body.pageCount,
             category: body.category,
             type: body.type,
+            isDigital: body.type === 'ebook' || body.type === 'both' ? true : (body.type === 'physical' ? false : undefined),
             status: body.status
         });
 

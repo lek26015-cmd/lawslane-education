@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+
 import { Button } from "@/components/ui/button";
 import { Target, ChevronRight } from "lucide-react";
 import { ArticlesSection } from "@/components/education/articles-section";
@@ -13,12 +15,11 @@ import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
 
 export default function EducationPage() {
   return (
-    <div className="flex flex-col gap-12 overflow-x-hidden" key="education-page-v5-cache-buster">
+    <div className="flex flex-col gap-12 overflow-x-hidden">
       {/* Hero Section - Exam Focused */}
       <HeroFadeIn>
         <section
-          className="relative overflow-hidden rounded-3xl text-white p-6 md:p-12 lg:p-20"
-          style={{ background: 'linear-gradient(to bottom right, #581c87, #312e81, #0f172a)' }}
+          className="relative overflow-hidden rounded-3xl text-white p-6 md:p-12 lg:p-20 bg-[linear-gradient(to_bottom_right,#581c87,#312e81,#0f172a)]"
         >
           <div className="relative z-20 max-w-2xl space-y-6 mx-auto lg:mx-0 text-center lg:text-left">
             <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight">
@@ -42,30 +43,37 @@ export default function EducationPage() {
             </div>
 
             <div className="flex flex-wrap gap-3 md:gap-4 pt-4 justify-center lg:justify-start">
-              <Link href="/exams">
-                <Button
-                  size="lg"
-                  className="bg-white !text-purple-900 border border-white hover:bg-slate-100 font-bold rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base shadow-lg relative z-10"
-                  style={{ color: '#4c1d95' }}
-                >
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-[#4c1d95] !text-purple-900 border border-white hover:bg-slate-100 font-bold rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base shadow-lg relative z-10"
+              >
+                <Link href="/exams">
                   เริ่มทำข้อสอบเลย
-                </Button>
-              </Link>
-              <Link href="/books">
-                <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/20 hover:text-white rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base backdrop-blur-sm relative z-10 font-medium">
+                </Link>
+              </Button>
+
+              <Button asChild size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/20 hover:text-white rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base backdrop-blur-sm relative z-10 font-medium">
+                <Link href="/books">
                   ดูหนังสือประกอบ
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </div>
 
           {/* Hero Image - Absolute Positioned - Hidden on small mobile */}
-          <div className="hidden md:flex absolute bottom-0 right-4 lg:right-8 h-[95%] w-auto z-10 items-end pointer-events-none">
-            <img
-              src="/images/lawslane-education-catoon.png"
-              alt="Lawlanes Education"
-              className="w-full h-auto object-contain drop-shadow-2xl"
-            />
+          <div className="hidden md:flex absolute bottom-0 right-4 lg:right-8 h-[95%] w-auto max-w-[50%] z-10 items-end pointer-events-none">
+            <div className="relative w-[500px] h-full">
+              <Image
+                src="/images/lawslane-education-catoon.png"
+                alt="Lawlanes Education"
+                fill
+                className="object-contain drop-shadow-2xl object-bottom"
+                priority
+                quality={100}
+                unoptimized
+              />
+            </div>
           </div>
 
           {/* Background decoration elements */}
@@ -111,12 +119,13 @@ export default function EducationPage() {
                   </p>
                 </div>
                 <div className="pt-2">
+                  {/* Outer card is already a Link, so we use a span styled as a button to avoid sorting tags */}
                   <Button
+                    asChild
                     size="lg"
                     className="rounded-full bg-[#4c1d95] hover:bg-[#3b1775] text-white font-bold text-lg px-10 h-14 shadow-lg shadow-indigo-900/20"
-                    style={{ backgroundColor: '#4c1d95', color: '#ffffff' }}
                   >
-                    เลือกแบบทดสอบ
+                    <span>เลือกแบบทดสอบ</span>
                   </Button>
                 </div>
               </div>
@@ -129,10 +138,13 @@ export default function EducationPage() {
                   <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-teal-100 rounded-full blur-2xl opacity-60" />
 
                   <div className="relative h-full w-full rounded-3xl overflow-hidden group-hover:-translate-y-2 transition-transform duration-500 shadow-2xl">
-                    <img
+                    <Image
                       src="/images/lawslane-education-book.png"
                       alt="Skill Score Dashboard"
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      quality={100}
+                      unoptimized
                     />
                   </div>
                 </div>

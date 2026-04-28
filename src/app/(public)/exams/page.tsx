@@ -70,23 +70,32 @@ export default function ExamListingPage() {
     return (
         <div className="max-w-6xl mx-auto space-y-8">
             {/* Hero */}
-            <motion.div
+            <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center py-8"
+                className="relative overflow-hidden rounded-3xl text-white p-8 md:p-12"
+                style={{ background: 'linear-gradient(to bottom right, #581c87, #312e81, #0f172a)' }}
             >
-                <div className="flex items-center justify-center gap-2 mb-4">
-                    <Sparkles className="w-6 h-6 text-indigo-500" />
-                    <Badge className="bg-indigo-100 text-indigo-700">AI ตรวจอัตนัย</Badge>
+                <div className="relative z-10 text-center max-w-2xl mx-auto">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                        <Sparkles className="w-6 h-6 text-amber-300" />
+                        <Badge className="bg-white/20 text-white border-0">AI ตรวจอัตนัย</Badge>
+                    </div>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
+                        ฝึกทำข้อสอบกฎหมาย
+                    </h1>
+                    <p className="text-slate-300 max-w-xl mx-auto">
+                        ข้อสอบจำลองพร้อมระบบ AI ตรวจคำตอบอัตนัย เปรียบเทียบกับธงคำตอบ
+                        พร้อม feedback ละเอียดช่วยให้คุณพัฒนาการเขียนตอบได้ดีขึ้น
+                    </p>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-                    ฝึกทำข้อสอบกฎหมาย
-                </h1>
-                <p className="text-slate-600 max-w-2xl mx-auto">
-                    ข้อสอบจำลองพร้อมระบบ AI ตรวจคำตอบอัตนัย เปรียบเทียบกับธงคำตอบ
-                    พร้อม feedback ละเอียดช่วยให้คุณพัฒนาการเขียนตอบได้ดีขึ้น
-                </p>
-            </motion.div>
+
+                {/* Background decoration */}
+                <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+                    <div className="absolute top-10 right-10 w-48 h-48 bg-purple-500 rounded-full blur-[80px]" />
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px]" />
+                </div>
+            </motion.section>
 
             {/* Search & Filter */}
             <div className="flex flex-col md:flex-row gap-4">

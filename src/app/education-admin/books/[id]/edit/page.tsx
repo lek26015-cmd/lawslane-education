@@ -29,9 +29,9 @@ export default function EditBookPage({ params }: { params: Promise<{ id: string 
         description: '',
         price: 0,
         originalPrice: 0,
-        coverImage: '',
+        coverUrl: '',
         author: '',
-        pages: 0,
+        pageCount: 0,
         category: 'ทั่วไป',
         type: 'ebook' as 'ebook' | 'physical' | 'both',
         status: 'draft' as 'draft' | 'published'
@@ -48,9 +48,9 @@ export default function EditBookPage({ params }: { params: Promise<{ id: string 
                         description: book.description || '',
                         price: book.price,
                         originalPrice: book.originalPrice || 0,
-                        coverImage: book.coverImage || '',
+                        coverUrl: book.coverUrl || '',
                         author: book.author || '',
-                        pages: book.pages || 0,
+                        pageCount: book.pageCount || 0,
                         category: book.category || 'ทั่วไป',
                         type: book.type || 'ebook',
                         status: book.status
@@ -155,7 +155,7 @@ export default function EditBookPage({ params }: { params: Promise<{ id: string 
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-700">จำนวนหน้า</label>
-                        <Input type="number" value={formData.pages} onChange={(e) => setFormData(prev => ({ ...prev, pages: Number(e.target.value) }))} />
+                        <Input type="number" value={formData.pageCount} onChange={(e) => setFormData(prev => ({ ...prev, pageCount: Number(e.target.value) }))} />
                     </div>
                 </div>
 
@@ -182,10 +182,10 @@ export default function EditBookPage({ params }: { params: Promise<{ id: string 
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
-                    <Input value={formData.coverImage} onChange={(e) => setFormData(prev => ({ ...prev, coverImage: e.target.value }))} />
-                    {formData.coverImage && (
+                    <Input value={formData.coverUrl} onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))} />
+                    {formData.coverUrl && (
                         <div className="mt-2 rounded-lg overflow-hidden border w-48">
-                            <img src={formData.coverImage} alt="Preview" className="w-full h-64 object-cover" />
+                            <img src={formData.coverUrl} alt="Preview" className="w-full h-64 object-cover" />
                         </div>
                     )}
                 </div>

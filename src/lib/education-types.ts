@@ -3,6 +3,7 @@ export interface Book {
     title: string;
     description: string;
     price: number;
+    originalPrice?: number;
     coverUrl: string;
     author: string;
     publisher?: string;
@@ -13,6 +14,8 @@ export interface Book {
     fileUrl?: string; // for ebook
     stock: number;
     category?: string; // e.g., 'Civil Law', 'Criminal Law'
+    type?: 'ebook' | 'physical' | 'both';
+    status?: 'draft' | 'published';
     level?: string; // e.g., 'Bachelor', 'Bar Exam', 'Lawyer License'
     createdAt: Date;
     updatedAt: Date;
@@ -27,6 +30,7 @@ export interface Exam {
     passingScore: number;
     totalQuestions: number;
     coverUrl?: string;
+    status?: 'draft' | 'published';
     category: 'license' | 'prosecutor' | 'judge' | 'other';
     difficulty: 'easy' | 'medium' | 'hard';
     createdAt: Date;
@@ -47,14 +51,34 @@ export interface Question {
     tags?: string[];
 }
 
+export interface AnswerResult {
+    questionId: string;
+    questionText: string;
+    questionType: 'MULTIPLE_CHOICE' | 'ESSAY';
+    studentAnswer: string | number;
+    correctAnswer?: string | number;
+    isCorrect?: boolean;
+    aiScore: number;
+    aiFeedback?: string;
+    aiStrengths?: string[];
+    aiWeaknesses?: string[];
+    aiSuggestions?: string[];
+}
+
 export interface ExamAttempt {
     id: string;
-    userId: string;
+    userId?: string;
+    userName?: string;
     examId: string;
     startedAt: Date;
     completedAt?: Date;
     score?: number; // Might be null for Essay until graded
-    answers: Record<string, number | string>; // questionId -> index (MC) or text (Essay)
+    totalScore?: number;
+    maxScore?: number;
+    passingScore?: number;
+    passed?: boolean;
+    examTitle?: string;
+    answers: AnswerResult[];
     status: 'IN_PROGRESS' | 'COMPLETED' | 'TIMEOUT';
 }
 
@@ -156,6 +180,8 @@ export interface Course {
     description: string;
     longDescription?: string; // HTML or Markdown
     price: number;
+    originalPrice?: number;
+    status?: 'draft' | 'published';
     coverUrl: string;
     instructor: {
         name: string;
@@ -169,6 +195,7 @@ export interface Course {
     rating?: number;
     reviewCount?: number;
     modules: CourseModule[];
+    linkedExamIds?: string[];
     createdAt: Date;
     updatedAt: Date;
 }

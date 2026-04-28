@@ -45,7 +45,7 @@ export async function PUT(
             passingScore: body.passingScore,
             category: body.category,
             difficulty: body.difficulty,
-            coverImage: body.coverImage,
+            coverUrl: body.coverUrl,
             status: body.status
         });
 

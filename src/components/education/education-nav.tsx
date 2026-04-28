@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@/firebase';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,9 +14,13 @@ import {
 } from '@/components/ui/sheet';
 
 export default function EducationNavigation() {
-    // Navigation for Education Portal
     const { user } = useUser();
+    const [isMounted, setIsMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const NAV_LINKS = [
         { href: "/exams", label: "คลังข้อสอบ" },
@@ -28,13 +32,13 @@ export default function EducationNavigation() {
     return (
         <>
             {/* Desktop Navigation - Hidden on mobile */}
-            <nav className="hidden md:flex items-center gap-4 text-sm font-medium" suppressHydrationWarning>
+            <nav className="hidden md:flex items-center gap-4 text-sm font-medium">
                 {NAV_LINKS.map((link) => (
                     <Link key={link.href} href={link.href} className="hover:text-primary transition-colors">
                         {link.label}
                     </Link>
                 ))}
-                {user && (
+                {isMounted && user && (
                     <Link href="/my-learning" className="hover:text-primary transition-colors">การเรียนรู้ของฉัน</Link>
                 )}
             </nav>
@@ -63,7 +67,7 @@ export default function EducationNavigation() {
                                     {link.label}
                                 </Link>
                             ))}
-                            {user && (
+                            {isMounted && user && (
                                 <Link
                                     href="/my-learning"
                                     className="text-lg font-medium py-2 px-3 rounded-lg hover:bg-slate-100 transition-colors"
@@ -73,7 +77,7 @@ export default function EducationNavigation() {
                                 </Link>
                             )}
                             <hr className="my-2 border-slate-200" />
-                            {!user && (
+                            {isMounted && !user && (
                                 <>
                                     <Link
                                         href="/login"

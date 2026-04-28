@@ -145,7 +145,7 @@ export default function EducationLoginPage() {
             <div className="hidden lg:flex flex-col relative bg-slate-900 text-white">
                 <div className="absolute inset-0 bg-slate-900/60 z-10" />
                 <Image
-                    src="/images/legal-document-signing.jpg"
+                    src="/images/Lawlanes-Hero-cover.jpg"
                     alt="Education Portal"
                     fill
                     className="object-cover"
