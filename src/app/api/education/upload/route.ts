@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 
-export const config = {
-    api: {
-        bodyParser: false, // Disable body parsing, we'll handle it manually
-    },
-};
-
 export async function POST(request: NextRequest) {
     try {
         const admin = await initAdmin();

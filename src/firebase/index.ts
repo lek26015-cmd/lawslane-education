@@ -52,6 +52,19 @@ export function initializeFirebase() {
     if (prodConfig) {
       firebaseApp = initializeApp(prodConfig);
     } else {
+      // During build-time static generation, env vars may not be available.
+      // Return null SDKs so the build can complete — real init happens client-side.
+      if (typeof window === 'undefined') {
+        console.warn(
+          "Firebase: Skipping initialization during server-side rendering (no env vars available)."
+        );
+        return {
+          firebaseApp: null as any,
+          auth: null as any,
+          firestore: null as any,
+          storage: null as any,
+        };
+      }
       // Fallback for environments like Firebase App Hosting which inject config automatically
       try {
         firebaseApp = initializeApp();
@@ -59,9 +72,6 @@ export function initializeFirebase() {
         console.error(
           "Firebase initialization failed. Ensure environment variables (NEXT_PUBLIC_FIREBASE_*) are set in your production environment."
         );
-        // In a real-world scenario, you might want to throw an error
-        // or handle this case more gracefully.
-        // For now, we'll fall back to the dev config, but this is not recommended for production.
         firebaseApp = initializeApp(devFirebaseConfig);
       }
     }
@@ -74,6 +84,15 @@ export function initializeFirebase() {
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
+  if (!firebaseApp) {
+    return {
+      firebaseApp: null as any,
+      auth: null as any,
+      firestore: null as any,
+      storage: null as any,
+    };
+  }
+
   let auth;
   try {
     auth = getAuth(firebaseApp);

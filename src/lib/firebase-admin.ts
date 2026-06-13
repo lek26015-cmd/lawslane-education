@@ -38,17 +38,11 @@ export async function initAdmin() {
         privateKey: process.env.FIREBASE_PRIVATE_KEY as string,
     };
 
-    if (!params.clientEmail || !params.privateKey) {
-        // Fallback for local dev without specific env vars, might rely on default creds
+    if (!params.projectId || !params.clientEmail || !params.privateKey) {
+        // During build-time or when env vars are missing, return existing app or null
         if (admin.apps.length > 0) return admin.app();
-        // If no env vars, we can't really init properly unless using default creds
-        // But let's try default if envs are missing
-        try {
-            return admin.initializeApp();
-        } catch (e) {
-            console.error("Failed to initialize Firebase Admin with default credentials or env vars missing.");
-            return null;
-        }
+        console.warn("Firebase Admin: Required environment variables are missing. Skipping initialization.");
+        return null;
     }
 
     return createFirebaseAdminApp(params);
