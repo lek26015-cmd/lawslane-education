@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getQuestionById, updateQuestion, deleteQuestion } from '@/lib/mock-store';
+import { initAdmin } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
+
+// Helper: find question across all examSets sub-collections
+async function findQuestion(db: admin.firestore.Firestore, questionId: string) {
+    // Search in all examSets for this question ID
+    const examSetsSnap = await db.collection('examSets').get();
+    for (const examDoc of examSetsSnap.docs) {
+        const qRef = examDoc.ref.collection('questions').doc(questionId);
+        const qSnap = await qRef.get();
+        if (qSnap.exists) {
+            return { ref: qRef, data: { id: qSnap.id, ...qSnap.data() }, examId: examDoc.id };
+        }
+    }
+    return null;
+}
 
 // GET /api/education/questions/[id] - Get single question
 export async function GET(
@@ -8,13 +23,17 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
-        const question = getQuestionById(id);
+        const app = await initAdmin();
+        if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
-        if (!question) {
+        const db = admin.firestore();
+        const result = await findQuestion(db, id);
+
+        if (!result) {
             return NextResponse.json({ error: 'Question not found' }, { status: 404 });
         }
 
-        return NextResponse.json(question);
+        return NextResponse.json(result.data);
     } catch (error) {
         console.error('Error fetching question:', error);
         return NextResponse.json({ error: 'Failed to fetch question' }, { status: 500 });
@@ -29,23 +48,33 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await request.json();
+        const app = await initAdmin();
+        if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
-        const updated = updateQuestion(id, {
-            text: body.text,
-            type: body.type,
-            options: body.options,
-            correctOptionIndex: body.correctOptionIndex,
-            correctAnswerText: body.correctAnswerText,
-            explanation: body.explanation,
-            order: body.order,
-            subject: body.subject
-        });
+        const db = admin.firestore();
+        const result = await findQuestion(db, id);
 
-        if (!updated) {
+        if (!result) {
             return NextResponse.json({ error: 'Question not found' }, { status: 404 });
         }
 
-        return NextResponse.json(updated);
+        const updates: Record<string, any> = {
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
+
+        const allowedFields = [
+            'questionText', 'text', 'type', 'choices', 'options',
+            'correctOptionIndex', 'correctAnswer', 'correctAnswerText',
+            'modelAnswer', 'explanation', 'orderIndex', 'order',
+            'subject', 'tags'
+        ];
+        for (const key of allowedFields) {
+            if (body[key] !== undefined) updates[key] = body[key];
+        }
+
+        await result.ref.update(updates);
+
+        return NextResponse.json({ id, ...updates });
     } catch (error) {
         console.error('Error updating question:', error);
         return NextResponse.json({ error: 'Failed to update question' }, { status: 500 });
@@ -59,12 +88,17 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params;
-        const deleted = deleteQuestion(id);
+        const app = await initAdmin();
+        if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
-        if (!deleted) {
+        const db = admin.firestore();
+        const result = await findQuestion(db, id);
+
+        if (!result) {
             return NextResponse.json({ error: 'Question not found' }, { status: 404 });
         }
 
+        await result.ref.delete();
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error deleting question:', error);

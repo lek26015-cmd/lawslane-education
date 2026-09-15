@@ -32,7 +32,6 @@ const tiers = [
             { text: 'Dashboard สถิติ', included: false },
             { text: 'ปิดโฆษณา', included: false },
             { text: 'คอร์สเรียนฟรี', included: false },
-            { text: 'กลุ่ม LINE VIP', included: false },
         ],
     },
     {
@@ -56,7 +55,6 @@ const tiers = [
             { text: 'ปิดโฆษณาทั้งหมด', included: true },
             { text: 'ส่วนลดหนังสือ 10%', included: true },
             { text: 'คอร์สเรียนฟรี', included: false },
-            { text: 'กลุ่ม LINE VIP', included: false },
         ],
     },
     {
@@ -74,7 +72,6 @@ const tiers = [
             { text: 'ทุกอย่างใน Premium', included: true },
             { text: 'คอร์สเรียนทุกคอร์สฟรี', included: true },
             { text: 'E-Book ดาวน์โหลดฟรีทุกเล่ม', included: true },
-            { text: 'กลุ่ม LINE VIP ถาม-ตอบทนาย', included: true },
             { text: 'Mock Exam จับเวลาเหมือนสอบจริง', included: true },
             { text: 'ใบรับรองผ่านข้อสอบ (Certificate)', included: true },
             { text: 'สิทธิ์เข้าถึงฟีเจอร์ใหม่ก่อนใคร', included: true },

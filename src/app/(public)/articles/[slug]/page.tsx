@@ -1,4 +1,5 @@
-import { getArticleBySlug, getArticles } from '@/lib/mock-store';
+import { initAdmin } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
 import { GoogleAd } from '@/components/google-ad';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -6,16 +7,46 @@ import { ChevronLeft, Calendar, Facebook, Twitter, Link as LinkIcon } from 'luci
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-export async function generateStaticParams() {
-    const articles = getArticles();
-    return articles.map((article) => ({
-        slug: article.slug,
-    }));
-}
-
 export default async function ArticleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const article = getArticleBySlug(slug);
+
+    let article: any = null;
+    try {
+        const app = await initAdmin();
+        if (app) {
+            const db = admin.firestore();
+            // Try by ID first
+            const docSnap = await db.collection('articles').doc(slug).get();
+            if (docSnap.exists) {
+                const data = docSnap.data()!;
+                article = {
+                    id: docSnap.id, slug: data.slug || docSnap.id,
+                    title: data.title || '', description: data.description || '',
+                    content: data.content || '', category: data.category || 'ทั่วไป',
+                    coverImage: data.coverImage || '', author: data.author || 'Admin',
+                    publishedAt: data.publishedAt?.toDate?.()?.toISOString() || '',
+                    views: data.views || 0,
+                };
+            } else {
+                // Try by slug
+                const slugSnap = await db.collection('articles').where('slug', '==', slug).limit(1).get();
+                if (!slugSnap.empty) {
+                    const doc = slugSnap.docs[0];
+                    const data = doc.data();
+                    article = {
+                        id: doc.id, slug: data.slug || doc.id,
+                        title: data.title || '', description: data.description || '',
+                        content: data.content || '', category: data.category || 'ทั่วไป',
+                        coverImage: data.coverImage || '', author: data.author || 'Admin',
+                        publishedAt: data.publishedAt?.toDate?.()?.toISOString() || '',
+                        views: data.views || 0,
+                    };
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching article:', error);
+    }
 
     if (!article) {
         notFound();

@@ -5,7 +5,8 @@ import { Calendar, ChevronRight, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { getArticles } from '@/lib/mock-store';
+import { initAdmin } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -15,8 +16,35 @@ export const metadata: Metadata = {
 };
 
 export default async function ArticlesPage() {
-    // Use mock store directly for Server Component
-    const articles = getArticles();
+    let articles: any[] = [];
+    try {
+        const app = await initAdmin();
+        if (app) {
+            const db = admin.firestore();
+            const snap = await db.collection('articles')
+                .where('status', '==', 'published')
+                .orderBy('createdAt', 'desc')
+                .limit(50)
+                .get();
+            articles = snap.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    slug: data.slug || doc.id,
+                    title: data.title || '',
+                    description: data.description || '',
+                    category: data.category || 'ทั่วไป',
+                    coverImage: data.coverImage || '',
+                    author: data.author || 'Admin',
+                    publishedAt: data.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                    views: data.views || 0,
+                    status: data.status || 'published',
+                };
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching articles:', error);
+    }
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">

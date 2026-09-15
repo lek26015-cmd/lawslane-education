@@ -1,17 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllAttempts } from '@/lib/mock-store';
+import { initAdmin } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
 import { analyzeWeaknesses } from '@/lib/ai-weakness-analyzer';
 
 // GET /api/education/analyze-weakness - Analyze user's weaknesses from exam attempts
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId'); // For future use with auth
+        const userId = searchParams.get('userId');
 
-        // Get all attempts (in production, filter by userId)
-        const attempts = getAllAttempts();
+        const app = await initAdmin();
+        if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
-        if (attempts.length === 0) {
+        const db = admin.firestore();
+        let query: admin.firestore.Query = db.collection('examAttempts')
+            .orderBy('completedAt', 'desc')
+            .limit(50);
+
+        if (userId) {
+            query = query.where('userId', '==', userId);
+        }
+
+        const snap = await query.get();
+
+        if (snap.empty) {
             return NextResponse.json({
                 success: true,
                 message: 'No exam attempts found',
@@ -26,7 +38,20 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        const analysis = await analyzeWeaknesses(attempts);
+        const attempts = snap.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                examId: data.examId || '',
+                userId: data.userId || '',
+                score: data.score || 0,
+                totalQuestions: data.totalQuestions || 0,
+                answers: data.answers || [],
+                completedAt: data.completedAt?.toDate?.()?.toISOString() || '',
+            };
+        });
+
+        const analysis = await analyzeWeaknesses(attempts as any);
 
         return NextResponse.json({
             success: true,

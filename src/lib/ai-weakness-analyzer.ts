@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { ExamAttempt } from './mock-store';
+import { ExamAttempt } from './education-types';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY || '');
 

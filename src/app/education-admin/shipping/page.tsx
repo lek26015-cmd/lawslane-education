@@ -40,84 +40,34 @@ import { Copy } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 
-// Mock Data
-const MOCK_SHIPMENTS = [
-    {
-        id: 'ORD-2024-001',
-        customer: 'สมชาย รักเรียน',
-        items: [
-            { name: 'คู่มือเตรียมสอบใบอนุญาตว่าความ', quantity: 1 },
-            { name: 'รวมข้อสอบตั๋วทนาย 10 ปี', quantity: 1 }
-        ],
-        address: '123 ถ.สุขุมวิท แขวงคลองตันเหนือ เขตวัฒนา กทม. 10110',
-        status: 'pending', // pending, shipping, delivered, returned
-        date: '2024-01-14',
-        courier: null,
-        trackingNo: null,
-    },
-    {
-        id: 'ORD-2024-002',
-        customer: 'วิภา สุขใจ',
-        items: [
-            { name: 'หนังสือสรุปกฎหมายแพ่ง', quantity: 1 }
-        ],
-        address: '456 ถ.พหลโยธิน แขวงสามเสนใน เขตพญาไท กทม. 10400',
-        status: 'shipping',
-        date: '2024-01-13',
-        courier: 'Kerry Express',
-        trackingNo: 'KEA123456789',
-    },
-    {
-        id: 'ORD-2024-003',
-        customer: 'กิตติ พัฒนา',
-        items: [
-            { name: 'เทคนิคการร่างฟ้อง', quantity: 1 }
-        ],
-        address: '789 ถ.ลาดพร้าว แขวงจอมพล เขตจตุจักร กทม. 10900',
-        status: 'delivered',
-        date: '2024-01-12',
-        courier: 'Flash Express',
-        trackingNo: 'TH0123456789',
-    },
-    {
-        id: 'ORD-2024-004',
-        customer: 'มานี มีใจ',
-        items: [
-            { name: 'ประมวลกฎหมายอาญา ฉบับพกพา', quantity: 2 }
-        ],
-        address: '101/1 หมู่ 5 ต.สุเทพ อ.เมือง จ.เชียงใหม่ 50200',
-        status: 'pending',
-        date: '2024-01-14',
-        courier: null,
-        trackingNo: null,
-    },
-    {
-        id: 'ORD-2024-005',
-        customer: 'ปิติ ยินดี',
-        items: [
-            { name: 'คู่มือสอบอัยการผู้ช่วย', quantity: 1 }
-        ],
-        address: '999 ถ.มิตรภาพ ต.ในเมือง อ.เมือง จ.ขอนแก่น 40000',
-        status: 'returned',
-        date: '2024-01-10',
-        courier: 'Thailand Post',
-        trackingNo: 'EF123456789TH',
-    }
-];
+// Data will come from Firestore orders collection once orders are placed
+interface Shipment {
+    id: string;
+    customer: string;
+    items: { name: string; quantity: number }[];
+    address: string;
+    status: string;
+    date: string;
+    courier: string | null;
+    trackingNo: string | null;
+}
 
 export default function ShippingPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('all');
-    const [selectedShipment, setSelectedShipment] = useState<typeof MOCK_SHIPMENTS[0] | null>(null);
+    const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
+    // TODO: Fetch from Firestore orders collection
+    const shipments: Shipment[] = [];
+
     // Open dialog when shipment is selected
-    const handleSelectShipment = (shipment: typeof MOCK_SHIPMENTS[0]) => {
+    const handleSelectShipment = (shipment: Shipment) => {
         setSelectedShipment(shipment);
         setIsDetailsOpen(true);
     };
 
-    const filteredShipments = MOCK_SHIPMENTS.filter(shipment => {
+    const filteredShipments = shipments.filter(shipment => {
         const matchesSearch =
             shipment.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
             shipment.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -163,7 +113,7 @@ export default function ShippingPage() {
                         <div>
                             <p className="text-sm font-medium text-indigo-600">รอจัดส่ง</p>
                             <p className="text-2xl font-bold text-indigo-900">
-                                {MOCK_SHIPMENTS.filter(s => s.status === 'pending').length}
+                                {shipments.filter(s => s.status === 'pending').length}
                             </p>
                         </div>
                         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-indigo-600 shadow-sm">
@@ -176,7 +126,7 @@ export default function ShippingPage() {
                         <div>
                             <p className="text-sm font-medium text-blue-600">กำลังจัดส่ง</p>
                             <p className="text-2xl font-bold text-blue-900">
-                                {MOCK_SHIPMENTS.filter(s => s.status === 'shipping').length}
+                                {shipments.filter(s => s.status === 'shipping').length}
                             </p>
                         </div>
                         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-600 shadow-sm">
@@ -189,7 +139,7 @@ export default function ShippingPage() {
                         <div>
                             <p className="text-sm font-medium text-emerald-600">สำเร็จแล้ว</p>
                             <p className="text-2xl font-bold text-emerald-900">
-                                {MOCK_SHIPMENTS.filter(s => s.status === 'delivered').length}
+                                {shipments.filter(s => s.status === 'delivered').length}
                             </p>
                         </div>
                         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-emerald-600 shadow-sm">
@@ -202,7 +152,7 @@ export default function ShippingPage() {
                         <div>
                             <p className="text-sm font-medium text-red-600">ตีกลับ/ยกเลิก</p>
                             <p className="text-2xl font-bold text-red-900">
-                                {MOCK_SHIPMENTS.filter(s => s.status === 'returned').length}
+                                {shipments.filter(s => s.status === 'returned').length}
                             </p>
                         </div>
                         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-600 shadow-sm">
@@ -437,10 +387,10 @@ export default function ShippingPage() {
                                                     // Update local state to reflect change immediately in UI (mock)
                                                     setSelectedShipment(updatedShipment);
 
-                                                    // Update mock data list (would be re-fetch in real app)
-                                                    const index = MOCK_SHIPMENTS.findIndex(s => s.id === selectedShipment.id);
+                                                    // Update data (re-fetch in real app)
+                                                    const index = shipments.findIndex(s => s.id === selectedShipment.id);
                                                     if (index !== -1) {
-                                                        MOCK_SHIPMENTS[index] = updatedShipment;
+                                                        shipments[index] = updatedShipment;
                                                     }
 
                                                     alert(`บันทึกข้อมูลจัดส่งเรียบร้อย\nขนส่ง: ${courier}\nเลขพัสดุ: ${tracking}`);

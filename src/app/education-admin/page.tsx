@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Users,
@@ -6,24 +8,65 @@ import {
     BookOpen,
     GraduationCap,
     Eye,
-    ArrowUpRight,
-    ChevronRight
+    ChevronRight,
+    Loader2,
+    ClipboardList
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getStats, getArticles, getCourses, getBooks } from '@/lib/mock-store';
+
+interface DashboardStats {
+    totalArticles: number;
+    totalCourses: number;
+    totalBooks: number;
+    totalExams: number;
+}
 
 export default function AdminDashboardPage() {
-    const stats = getStats();
-    const recentArticles = getArticles().slice(0, 3);
-    const recentCourses = getCourses().slice(0, 3);
+    const [stats, setStats] = useState<DashboardStats>({ totalArticles: 0, totalCourses: 0, totalBooks: 0, totalExams: 0 });
+    const [recentArticles, setRecentArticles] = useState<any[]>([]);
+    const [recentCourses, setRecentCourses] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDashboard = async () => {
+            try {
+                const [articlesRes, coursesRes, booksRes, examsRes] = await Promise.all([
+                    fetch('/api/education/articles?all=true'),
+                    fetch('/api/education/courses?all=true'),
+                    fetch('/api/education/books?all=true'),
+                    fetch('/api/education/exams?all=true'),
+                ]);
+
+                const articles = articlesRes.ok ? await articlesRes.json() : [];
+                const courses = coursesRes.ok ? await coursesRes.json() : [];
+                const books = booksRes.ok ? await booksRes.json() : [];
+                const exams = examsRes.ok ? await examsRes.json() : [];
+
+                setStats({
+                    totalArticles: articles.length,
+                    totalCourses: courses.length,
+                    totalBooks: books.length,
+                    totalExams: exams.length,
+                });
+
+                setRecentArticles(articles.slice(0, 3));
+                setRecentCourses(courses.slice(0, 3));
+            } catch (error) {
+                console.error('Error fetching dashboard:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchDashboard();
+    }, []);
 
     const STATS = [
         {
             title: 'บทความ',
             value: stats.totalArticles.toString(),
             icon: FileText,
-            change: `${stats.publishedArticles} เผยแพร่`,
+            change: 'ทั้งหมด',
             color: 'text-indigo-600',
             bg: 'bg-indigo-50',
             href: '/education-admin/articles'
@@ -32,7 +75,7 @@ export default function AdminDashboardPage() {
             title: 'คอร์สเรียน',
             value: stats.totalCourses.toString(),
             icon: GraduationCap,
-            change: `${stats.publishedCourses} เผยแพร่`,
+            change: 'ทั้งหมด',
             color: 'text-emerald-600',
             bg: 'bg-emerald-50',
             href: '/education-admin/courses'
@@ -41,21 +84,29 @@ export default function AdminDashboardPage() {
             title: 'หนังสือ',
             value: stats.totalBooks.toString(),
             icon: BookOpen,
-            change: `${stats.publishedBooks} เผยแพร่`,
+            change: 'ทั้งหมด',
             color: 'text-amber-600',
             bg: 'bg-amber-50',
             href: '/education-admin/books'
         },
         {
-            title: 'การดูทั้งหมด',
-            value: stats.totalViews.toLocaleString(),
-            icon: Eye,
-            change: 'บทความ',
+            title: 'ข้อสอบ',
+            value: stats.totalExams.toString(),
+            icon: ClipboardList,
+            change: 'ทั้งหมด',
             color: 'text-blue-600',
             bg: 'bg-blue-50',
-            href: '/education-admin/articles'
+            href: '/education-admin/exams'
         },
     ];
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-[40vh]">
+                <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
@@ -100,7 +151,7 @@ export default function AdminDashboardPage() {
                             {recentArticles.length === 0 ? (
                                 <p className="text-slate-400 text-center py-4">ยังไม่มีบทความ</p>
                             ) : (
-                                recentArticles.map((article) => (
+                                recentArticles.map((article: any) => (
                                     <div key={article.id} className="flex items-center gap-4 py-2 border-b last:border-0 border-slate-50">
                                         <div className="w-12 h-12 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden">
                                             {article.coverImage && (
@@ -109,7 +160,7 @@ export default function AdminDashboardPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="font-medium text-slate-900 truncate">{article.title}</p>
-                                            <p className="text-xs text-slate-500">โดย {article.author} • {article.views} views</p>
+                                            <p className="text-xs text-slate-500">โดย {article.author} • {article.views || 0} views</p>
                                         </div>
                                         <Badge className={article.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
                                             {article.status === 'published' ? 'เผยแพร่' : 'แบบร่าง'}
@@ -133,7 +184,7 @@ export default function AdminDashboardPage() {
                             {recentCourses.length === 0 ? (
                                 <p className="text-slate-400 text-center py-4">ยังไม่มีคอร์ส</p>
                             ) : (
-                                recentCourses.map((course) => (
+                                recentCourses.map((course: any) => (
                                     <div key={course.id} className="flex items-center gap-4 py-2 border-b last:border-0 border-slate-50">
                                         <div className="w-12 h-12 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden">
                                             {course.coverUrl && (
@@ -142,10 +193,10 @@ export default function AdminDashboardPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="font-medium text-slate-900 truncate">{course.title}</p>
-                                            <p className="text-xs text-slate-500">{course.instructor?.name} • {course.totalLessons} บท</p>
+                                            <p className="text-xs text-slate-500">{course.instructor?.name || 'Lawslane'} • {course.totalLessons || 0} บท</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-bold text-slate-900">฿{course.price.toLocaleString()}</p>
+                                            <p className="font-bold text-slate-900">฿{(course.price || 0).toLocaleString()}</p>
                                             <Badge className={course.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}>
                                                 {course.status === 'published' ? 'เผยแพร่' : 'แบบร่าง'}
                                             </Badge>

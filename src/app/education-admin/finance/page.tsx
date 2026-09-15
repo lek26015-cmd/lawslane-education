@@ -24,92 +24,25 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-// Mock data for demonstration
-const MOCK_STATS = {
-    totalRevenue: 125750,
-    monthlyRevenue: 32500,
-    totalOrders: 156,
-    monthlyOrders: 42,
-    averageOrderValue: 806,
-    revenueChange: 12.5,
-    ordersChange: 8.3,
+// Data will come from Firestore orders collection once orders are placed
+const EMPTY_STATS = {
+    totalRevenue: 0,
+    monthlyRevenue: 0,
+    totalOrders: 0,
+    monthlyOrders: 0,
+    averageOrderValue: 0,
+    revenueChange: 0,
+    ordersChange: 0,
 };
-
-const MOCK_TRANSACTIONS = [
-    {
-        id: 'TXN-001',
-        date: new Date('2026-01-14T10:30:00'),
-        customer: 'สมชาย รักเรียน',
-        email: 'somchai@email.com',
-        items: ['คู่มือเตรียมสอบใบอนุญาตว่าความ', 'รวมข้อสอบตั๋วทนาย 10 ปี'],
-        type: 'BOOK',
-        amount: 800,
-        status: 'completed',
-        paymentMethod: 'PromptPay',
-    },
-    {
-        id: 'TXN-002',
-        date: new Date('2026-01-13T15:45:00'),
-        customer: 'วิภา สุขใจ',
-        email: 'wipa@email.com',
-        items: ['คอร์สตะลุยโจทย์เนติบัณฑิต ภาค 1'],
-        type: 'COURSE',
-        amount: 2500,
-        status: 'completed',
-        paymentMethod: 'Credit Card',
-    },
-    {
-        id: 'TXN-003',
-        date: new Date('2026-01-13T09:15:00'),
-        customer: 'อนันต์ มานะ',
-        email: 'anan@email.com',
-        items: ['ข้อสอบจำลอง กฎหมายแพ่ง'],
-        type: 'EXAM',
-        amount: 199,
-        status: 'completed',
-        paymentMethod: 'TrueMoney Wallet',
-    },
-    {
-        id: 'TXN-004',
-        date: new Date('2026-01-12T14:20:00'),
-        customer: 'นภา ใจดี',
-        email: 'napa@email.com',
-        items: ['ติวสรุปกฎหมายแพ่งและพาณิชย์'],
-        type: 'COURSE',
-        amount: 1500,
-        status: 'pending',
-        paymentMethod: 'Bank Transfer',
-    },
-    {
-        id: 'TXN-005',
-        date: new Date('2026-01-11T11:00:00'),
-        customer: 'กิตติ พัฒนา',
-        email: 'kitti@email.com',
-        items: ['เทคนิคการร่างฟ้องและคำร้อง'],
-        type: 'BOOK',
-        amount: 199,
-        status: 'completed',
-        paymentMethod: 'PromptPay',
-    },
-];
-
-const MOCK_MONTHLY_DATA = [
-    { month: 'ม.ค.', revenue: 32500, orders: 42 },
-    { month: 'ธ.ค.', revenue: 28900, orders: 38 },
-    { month: 'พ.ย.', revenue: 31200, orders: 41 },
-    { month: 'ต.ค.', revenue: 25600, orders: 33 },
-    { month: 'ก.ย.', revenue: 22400, orders: 29 },
-    { month: 'ส.ค.', revenue: 19800, orders: 25 },
-];
 
 export default function FinancePage() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [transactions, setTransactions] = useState(MOCK_TRANSACTIONS);
+    const [transactions, setTransactions] = useState<any[]>([]);
 
     const filteredTransactions = transactions.filter(t =>
         t.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.items.some(item => item.toLowerCase().includes(searchQuery.toLowerCase()))
+        t.items.some((item: string) => item.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     const getTypeIcon = (type: string) => {
@@ -171,7 +104,7 @@ export default function FinancePage() {
                             <div>
                                 <p className="text-sm text-slate-500">รายได้รวมทั้งหมด</p>
                                 <p className="text-2xl font-bold text-slate-900">
-                                    ฿{MOCK_STATS.totalRevenue.toLocaleString()}
+                                    ฿{EMPTY_STATS.totalRevenue.toLocaleString()}
                                 </p>
                             </div>
                             <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
@@ -187,12 +120,12 @@ export default function FinancePage() {
                             <div>
                                 <p className="text-sm text-slate-500">รายได้เดือนนี้</p>
                                 <p className="text-2xl font-bold text-slate-900">
-                                    ฿{MOCK_STATS.monthlyRevenue.toLocaleString()}
+                                    ฿{EMPTY_STATS.monthlyRevenue.toLocaleString()}
                                 </p>
                                 <div className="flex items-center gap-1 mt-1">
                                     <ArrowUpRight className="w-3 h-3 text-emerald-500" />
                                     <span className="text-xs text-emerald-600 font-medium">
-                                        +{MOCK_STATS.revenueChange}%
+                                        +{EMPTY_STATS.revenueChange}%
                                     </span>
                                     <span className="text-xs text-slate-400">vs เดือนก่อน</span>
                                 </div>
@@ -210,7 +143,7 @@ export default function FinancePage() {
                             <div>
                                 <p className="text-sm text-slate-500">คำสั่งซื้อทั้งหมด</p>
                                 <p className="text-2xl font-bold text-slate-900">
-                                    {MOCK_STATS.totalOrders}
+                                    {EMPTY_STATS.totalOrders}
                                 </p>
                             </div>
                             <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -226,7 +159,7 @@ export default function FinancePage() {
                             <div>
                                 <p className="text-sm text-slate-500">ยอดเฉลี่ยต่อคำสั่งซื้อ</p>
                                 <p className="text-2xl font-bold text-slate-900">
-                                    ฿{MOCK_STATS.averageOrderValue.toLocaleString()}
+                                    ฿{EMPTY_STATS.averageOrderValue.toLocaleString()}
                                 </p>
                             </div>
                             <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
@@ -246,7 +179,7 @@ export default function FinancePage() {
                         <CardDescription>6 เดือนล่าสุด</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {MOCK_MONTHLY_DATA.map((data, idx) => (
+                        {([] as { month: string; revenue: number; orders: number }[]).map((data, idx) => (
                             <div key={idx} className="flex items-center gap-4">
                                 <div className="w-12 text-sm text-slate-500 font-medium">{data.month}</div>
                                 <div className="flex-1">

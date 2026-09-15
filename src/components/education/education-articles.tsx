@@ -6,7 +6,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Newspaper } from 'lucide-react';
-import { Article } from '@/lib/mock-store';
+interface Article {
+    id: string;
+    slug: string;
+    title: string;
+    description: string;
+    category: string;
+    coverImage: string;
+    author: string;
+    publishedAt: string;
+    views: number;
+    status: string;
+}
 
 export function EducationArticles() {
     const [articles, setArticles] = useState<Article[]>([]);
@@ -15,7 +26,7 @@ export function EducationArticles() {
     useEffect(() => {
         async function fetchArticles() {
             try {
-                // Fetch from our Education API (uses mock-store)
+                // Fetch from Education API (Firestore)
                 const response = await fetch('/api/education/articles');
                 if (response.ok) {
                     const data = await response.json();
