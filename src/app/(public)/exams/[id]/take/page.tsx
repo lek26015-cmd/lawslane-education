@@ -8,6 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { AuthGuard } from '@/components/education/auth-guard';
+import { GoogleAd } from '@/components/google-ad';
+import { CopyProtection } from '@/components/education/copy-protection';
+import { useExamLimit } from '@/hooks/use-exam-limit';
+import { UpgradePaywall, ExamLimitBanner } from '@/components/education/upgrade-paywall';
 
 interface Question {
     id: string;
@@ -18,6 +23,11 @@ interface Question {
     subject?: string;
 }
 
+interface PageImage {
+    page: number;
+    url: string;
+}
+
 interface Exam {
     id: string;
     title: string;
@@ -25,9 +35,16 @@ interface Exam {
     durationMinutes: number;
     passingScore: number;
     totalQuestions: number;
+    pageImages?: PageImage[];
+    hasImages?: boolean;
 }
 
-export default function TakeExamPage({ params }: { params: Promise<{ id: string }> }) {
+// Strip leading question number prefixes like "ข้อ๑.", "ข้อ ๒.", "ข้อ1.", "ข้อที่ 3."
+function stripQuestionPrefix(text: string): string {
+    return text.replace(/^ข้อ(?:ที่)?\s*[๐-๙0-9]+\.?\s*/u, '').trim();
+}
+
+function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const router = useRouter();
     const { toast } = useToast();
@@ -40,6 +57,8 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
     const [startedAt] = useState(new Date().toISOString());
+
+    const { used, dailyLimit, isLimitReached, isPremium, recordExamAttempt } = useExamLimit();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,6 +82,15 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
         fetchData();
     }, [id, router, toast]);
 
+    // Check daily limit (after exam loads)
+    useEffect(() => {
+        if (exam && !isPremium) {
+            const allowed = recordExamAttempt(id);
+            if (!allowed) return; // limit reached
+        }
+    }, [exam, id, isPremium, recordExamAttempt]);
+
+
     // Timer
     useEffect(() => {
         if (timeLeft <= 0 || !exam) return;
@@ -80,6 +108,11 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
 
         return () => clearInterval(timer);
     }, [timeLeft, exam]);
+
+    // Show paywall if limit reached (after all hooks)
+    if (!isLoading && isLimitReached && !isPremium) {
+        return <UpgradePaywall used={used} dailyLimit={dailyLimit} context="exam" />;
+    }
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -125,7 +158,7 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
             </div>
         );
     }
@@ -145,23 +178,24 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
     const answeredCount = Object.keys(answers).filter(k => answers[k] !== '' && answers[k] !== undefined).length;
 
     return (
+        <CopyProtection watermarkText="© Lawslane Wittaya — ห้ามคัดลอก">
         <div className="max-w-4xl mx-auto space-y-6">
             {/* Header */}
             <div className="bg-white rounded-xl border p-4 shadow-sm sticky top-0 z-10">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-bold text-lg text-slate-900">{exam.title}</h1>
+                        <h1 className="font-normal text-lg text-slate-900">{exam.title}</h1>
                         <p className="text-sm text-slate-500">ตอบแล้ว {answeredCount}/{questions.length} ข้อ</p>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${timeLeft < 300 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}>
                             <Clock className="w-4 h-4" />
-                            <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
+                            <span className="font-mono font-normal">{formatTime(timeLeft)}</span>
                         </div>
                         <Button
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className="bg-indigo-600 hover:bg-indigo-700"
+                            className="bg-sky-600 hover:bg-sky-700"
                         >
                             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
                             ส่งข้อสอบ
@@ -182,7 +216,7 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
                                 key={q.id}
                                 onClick={() => setCurrentQuestionIndex(idx)}
                                 className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium text-sm transition-all ${isCurrent
-                                        ? 'bg-indigo-600 text-white'
+                                        ? 'bg-sky-600 text-white'
                                         : isAnswered
                                             ? 'bg-green-100 text-green-700 border border-green-300'
                                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -195,10 +229,13 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
                 </div>
             </div>
 
+            {/* Ad Banner */}
+            <GoogleAd variant="banner" className="my-2" />
+
             {/* Current Question */}
             <div className="bg-white rounded-xl border p-6 shadow-sm">
                 <div className="flex items-start gap-4 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-normal flex-shrink-0">
                         {currentQuestionIndex + 1}
                     </div>
                     <div className="flex-1">
@@ -206,7 +243,7 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
                             <Badge variant="outline">{currentQuestion.type === 'MULTIPLE_CHOICE' ? 'ปรนัย' : 'อัตนัย'}</Badge>
                             {currentQuestion.subject && <Badge variant="secondary">{currentQuestion.subject}</Badge>}
                         </div>
-                        <p className="text-lg text-slate-900 whitespace-pre-wrap">{currentQuestion.text}</p>
+                        <p className="text-lg text-slate-900 whitespace-pre-wrap">{stripQuestionPrefix(currentQuestion.text)}</p>
                     </div>
                 </div>
 
@@ -218,12 +255,12 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
                                 key={idx}
                                 onClick={() => handleAnswerChange(currentQuestion.id, idx)}
                                 className={`w-full text-left p-4 rounded-lg border transition-all flex items-center gap-3 ${answers[currentQuestion.id] === idx
-                                        ? 'border-indigo-500 bg-indigo-50'
+                                        ? 'border-sky-500 bg-sky-50'
                                         : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                                     }`}
                             >
                                 {answers[currentQuestion.id] === idx
-                                    ? <CheckCircle className="w-5 h-5 text-indigo-600" />
+                                    ? <CheckCircle className="w-5 h-5 text-sky-600" />
                                     : <Circle className="w-5 h-5 text-slate-300" />
                                 }
                                 <span className="text-slate-700">{option}</span>
@@ -264,5 +301,17 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
                 </div>
             </div>
         </div>
+        </CopyProtection>
+    );
+}
+
+export default function TakeExamPage({ params }: { params: Promise<{ id: string }> }) {
+    return (
+        <AuthGuard
+            message="กรุณาเข้าสู่ระบบเพื่อทำข้อสอบ"
+            returnTo={`/exams`}
+        >
+            <TakeExamPageContent params={params} />
+        </AuthGuard>
     );
 }

@@ -91,93 +91,6 @@ const MOCK_COURSES: Course[] = [
     }
 ];
 
-// Mock books for development
-const MOCK_BOOKS: Book[] = [
-    {
-        id: "book-1",
-        title: "คู่มือเตรียมสอบใบอนุญาตว่าความ",
-        description: "สรุปเนื้อหาสำคัญสำหรับสอบภาคทฤษฎี ครบถ้วน เข้าใจง่าย พร้อมตัวอย่างข้อสอบจริงจากสนามสอบ 5 ปีล่าสุด เหมาะสำหรับผู้ที่เตรียมตัวสอบใบอนุญาตว่าความ ภาคทฤษฎี",
-        price: 350,
-        coverUrl: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=560&fit=crop",
-        author: "อ.สมชาย กฎหมายแม่น",
-        stock: 50,
-        isDigital: false,
-        level: "ใบอนุญาตว่าความ",
-        category: "เตรียมสอบ",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "book-2",
-        title: "รวมข้อสอบตั๋วทนาย 10 ปี",
-        description: "เจาะลึกข้อสอบเก่า พร้อมเฉลยละเอียด ครบทุกสนามสอบ รวมคำถามกว่า 500 ข้อ พร้อมวิเคราะห์แนวโน้มข้อสอบ",
-        price: 450,
-        coverUrl: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=400&h=560&fit=crop",
-        author: "ทีมงาน Lawlanes",
-        stock: 20,
-        isDigital: false,
-        level: "ใบอนุญาตว่าความ",
-        category: "เตรียมสอบ",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "book-3",
-        title: "เทคนิคการร่างฟ้องและคำร้อง",
-        description: "เทคนิคระดับมือโปรสำหรับการร่างเอกสารทางกฎหมาย รูปแบบ PDF พร้อมตัวอย่างคำฟ้องจริงกว่า 50 แบบ",
-        price: 199,
-        coverUrl: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=560&fit=crop",
-        author: "ทนายวิชัย",
-        stock: 999,
-        isDigital: true,
-        level: "ทักษะปฏิบัติ",
-        category: "ทักษะงานคดี",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "book-4",
-        title: "กฎหมายแพ่งว่าด้วยสัญญา",
-        description: "หลักกฎหมายสัญญาฉบับสมบูรณ์ อธิบายทุกมาตราพร้อมคำพิพากษาศาลฎีกาที่สำคัญ",
-        price: 280,
-        coverUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=560&fit=crop",
-        author: "ศ.ดร.สมศักดิ์ แพ่งศรี",
-        stock: 35,
-        isDigital: false,
-        level: "ชั้นปริญญาตรี",
-        category: "กฎหมายแพ่ง",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "book-5",
-        title: "ป.วิ.อาญา ฉบับอ่านง่าย",
-        description: "วิธีพิจารณาความอาญา สรุปเข้าใจง่าย พร้อมแผนภูมิกระบวนการและ Flowchart",
-        price: 320,
-        coverUrl: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400&h=560&fit=crop",
-        author: "อ.อาญา สมบูรณ์",
-        stock: 40,
-        isDigital: false,
-        level: "ชั้นปริญญาตรี",
-        category: "กฎหมายวิธีพิจารณาความ",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "book-6",
-        title: "ถาม-ตอบ กฎหมายลักษณะพยาน",
-        description: "รวม Q&A กฎหมายพยานหลักฐาน 500 ข้อ พร้อมเฉลยละเอียด เหมาะสำหรับทบทวนก่อนสอบ",
-        price: 250,
-        coverUrl: "https://images.unsplash.com/photo-1423592707957-3b212afa6733?w=400&h=560&fit=crop",
-        author: "Lawlanes",
-        stock: 999,
-        isDigital: true,
-        level: "เนติบัณฑิต",
-        category: "กฎหมายวิธีพิจารณาความ",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    }
-];
 
 export async function getBookById(id: string): Promise<Book | null> {
     // First try to get from Firestore
@@ -196,8 +109,8 @@ export async function getBookById(id: string): Promise<Book | null> {
         }
     }
 
-    // Fallback to mock data
-    return MOCK_BOOKS.find(book => book.id === id) || null;
+    // No mock fallback
+    return null;
 }
 
 export async function getAllBooks(): Promise<Book[]> {
@@ -218,8 +131,8 @@ export async function getAllBooks(): Promise<Book[]> {
         }
     }
 
-    // Fallback to mock data
-    return MOCK_BOOKS;
+    // No mock fallback
+    return [];
 }
 
 export async function getAllCourses(): Promise<Course[]> {

@@ -1,38 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&family=Inter:wght@200;300;400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
   --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(203 100% 16%);
+  --color-foreground: hsl(222 47% 11%);
   --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(203 100% 16%);
+  --color-card-foreground: hsl(222 47% 11%);
   --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(203 100% 16%);
-  --color-primary: hsl(203 100% 17%);
+  --color-popover-foreground: hsl(222 47% 11%);
+  --color-primary: hsl(199 89% 48%);
   --color-primary-foreground: hsl(0 0% 100%);
   --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(203 100% 16%);
+  --color-secondary-foreground: hsl(222 47% 11%);
   --color-muted: hsl(210 40% 96.1%);
   --color-muted-foreground: hsl(215.4 16.3% 46.9%);
   --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(203 100% 16%);
+  --color-accent-foreground: hsl(222 47% 11%);
   --color-destructive: hsl(0 84.2% 60.2%);
   --color-destructive-foreground: hsl(210 40% 98%);
   --color-border: hsl(214.3 31.8% 91.4%);
   --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(203 100% 16%);
+  --color-ring: hsl(199 89% 48%);
   --radius: 0.5rem;
 }
 
 html,
 body {
   overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   border-color: var(--color-border);
+}
+
+/* ── Custom Scrollbar ──────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ── Focus Styles ──────────────────────── */
+:focus-visible {
+  outline: 2px solid hsl(199 89% 48%);
+  outline-offset: 2px;
 }

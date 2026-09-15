@@ -238,6 +238,12 @@ export default function AdminExamsPage() {
                                                         แก้ไข
                                                     </Link>
                                                 </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/education-admin/exams/${exam.id}/review`}>
+                                                        <ClipboardList className="w-4 h-4 mr-2" />
+                                                        ตรวจสอบ OCR
+                                                    </Link>
+                                                </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     className="text-red-600 focus:text-red-600"
                                                     onClick={() => {

@@ -12,7 +12,7 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import Image from 'next/image';
-// import logoColor from '/images/logo-lawslane-transparent-color.png';
+import { BrandLogo } from '@/components/brand-logo';
 
 
 import { Button } from '@/components/ui/button';
@@ -143,26 +143,19 @@ export default function EducationLoginPage() {
         <div className="w-full min-h-screen lg:grid lg:grid-cols-2">
             {/* Left Side - Image */}
             <div className="hidden lg:flex flex-col relative bg-slate-900 text-white">
-                <div className="absolute inset-0 bg-slate-900/60 z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-slate-900/50 z-10" />
                 <Image
-                    src="/images/Lawlanes-Hero-cover.jpg"
+                    src="/images/login-lawslane.png"
                     alt="Education Portal"
                     fill
                     className="object-cover"
                     priority
                 />
-                <div className="relative z-20 flex flex-col justify-between h-full p-12">
-                    <div className="flex items-center gap-3">
-                        <Image
-                            src="/images/logo-lawslane-transparent-color.png"
-                            alt="Lawlanes Logo"
-                            width={40}
-                            height={40}
-                            className="h-10 w-auto brightness-0 invert"
-                        />
-                        <span className="text-xl font-bold tracking-tight">Lawslane Education</span>
+                <div className="relative z-20 flex flex-col h-full p-12">
+                    <div className="mb-2">
+                        <BrandLogo variant="dark" />
                     </div>
-                    <div className="space-y-4 max-w-lg">
+                    <div className="space-y-4 max-w-lg mt-6">
                         <h1 className="text-4xl font-extrabold leading-tight tracking-tight">
                             เตรียมสอบทนายความ<br />อย่างมั่นใจ
                         </h1>
@@ -170,7 +163,7 @@ export default function EducationLoginPage() {
                             เข้าถึงคลังข้อสอบ บทความกฎหมาย และหนังสือเตรียมสอบที่ดีที่สุด เพื่อความสำเร็จในเส้นทางวิชาชีพของคุณ
                         </p>
                     </div>
-                    <div className="text-sm text-slate-400">
+                    <div className="text-sm text-slate-400 mt-auto">
                         © {new Date().getFullYear()} Lawslane. All rights reserved.
                     </div>
                 </div>
@@ -191,7 +184,7 @@ export default function EducationLoginPage() {
                         </div>
                         <h1 className="text-2xl font-semibold tracking-tight">เข้าสู่ระบบ</h1>
                         <p className="text-sm text-slate-500">
-                            ยินดีต้อนรับกลับสู่ Lawslane Education
+                            ยินดีต้อนรับกลับสู่ Lawslane Wittaya
                         </p>
                     </div>
 

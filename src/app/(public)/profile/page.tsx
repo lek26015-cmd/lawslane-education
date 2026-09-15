@@ -61,7 +61,7 @@ export default function ProfilePage() {
     if (isUserLoading || !user) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
             </div>
         );
     }
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="pt-4 flex justify-end">
-                            <Button type="submit" disabled={isSaving || displayName === user.displayName} className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button type="submit" disabled={isSaving || displayName === user.displayName} className="bg-sky-600 hover:bg-sky-700">
                                 {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 บันทึกการเปลี่ยนแปลง
                             </Button>
@@ -155,7 +155,7 @@ export default function ProfilePage() {
             <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/profile/orders')}>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-indigo-600" />
+                        <Package className="h-5 w-5 text-sky-600" />
                         ประวัติการสั่งซื้อ
                     </CardTitle>
                     <CardDescription>
@@ -163,7 +163,7 @@ export default function ProfilePage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button variant="link" className="px-0 text-indigo-600">
+                    <Button variant="link" className="px-0 text-sky-600">
                         ดูทั้งหมด <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </CardContent>

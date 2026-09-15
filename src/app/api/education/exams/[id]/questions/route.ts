@@ -1,56 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getQuestionsByExamId, createQuestion } from '@/lib/mock-store';
+import { initAdmin } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
+import { stripAnswerFromQuestion, formatExamText } from '@/lib/exam-utils';
+import { anonymizeExamTexts } from '@/lib/name-anonymizer';
 
-// GET /api/education/exams/[id]/questions - Get all questions for exam
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { id } = await params;
-        const questions = getQuestionsByExamId(id);
-        return NextResponse.json(questions);
+        const app = await initAdmin();
+        if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
+
+        const db = admin.firestore();
+        const examDoc = await db.collection('examSets').doc(id).get();
+        if (!examDoc.exists) {
+            return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
+        }
+
+        const qSnap = await examDoc.ref.collection('questions')
+            .orderBy('orderIndex', 'asc')
+            .get();
+
+        const questions = qSnap.docs.map((qDoc, idx) => {
+            const q = qDoc.data();
+            const rawType = q.type === 'multiple_choice' || q.type === 'MULTIPLE_CHOICE';
+            
+            let options: string[] | undefined;
+            let correctOptionIndex: number | undefined;
+            let hasRealChoices = false;
+            
+            if (rawType && Array.isArray(q.choices) && q.choices.length > 0) {
+                options = q.choices.map((c: any) => typeof c === 'string' ? c : c.text || c);
+                hasRealChoices = true;
+                if (q.correctAnswer) {
+                    const match = q.correctAnswer.match(/\((\d+)\)/);
+                    if (match) correctOptionIndex = parseInt(match[1]) - 1;
+                }
+            }
+
+            const finalType = (rawType && hasRealChoices) ? 'MULTIPLE_CHOICE' : 'ESSAY';
+            const { question: cleanText } = stripAnswerFromQuestion(q.questionText || '');
+
+            return {
+                id: qDoc.id,
+                examId: id,
+                text: formatExamText(cleanText),
+                type: finalType,
+                options: finalType === 'MULTIPLE_CHOICE' ? options : undefined,
+                correctOptionIndex: finalType === 'MULTIPLE_CHOICE' ? correctOptionIndex : undefined,
+                explanation: q.explanation || '',
+                order: q.orderIndex ?? idx + 1,
+                subject: q.tags?.[0] || '',
+                tags: q.tags || [],
+            };
+        });
+
+        // Batch anonymize
+        const allTexts = questions.map((q: any) => q.text);
+        const anonymized = anonymizeExamTexts(allTexts, id);
+        const anonymizedQuestions = questions.map((q: any, i: number) => ({
+            ...q,
+            text: anonymized[i],
+        }));
+
+        return NextResponse.json(anonymizedQuestions);
     } catch (error) {
         console.error('Error fetching questions:', error);
         return NextResponse.json({ error: 'Failed to fetch questions' }, { status: 500 });
-    }
-}
-
-// POST /api/education/exams/[id]/questions - Add question to exam
-export async function POST(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await params;
-        const body = await request.json();
-
-        if (!body.text) {
-            return NextResponse.json(
-                { error: 'Missing required field: text' },
-                { status: 400 }
-            );
-        }
-
-        // Calculate order based on existing questions
-        const existingQuestions = getQuestionsByExamId(id);
-        const order = body.order || existingQuestions.length + 1;
-
-        const newQuestion = createQuestion({
-            examId: id,
-            text: body.text,
-            type: body.type || 'MULTIPLE_CHOICE',
-            options: body.options || [],
-            correctOptionIndex: body.correctOptionIndex,
-            correctAnswerText: body.correctAnswerText,
-            explanation: body.explanation || '',
-            order,
-            subject: body.subject || ''
-        });
-
-        return NextResponse.json(newQuestion, { status: 201 });
-    } catch (error) {
-        console.error('Error creating question:', error);
-        return NextResponse.json({ error: 'Failed to create question' }, { status: 500 });
     }
 }

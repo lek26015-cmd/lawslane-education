@@ -1,10 +1,18 @@
 import { PageHeader } from '@/components/education/page-header';
+import { GoogleAd } from '@/components/google-ad';
 import Link from 'next/link';
 import { Calendar, ChevronRight, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { getArticles } from '@/lib/mock-store';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'บทความกฎหมาย — เทคนิคสอบ เกร็ดความรู้ ข่าวกฎหมาย',
+    description: 'บทความเทคนิคการสอบทนายความ เกร็ดความรู้กฎหมาย และข่าวสารทางกฎหมาย อัปเดตล่าสุดจาก Lawslane Wittaya',
+    alternates: { canonical: '/articles' },
+};
 
 export default async function ArticlesPage() {
     // Use mock store directly for Server Component
@@ -16,7 +24,7 @@ export default async function ArticlesPage() {
                 title="คลังความรู้กฎหมาย"
                 description="บทความ เทคนิคการสอบ และเกร็ดความรู้กฎหมายที่น่าสนใจ"
                 icon="BookOpen"
-                theme="purple"
+                theme="sky"
                 backLink="/"
                 backLabel="กลับหน้าหลัก"
             />
@@ -30,7 +38,7 @@ export default async function ArticlesPage() {
                         className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent p-6 md:p-12 flex flex-col justify-end items-start text-white">
-                        <Badge className="bg-purple-500 hover:bg-purple-600 border-none mb-4">
+                        <Badge className="bg-sky-500 hover:bg-sky-600 border-none mb-4">
                             {articles[0].category}
                         </Badge>
                         <h2 className="text-2xl md:text-4xl font-bold mb-4 max-w-2xl leading-tight">
@@ -40,13 +48,16 @@ export default async function ArticlesPage() {
                             {articles[0].description}
                         </p>
                         <Link href={`/articles/${articles[0].slug}`}>
-                            <Button size="lg" className="rounded-full bg-white text-slate-900 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                            <Button size="lg" className="rounded-full bg-white text-slate-900 hover:bg-sky-50 hover:text-sky-700 transition-colors">
                                 อ่านบทความ <ChevronRight className="w-4 h-4 ml-1" />
                             </Button>
                         </Link>
                     </div>
                 </div>
             )}
+
+            {/* Ad Banner */}
+            <GoogleAd variant="banner" className="my-4" />
 
             {/* Recent Articles Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -76,13 +87,13 @@ export default async function ArticlesPage() {
                                         {article.author}
                                     </div>
                                 </div>
-                                <h3 className="font-bold text-lg text-slate-900 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                                <h3 className="font-bold text-lg text-slate-900 mb-2 line-clamp-2 group-hover:text-sky-600 transition-colors">
                                     {article.title}
                                 </h3>
                                 <p className="text-slate-500 text-sm line-clamp-2 mb-4">
                                     {article.description}
                                 </p>
-                                <span className="text-purple-600 text-sm font-semibold flex items-center group-hover:underline">
+                                <span className="text-sky-600 text-sm font-semibold flex items-center group-hover:underline">
                                     อ่านต่อ <ChevronRight className="w-4 h-4" />
                                 </span>
                             </CardContent>

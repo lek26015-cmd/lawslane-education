@@ -45,7 +45,7 @@ export default function OrderHistoryPage() {
             case 'PAID':
                 return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">ชำระแล้ว</Badge>;
             case 'SHIPPING':
-                return <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">กำลังจัดส่ง</Badge>;
+                return <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200">กำลังจัดส่ง</Badge>;
             case 'COMPLETED':
                 return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">เสร็จสิ้น</Badge>;
             case 'CANCELLED':
@@ -58,7 +58,7 @@ export default function OrderHistoryPage() {
     if (isUserLoading || isLoading) {
         return (
             <div className="container mx-auto py-12 flex justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
             </div>
         );
     }
@@ -90,7 +90,7 @@ export default function OrderHistoryPage() {
                                 ลองดูสินค้าแนะนำของเราได้ที่ร้านหนังสือ
                             </p>
                         </div>
-                        <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700" asChild>
+                        <Button className="mt-4 bg-sky-600 hover:bg-sky-700" asChild>
                             <Link href="/books">ไปที่ร้านหนังสือ</Link>
                         </Button>
                     </CardContent>
@@ -152,7 +152,7 @@ export default function OrderHistoryPage() {
                                 </div>
                             </CardContent>
                             <CardFooter className="bg-slate-50/30 border-t p-4 flex justify-end">
-                                <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50" asChild>
+                                <Button variant="ghost" className="text-sky-600 hover:text-sky-700 hover:bg-sky-50" asChild>
                                     <Link href={`/profile/orders/${order.id}`}>
                                         ดูรายละเอียด & ติดตามพัสดุ <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>

@@ -58,7 +58,7 @@ export function CourseOrderDialog({ course, trigger, open, onOpenChange }: Cours
                             <div>
                                 <h4 className="font-semibold text-slate-900 line-clamp-1">{course.title}</h4>
                                 <p className="text-sm text-slate-500 mb-1">โดย {course.instructor.name}</p>
-                                <p className="text-lg font-bold text-indigo-700">฿{course.price.toLocaleString()}</p>
+                                <p className="text-lg font-bold text-sky-700">฿{course.price.toLocaleString()}</p>
                             </div>
                         </div>
 
@@ -126,7 +126,7 @@ export function CourseOrderDialog({ course, trigger, open, onOpenChange }: Cours
                     {step === 'payment' ? (
                         <>
                             <Button variant="outline" onClick={() => onOpenChange?.(false)}>ยกเลิก</Button>
-                            <Button onClick={() => setStep('confirm')} className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button onClick={() => setStep('confirm')} className="bg-sky-600 hover:bg-sky-700">
                                 แจ้งชำระเงิน
                             </Button>
                         </>

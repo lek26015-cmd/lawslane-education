@@ -28,7 +28,7 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
-            <Link href="/exams" className="inline-flex items-center text-sm text-slate-500 hover:text-indigo-600 transition-colors">
+            <Link href="/exams" className="inline-flex items-center text-sm text-slate-500 hover:text-sky-600 transition-colors">
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 กลับไปหน้าคลังข้อสอบ
             </Link>
@@ -37,7 +37,7 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                 <div className="flex items-start justify-between mb-6">
                     <div>
                         <div className="flex gap-2 mb-4">
-                            <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200 border-none">
+                            <Badge className="bg-sky-100 text-sky-700 hover:bg-sky-200 border-none">
                                 {exam.category === 'license' ? 'ใบอนุญาตว่าความ' : 'อื่นๆ'}
                             </Badge>
                             <Badge variant="outline">
@@ -53,12 +53,12 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
                     <div className="flex flex-col items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                        <Clock className="w-8 h-8 text-indigo-500 mb-2" />
+                        <Clock className="w-8 h-8 text-sky-500 mb-2" />
                         <span className="text-2xl font-bold text-slate-900">{exam.durationMinutes}</span>
                         <span className="text-sm text-slate-500">นาที</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                        <HelpCircle className="w-8 h-8 text-purple-500 mb-2" />
+                        <HelpCircle className="w-8 h-8 text-sky-500 mb-2" />
                         <span className="text-2xl font-bold text-slate-900">{exam.totalQuestions}</span>
                         <span className="text-sm text-slate-500">ข้อ</span>
                     </div>
@@ -83,7 +83,12 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                 </div>
 
                 <div className="flex justify-center">
-                    <StartExamButton examId={id} />
+                    <StartExamButton
+                        examId={id}
+                        totalQuestions={exam.totalQuestions}
+                        timeLimit={exam.durationMinutes}
+                        passingScore={exam.passingScore}
+                    />
                 </div>
             </div>
         </div>

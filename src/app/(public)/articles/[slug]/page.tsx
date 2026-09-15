@@ -1,4 +1,5 @@
 import { getArticleBySlug, getArticles } from '@/lib/mock-store';
+import { GoogleAd } from '@/components/google-ad';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft, Calendar, Facebook, Twitter, Link as LinkIcon } from 'lucide-react';
@@ -52,7 +53,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 pb-8 md:pb-12 max-w-4xl">
-                    <Badge className="bg-purple-500 mb-4 hover:bg-purple-600 border-none">
+                    <Badge className="bg-sky-500 mb-4 hover:bg-sky-600 border-none">
                         {article.category}
                     </Badge>
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 drop-shadow-sm">
@@ -77,7 +78,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
             <div className="container mx-auto px-4 max-w-3xl -mt-8 relative z-10">
                 <div className="bg-white rounded-t-3xl p-6 md:p-12 shadow-sm min-h-[500px]">
                     {/* Description (Lead) */}
-                    <div className="text-xl md:text-2xl text-slate-800 font-medium leading-relaxed mb-10 border-l-4 border-purple-500 pl-6 italic">
+                    <div className="text-xl md:text-2xl text-slate-800 font-medium leading-relaxed mb-10 border-l-4 border-sky-500 pl-6 italic">
                         {article.description}
                     </div>
 
@@ -85,10 +86,15 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
                         className="prose prose-lg prose-slate max-w-none 
                         prose-headings:font-bold prose-headings:text-slate-900 
                         prose-p:text-slate-600 prose-p:leading-8
-                        prose-a:text-purple-600 prose-a:no-underline hover:prose-a:underline
+                        prose-a:text-sky-600 prose-a:no-underline hover:prose-a:underline
                         prose-img:rounded-xl prose-img:shadow-md"
                         dangerouslySetInnerHTML={{ __html: article.content }}
                     />
+                </div>
+
+                {/* In-article Ad */}
+                <div className="max-w-4xl mx-auto px-4 mt-8">
+                    <GoogleAd variant="infeed" />
                 </div>
             </div>
 

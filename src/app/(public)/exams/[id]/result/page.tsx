@@ -82,7 +82,7 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="animate-pulse text-center">
-                    <Sparkles className="w-12 h-12 text-indigo-400 mx-auto mb-4 animate-bounce" />
+                    <Sparkles className="w-12 h-12 text-sky-400 mx-auto mb-4 animate-bounce" />
                     <p className="text-slate-500">กำลังโหลดผลการสอบ...</p>
                 </div>
             </div>
@@ -144,7 +144,7 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
                     transition={{ delay: 0.1 }}
                     className="bg-white rounded-xl border p-4 text-center"
                 >
-                    <BookOpen className="w-6 h-6 text-indigo-500 mx-auto mb-2" />
+                    <BookOpen className="w-6 h-6 text-sky-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-slate-900">{attempt.answers.length}</p>
                     <p className="text-xs text-slate-500">คำถามทั้งหมด</p>
                 </motion.div>
@@ -253,17 +253,17 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
                                                 <>
                                                     {/* Model Answer */}
                                                     {answer.correctAnswer && (
-                                                        <div className="bg-indigo-50 rounded-lg p-4">
-                                                            <p className="text-sm font-medium text-indigo-700 mb-1">📚 ธงคำตอบ</p>
-                                                            <p className="text-indigo-900 whitespace-pre-wrap text-sm">{answer.correctAnswer}</p>
+                                                        <div className="bg-sky-50 rounded-lg p-4">
+                                                            <p className="text-sm font-medium text-sky-700 mb-1">📚 ธงคำตอบ</p>
+                                                            <p className="text-sky-900 whitespace-pre-wrap text-sm">{answer.correctAnswer}</p>
                                                         </div>
                                                     )}
 
                                                     {/* AI Feedback */}
-                                                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
+                                                    <div className="bg-gradient-to-r from-sky-50 to-sky-50 rounded-lg p-4">
                                                         <div className="flex items-center gap-2 mb-2">
-                                                            <Sparkles className="w-4 h-4 text-purple-600" />
-                                                            <p className="text-sm font-medium text-purple-700">AI Feedback</p>
+                                                            <Sparkles className="w-4 h-4 text-sky-600" />
+                                                            <p className="text-sm font-medium text-sky-700">AI Feedback</p>
                                                         </div>
                                                         <p className="text-slate-700 mb-3">{answer.aiFeedback}</p>
 

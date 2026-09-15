@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY || '');
 
 export interface GradingResult {
     score: number;
@@ -22,7 +22,7 @@ export interface QuestionGradingInput {
  * Grade an essay answer using Gemini AI
  */
 export async function gradeEssayAnswer(input: QuestionGradingInput): Promise<GradingResult> {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `คุณเป็นผู้ตรวจข้อสอบกฎหมายผู้เชี่ยวชาญ กรุณาตรวจคำตอบนักศึกษาอย่างละเอียด
 

@@ -1,52 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getBooks, getAllBooks, createBook } from '@/lib/mock-store';
+import { initAdmin } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
 
-// GET /api/education/books - Get all books
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
-        const includeAll = searchParams.get('all') === 'true';
+        const app = await initAdmin();
+        if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
-        if (includeAll) {
-            return NextResponse.json(getAllBooks());
-        }
+        const db = admin.firestore();
+        const snap = await db.collection('books')
+            .orderBy('publishedAt', 'desc')
+            .limit(200)
+            .get();
 
-        return NextResponse.json(getBooks());
+        const books = snap.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                title: data.title || '',
+                description: data.description || '',
+                price: data.price || 0,
+                originalPrice: data.originalPrice,
+                coverUrl: data.imageUrl || data.coverUrl || '',
+                author: data.author || 'Lawslane',
+                publisher: data.publisher || '',
+                isbn: data.isbn || '',
+                pageCount: data.pageCount,
+                isDigital: data.isDigital || false,
+                stock: data.stock || 0,
+                category: data.category || '',
+                status: 'published',
+                createdAt: data.createdAt?.toDate?.() || data.publishedAt?.toDate?.() || new Date(),
+                updatedAt: data.updatedAt?.toDate?.() || new Date(),
+            };
+        });
+
+        return NextResponse.json(books);
     } catch (error) {
         console.error('Error fetching books:', error);
         return NextResponse.json({ error: 'Failed to fetch books' }, { status: 500 });
-    }
-}
-
-// POST /api/education/books - Create new book
-export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-
-        if (!body.title) {
-            return NextResponse.json(
-                { error: 'Missing required field: title' },
-                { status: 400 }
-            );
-        }
-
-        const newBook = createBook({
-            title: body.title,
-            description: body.description || '',
-            price: body.price || 0,
-            originalPrice: body.originalPrice,
-            coverUrl: body.coverUrl || '',
-            author: body.author || '',
-            pageCount: body.pageCount || 0,
-            category: body.category || 'ทั่วไป',
-            type: body.type || 'ebook',
-            isDigital: body.type === 'ebook' || body.type === 'both',
-            status: body.status || 'draft'
-        });
-
-        return NextResponse.json(newBook, { status: 201 });
-    } catch (error) {
-        console.error('Error creating book:', error);
-        return NextResponse.json({ error: 'Failed to create book' }, { status: 500 });
     }
 }

@@ -1,103 +1,94 @@
-'use client';
-
 import Link from "next/link";
-import Image from "next/image";
-import { ChevronRight, Star } from "lucide-react";
-const educationHero = "/images/education-hero.png";
-const lawlanesHero = "/images/Lawlanes-Hero-cover.jpg";
+import { ChevronRight, FileText } from "lucide-react";
+import { initAdmin } from '@/lib/firebase-admin';
+import * as admin from 'firebase-admin';
 
-// Sample Exams as List
-export function SampleExamsList() {
-    const exams = [
-        {
-            id: 1,
-            title: "ข้อสอบกฎหมายแพ่ง: นิติกรรมและสัญญา",
-            description: "ทดสอบความเข้าใจเรื่องนิติกรรม สัญญา และผลของสัญญา",
-            thumbnail: educationHero,
-            instructorName: "ทีมวิชาการ",
-            badge: "ฟรี",
-            category: "ปี 1",
-            rating: "easy",
-            href: "/exams/exam-1"
-        },
-        {
-            id: 2,
-            title: "ข้อสอบกฎหมายแพ่ง: ทรัพย์สินและที่ดิน",
-            description: "เน้นเรื่องกรรมสิทธิ์ ครอบครอง ภาระจำยอม และสิทธิเหนือที่ดิน",
-            thumbnail: lawlanesHero,
-            instructorName: "ทีมวิชาการ",
-            badge: "฿99",
-            rating: "medium",
-            category: "ปี 2",
-            href: "/exams/exam-2"
-        },
-        {
-            id: 4,
-            title: "ข้อสอบวิธีพิจารณาความแพ่ง: การดำเนินคดี",
-            description: "ขั้นตอนการฟ้องคดี การส่งหมาย พยานหลักฐาน และการบังคับคดี",
-            thumbnail: educationHero,
-            instructorName: "อ.สมชาย",
-            badge: "฿150",
-            rating: "hard",
-            category: "ปี 3",
-            href: "/exams/exam-4"
-        },
-        {
-            id: 6,
-            title: "จำลองสอบใบอนุญาตว่าความ (ภาคทฤษฎี) ชุดที่ 1",
-            description: "ข้อสอบเสมือนจริง 100 ข้อ จำกัดเวลา 4 ชั่วโมง",
-            thumbnail: lawlanesHero,
-            instructorName: "สภาทนายความ",
-            badge: "ฟรี",
-            rating: "hard",
-            category: "ใบอนุญาต",
-            href: "/exams/exam-6"
-        }
-    ];
+async function getRecentExams() {
+    try {
+        const app = await initAdmin();
+        if (!app) return [];
+        const db = admin.firestore();
+        const snap = await db.collection('examSets')
+            .orderBy('createdAt', 'desc')
+            .limit(6)
+            .get();
+        
+        return snap.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                title: data.title || '',
+                totalQuestions: data.totalQuestions || data.essayCount || 0,
+                category: data.category || '',
+                subjectCode: data.subjectCode || '',
+                session: data.session || '',
+            };
+        });
+    } catch (e) {
+        console.error('Error fetching exams for home:', e);
+        return [];
+    }
+}
+
+function mapCategory(cat: string, code: string): string {
+    if (cat === 'year1') return 'ชั้นปี 1';
+    if (cat === 'year2') return 'ชั้นปี 2';
+    if (cat === 'year3') return 'ชั้นปี 3';
+    if (cat === 'year4') return 'ชั้นปี 4';
+    if (cat === 'other') return 'ตั๋วทนาย';
+    if (!code) return 'ข้อสอบ';
+    const num = parseInt(code.replace(/\D/g, '').substring(0, 4));
+    if (num >= 1001 && num <= 1004) return 'ชั้นปี 1';
+    if (num >= 2001 && num <= 2032) return 'ชั้นปี 2';
+    if (num >= 3001 && num <= 3035) return 'ชั้นปี 3';
+    if (num >= 4001 && num <= 4999) return 'ชั้นปี 4';
+    return 'ข้อสอบ';
+}
+
+export async function SampleExamsList() {
+    const exams = await getRecentExams();
+
+    if (exams.length === 0) {
+        return (
+            <div className="text-center py-8 text-slate-400">
+                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>ยังไม่มีข้อสอบในขณะนี้</p>
+            </div>
+        );
+    }
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {exams.map((exam, idx) => (
                 <Link
                     key={exam.id}
-                    href={exam.href}
-                    className="group flex gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all animate-in fade-in slide-in-from-bottom-4 duration-500"
-                    style={{ animationDelay: `${idx * 0.1}s` }}
+                    href={`/exams/${exam.id}/take`}
+                    className="group flex gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-sky-200 transition-all"
                 >
-                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-slate-100">
-                        <Image
-                            src={exam.thumbnail}
-                            alt={exam.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        {exam.badge && (
-                            <div className="absolute top-0 left-0 bg-indigo-600 text-[10px] text-white px-2 py-0.5 font-bold">
-                                {exam.badge}
-                            </div>
-                        )}
+                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center">
+                        <FileText className="w-10 h-10 text-white/60" />
+                        <div className="absolute top-0 left-0 bg-sky-600 text-[10px] text-white px-2 py-0.5 font-bold">
+                            ฟรี
+                        </div>
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
-                                {exam.category}
+                            <span className="text-xs font-medium text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full">
+                                {mapCategory(exam.category, exam.subjectCode)}
                             </span>
-                            <div className="flex items-center text-[10px] text-amber-500 font-bold">
-                                <Star className="w-3 h-3 fill-current mr-0.5" />
-                                {exam.rating}
-                            </div>
                         </div>
-                        <h3 className="font-bold text-slate-900 leading-tight mb-1 group-hover:text-indigo-700 transition-colors line-clamp-2">
+                        <h3 className="font-bold text-slate-900 leading-tight mb-1 group-hover:text-sky-700 transition-colors line-clamp-2">
                             {exam.title}
                         </h3>
-                        <p className="text-xs text-slate-500 line-clamp-2 mb-2">
-                            {exam.description}
-                        </p>
-                        <div className="flex items-center text-xs text-slate-400">
-                            <span>สอนโดย {exam.instructorName}</span>
+                        <div className="flex items-center gap-3 text-xs text-slate-400">
+                            <span className="flex items-center gap-1">
+                                <FileText className="w-3 h-3" />
+                                {exam.totalQuestions} ข้อ
+                            </span>
+                            {exam.session && <span>{exam.session}</span>}
                         </div>
                     </div>
-                    <div className="flex items-center justify-center text-slate-300 group-hover:text-indigo-500 transition-colors">
+                    <div className="flex items-center justify-center text-slate-300 group-hover:text-sky-500 transition-colors">
                         <ChevronRight className="w-5 h-5" />
                     </div>
                 </Link>

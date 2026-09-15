@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, LucideIcon, BookOpen, GraduationCap, Award, Settings, FileText, ShoppingBag, PlayCircle } from 'lucide-react';
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -25,19 +26,15 @@ interface PageHeaderProps {
     children?: ReactNode;
     badge?: string;
     badgeColor?: string;
-    theme?: 'indigo' | 'emerald' | 'amber' | 'purple' | 'rose' | 'slate' | 'blue' | 'cyan';
+    theme?: 'sky' | 'emerald' | 'amber' | 'slate';
     variant?: 'gradient' | 'minimal';
 }
 
 const THEME_GRADIENTS = {
-    indigo: 'from-indigo-900 via-indigo-800 to-slate-900',
+    sky: 'from-sky-900 via-sky-800 to-slate-900',
     emerald: 'from-emerald-900 via-emerald-800 to-slate-900',
     amber: 'from-amber-800 via-amber-700 to-slate-900',
-    purple: 'from-purple-900 via-indigo-900 to-slate-900',
-    rose: 'from-rose-900 via-pink-800 to-slate-900',
     slate: 'from-slate-800 via-slate-700 to-slate-900',
-    blue: 'from-blue-900 via-indigo-800 to-slate-900',
-    cyan: 'from-cyan-900 via-blue-800 to-slate-900'
 };
 
 export function PageHeader({
@@ -45,7 +42,7 @@ export function PageHeader({
     description,
     icon: iconProp,
     iconColor,
-    theme = 'purple',
+    theme = 'sky',
     variant = 'gradient',
     backLink,
     backLabel = 'กลับ',
@@ -72,7 +69,7 @@ export function PageHeader({
                         >
                             <Link
                                 href={backLink}
-                                className="inline-flex items-center text-slate-500 hover:text-purple-600 transition-colors mb-4 text-sm font-medium"
+                                className="inline-flex items-center text-slate-500 hover:text-sky-600 transition-colors mb-4 text-sm font-medium"
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2" />
                                 {backLabel}
@@ -86,9 +83,9 @@ export function PageHeader({
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-                                className="w-14 h-14 md:w-16 md:h-16 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0"
+                                className="w-14 h-14 md:w-16 md:h-16 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0"
                             >
-                                <Icon className={`w-7 h-7 md:w-8 md:h-8 ${iconColor || 'text-purple-600'}`} />
+                                <Icon className={`w-7 h-7 md:w-8 md:h-8 ${iconColor || 'text-sky-600'}`} />
                             </motion.div>
                         )}
 
@@ -108,7 +105,7 @@ export function PageHeader({
                                         initial={{ opacity: 0, scale: 0.8 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: 0.25 }}
-                                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeColor || 'bg-purple-100 text-purple-700'}`}
+                                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeColor || 'bg-sky-100 text-sky-700'}`}
                                     >
                                         {badge}
                                     </motion.span>
@@ -144,7 +141,7 @@ export function PageHeader({
     }
 
     // Gradient variant (default) - dark background with white text
-    const containerClasses = `relative overflow-hidden rounded-3xl p-8 md:p-12 mb-8 shadow-xl text-white bg-gradient-to-br ${THEME_GRADIENTS[theme] || THEME_GRADIENTS.purple}`;
+    const containerClasses = `relative overflow-hidden rounded-3xl p-8 md:p-12 mb-8 shadow-xl text-white bg-gradient-to-br ${THEME_GRADIENTS[theme] || THEME_GRADIENTS.sky}`;
 
     const finalIconColor = iconColor || 'text-white';
     const defaultBadgeClasses = 'bg-white/20 text-white border-0 backdrop-blur-sm';
@@ -152,10 +149,10 @@ export function PageHeader({
 
     return (
         <div className={containerClasses}>
-            {/* Background decoration - matching exams page */}
+            {/* Background decoration - glow effects */}
             <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-                <div className="absolute top-10 right-10 w-48 h-48 bg-purple-500 rounded-full blur-[80px]" />
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px]" />
+                <div className="absolute top-10 right-10 w-48 h-48 bg-sky-300 rounded-full blur-[80px]" />
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-sky-400 rounded-full blur-[100px]" />
             </div>
 
             <motion.div
@@ -275,7 +272,7 @@ export function CompactPageHeader({
             {backLink && (
                 <Link
                     href={backLink}
-                    className="inline-flex items-center text-slate-600 hover:text-purple-600 transition-colors mb-3 text-sm"
+                    className="inline-flex items-center text-slate-600 hover:text-sky-600 transition-colors mb-3 text-sm"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     {backLabel}

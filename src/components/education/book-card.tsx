@@ -48,7 +48,7 @@ export function BookCard({
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     {isEbook && (
-                        <Badge className="absolute top-2 right-2 bg-indigo-600 hover:bg-indigo-700">E-Book</Badge>
+                        <Badge className="absolute top-2 right-2 bg-sky-600 hover:bg-sky-700">E-Book</Badge>
                     )}
                 </div>
             </Link>
@@ -70,7 +70,7 @@ export function BookCard({
 
                 {/* Title */}
                 <Link href={href} className="w-full">
-                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3.5rem] text-slate-900 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3.5rem] text-slate-900 group-hover:text-sky-600 transition-colors">
                         {title}
                     </h3>
                 </Link>
@@ -103,11 +103,11 @@ export function BookCard({
                     {originalPrice && (
                         <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
                     )}
-                    <span className="text-lg font-bold text-indigo-700">฿{price.toLocaleString()}</span>
+                    <span className="text-lg font-bold text-sky-700">฿{price.toLocaleString()}</span>
                 </div>
                 <Link href={href} className="pt-4">
                     <Button
-                        variant="outline" size="sm" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                        variant="outline" size="sm" className="border-sky-200 text-sky-700 hover:bg-sky-50"
                     >
                         ดูรายละเอียด
                     </Button>

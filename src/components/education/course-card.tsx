@@ -47,7 +47,7 @@ export function CourseCard({ course, href }: CourseCardProps) {
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-bold text-lg text-slate-800 line-clamp-2 leading-snug group-hover:text-indigo-600 transition-colors -mt-1">
+                    <h3 className="font-bold text-lg text-slate-800 line-clamp-2 leading-snug group-hover:text-sky-600 transition-colors -mt-1">
                         {course.title}
                     </h3>
 
@@ -83,7 +83,7 @@ export function CourseCard({ course, href }: CourseCardProps) {
                                     className="rounded-full bg-slate-100"
                                 />
                             ) : (
-                                <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600">
+                                <div className="w-6 h-6 rounded-full bg-sky-100 flex items-center justify-center text-[10px] font-bold text-sky-600">
                                     {course.instructor.name?.charAt(0) || '?'}
                                 </div>
                             )}

@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
                             <GraduationCap className="w-7 h-7 text-white" />
                         </div>
                         <div className="text-left">
-                            <h1 className="text-xl font-bold text-white">Lawslane Education</h1>
+                            <h1 className="text-xl font-bold text-white">Lawslane Wittaya</h1>
                             <p className="text-indigo-300 text-sm">Admin Panel</p>
                         </div>
                     </div>

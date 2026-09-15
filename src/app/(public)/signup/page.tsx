@@ -158,7 +158,7 @@ export default function EducationSignupPage() {
 
             toast({
                 title: 'สมัครสมาชิกสำเร็จ',
-                description: 'ยินดีต้อนรับสู่ Lawslane Education',
+                description: 'ยินดีต้อนรับสู่ Lawslane Wittaya',
             });
 
             router.push('/');
@@ -182,7 +182,7 @@ export default function EducationSignupPage() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12">
             <div className="container mx-auto flex justify-center p-4">
-                <Card className="w-full max-w-[480px] shadow-xl rounded-2xl border-indigo-100">
+                <Card className="w-full max-w-[480px] shadow-xl rounded-2xl border-sky-100">
                     <CardHeader className="text-center space-y-4 pt-10">
                         <div className="flex flex-col items-center justify-center mb-4 gap-3">
                             <Image
@@ -194,14 +194,14 @@ export default function EducationSignupPage() {
                                 priority
                             />
                             <div className="flex flex-col" style={{ lineHeight: '1.1' }}>
-                                <span className="font-bold text-2xl text-indigo-900">Lawslane</span>
-                                <span className="font-bold text-2xl text-indigo-600">Education</span>
+                                <span className="font-bold text-2xl text-sky-900">Lawslane</span>
+                                <span className="font-bold text-2xl text-sky-600">Education</span>
                             </div>
                         </div>
 
                         <div className="space-y-1">
                             <CardDescription className="text-slate-500">
-                                สำหรับใช้งานคลังข้อสอบ Lawslane Education
+                                สำหรับใช้งานคลังข้อสอบ Lawslane Wittaya
                             </CardDescription>
                         </div>
                     </CardHeader>
@@ -295,7 +295,7 @@ export default function EducationSignupPage() {
 
                                     <TurnstileWidget onSuccess={setTurnstileToken} />
 
-                                    <Button type="submit" className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-lg font-medium shadow-md shadow-indigo-200" disabled={isLoading}>
+                                    <Button type="submit" className="w-full h-11 bg-sky-600 hover:bg-sky-700 text-lg font-medium shadow-md shadow-sky-200" disabled={isLoading}>
                                         {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                                         สมัครสมาชิก
                                     </Button>
@@ -306,7 +306,7 @@ export default function EducationSignupPage() {
                         <div className="text-center pt-2">
                             <p className="text-sm text-slate-500">
                                 มีบัญชีอยู่แล้ว?{' '}
-                                <Link href="/login" className="text-indigo-600 font-semibold hover:underline">
+                                <Link href="/login" className="text-sky-600 font-semibold hover:underline">
                                     เข้าสู่ระบบ
                                 </Link>
                             </p>

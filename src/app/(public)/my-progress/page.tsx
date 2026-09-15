@@ -52,7 +52,7 @@ export default function MyProgressPage() {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                <Brain className="w-16 h-16 text-indigo-400 mb-4 animate-pulse" />
+                <Brain className="w-16 h-16 text-sky-400 mb-4 animate-pulse" />
                 <p className="text-slate-500">กำลังวิเคราะห์ผลการเรียน...</p>
             </div>
         );
@@ -67,7 +67,7 @@ export default function MyProgressPage() {
                 className="text-center py-6"
             >
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <Brain className="w-8 h-8 text-indigo-600" />
+                    <Brain className="w-8 h-8 text-sky-600" />
                     <h1 className="text-3xl font-bold text-slate-900">AI วิเคราะห์พัฒนาการ</h1>
                 </div>
                 <p className="text-slate-600 mb-4">
@@ -93,7 +93,7 @@ export default function MyProgressPage() {
                     <h2 className="text-xl font-bold text-slate-900 mb-2">ยังไม่มีข้อมูลเพียงพอ</h2>
                     <p className="text-slate-500 mb-6">ลองทำข้อสอบสัก 2-3 ชุด แล้ว AI จะวิเคราะห์จุดแข็ง/จุดอ่อนให้</p>
                     <Link href="/exams">
-                        <Button className="bg-indigo-600 hover:bg-indigo-700">
+                        <Button className="bg-sky-600 hover:bg-sky-700">
                             <BookOpen className="w-4 h-4 mr-2" />
                             เริ่มทำข้อสอบ
                         </Button>
@@ -106,7 +106,7 @@ export default function MyProgressPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white"
+                        className="bg-gradient-to-r from-sky-500 to-sky-600 rounded-2xl p-6 text-white"
                     >
                         <div className="flex items-start gap-4">
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
@@ -210,13 +210,13 @@ export default function MyProgressPage() {
                             className="bg-white rounded-2xl border p-5"
                         >
                             <div className="flex items-center gap-2 mb-4">
-                                <Rocket className="w-5 h-5 text-indigo-600" />
+                                <Rocket className="w-5 h-5 text-sky-600" />
                                 <h3 className="font-bold text-slate-900">แผนพัฒนาตนเอง</h3>
                             </div>
                             <div className="space-y-2">
                                 {analysis.improvementPlan.map((step, idx) => (
                                     <div key={idx} className="flex items-start gap-3">
-                                        <CheckCircle className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                                        <CheckCircle className="w-5 h-5 text-sky-400 flex-shrink-0 mt-0.5" />
                                         <p className="text-slate-700 text-sm">{step}</p>
                                     </div>
                                 ))}
@@ -229,15 +229,15 @@ export default function MyProgressPage() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.6 }}
-                        className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 text-center border border-purple-100"
+                        className="bg-gradient-to-r from-sky-50 to-sky-50 rounded-2xl p-6 text-center border border-sky-100"
                     >
-                        <p className="text-lg font-medium text-purple-700">💪 {analysis.motivationalMessage}</p>
+                        <p className="text-lg font-medium text-sky-700">💪 {analysis.motivationalMessage}</p>
                     </motion.div>
 
                     {/* CTA */}
                     <div className="text-center py-4">
                         <Link href="/exams">
-                            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button size="lg" className="bg-sky-600 hover:bg-sky-700">
                                 ฝึกทำข้อสอบต่อ
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>

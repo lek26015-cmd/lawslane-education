@@ -2,8 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
+import { GoogleAd } from '@/components/google-ad';
 import { Target, ChevronRight } from "lucide-react";
-import { ArticlesSection } from "@/components/education/articles-section";
 import { RecommendedBooksSection } from '@/components/education/recommended-books';
 import {
   FeatureCardsAnimated,
@@ -12,6 +12,13 @@ import {
 } from '@/components/education/animated-sections';
 import { SampleExamsList } from '@/components/education/sample-exams-list';
 import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'หน้าแรก — คลังข้อสอบทนายความ หนังสือเตรียมสอบ',
+  description: 'เตรียมสอบใบอนุญาตว่าความ สอบเนติบัณฑิต ด้วยข้อสอบกฎหมายจริงกว่า 2,000 ชุด หนังสือเตรียมสอบ และ AI ตรวจอัตนัย จาก Lawslane Wittaya',
+  alternates: { canonical: '/' },
+};
 
 export default function EducationPage() {
   return (
@@ -19,12 +26,12 @@ export default function EducationPage() {
       {/* Hero Section - Exam Focused */}
       <HeroFadeIn>
         <section
-          className="relative overflow-hidden rounded-3xl text-white p-6 md:p-12 lg:p-20 bg-[linear-gradient(to_bottom_right,#581c87,#312e81,#0f172a)]"
+          className="relative overflow-hidden rounded-3xl text-white p-6 md:p-12 lg:p-20 bg-[linear-gradient(135deg,#0c4a6e,#0369a1,#0284c7)]"
         >
           <div className="relative z-20 max-w-2xl space-y-6 mx-auto lg:mx-0 text-center lg:text-left">
             <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight">
               ฝึกทำข้อสอบกฎหมาย<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-200">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-200 to-sky-100">
                 จนกว่าจะมั่นใจ
               </span>
             </h1>
@@ -39,14 +46,14 @@ export default function EducationPage() {
               <span className="px-3 py-1 bg-white/20 rounded-full text-xs md:text-sm">วิธีพิจารณาความแพ่ง</span>
               <span className="px-3 py-1 bg-white/20 rounded-full text-xs md:text-sm">กฎหมายอาญา</span>
               <span className="px-3 py-1 bg-white/20 rounded-full text-xs md:text-sm">วิธีพิจารณาความอาญา</span>
-              <span className="px-3 py-1 bg-amber-500/30 rounded-full text-xs md:text-sm text-amber-200">ข้อสอบทนาย</span>
+               <span className="px-3 py-1 bg-sky-400/30 rounded-full text-xs md:text-sm text-sky-100">ข้อสอบทนาย</span>
             </div>
 
             <div className="flex flex-wrap gap-3 md:gap-4 pt-4 justify-center lg:justify-start">
               <Button
                 asChild
                 size="lg"
-                className="bg-white text-[#4c1d95] !text-purple-900 border border-white hover:bg-slate-100 font-bold rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base shadow-lg relative z-10"
+                className="bg-white text-[#0284c7] !text-sky-900 border border-white hover:bg-slate-100 font-bold rounded-full px-6 md:px-8 h-10 md:h-12 text-sm md:text-base shadow-lg relative z-10"
               >
                 <Link href="/exams">
                   เริ่มทำข้อสอบเลย
@@ -76,10 +83,10 @@ export default function EducationPage() {
             </div>
           </div>
 
-          {/* Background decoration elements */}
-          <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-            <div className="absolute top-20 right-20 w-64 h-64 bg-purple-500 rounded-full blur-[100px]" />
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-[120px]" />
+          {/* Background glow effects */}
+          <div className="absolute top-0 right-0 w-1/2 h-full opacity-15 pointer-events-none z-0">
+            <div className="absolute top-20 right-20 w-64 h-64 bg-sky-300 rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-sky-400 rounded-full blur-[120px]" />
           </div>
         </section>
       </HeroFadeIn>
@@ -101,6 +108,9 @@ export default function EducationPage() {
       {/* Feature Highlights - Exam System */}
       <FeatureCardsAnimated />
 
+      {/* Ad Banner */}
+      <GoogleAd variant="banner" className="my-2" />
+
       {/* Exam CTA - Big Card */}
       <SectionFadeIn delay={0.1}>
         <Link href="/exams" className="group block relative no-underline">
@@ -111,7 +121,7 @@ export default function EducationPage() {
                 <div className="space-y-4">
                   <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">
                     วัดระดับความพร้อมก่อนลงสนามจริงด้วย<br />
-                    <span className="text-[#4c1d95] font-extrabold">Skill Score by Lawslane</span>
+                    <span className="text-[#0284c7] font-extrabold">Skill Score by Lawslane</span>
                   </h3>
                   <p className="text-lg text-slate-500 font-light leading-relaxed max-w-2xl mx-auto md:mx-0">
                     ระบบทดสอบวัดระดับความรู้กฎหมายที่ช่วยวิเคราะห์จุดแข็ง (Strengths) และจุดอ่อน (Gaps)
@@ -123,7 +133,7 @@ export default function EducationPage() {
                   <Button
                     asChild
                     size="lg"
-                    className="rounded-full bg-[#4c1d95] hover:bg-[#3b1775] text-white font-bold text-lg px-10 h-14 shadow-lg shadow-indigo-900/20"
+                    className="rounded-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-bold text-lg px-10 h-14 shadow-lg shadow-sky-900/20"
                   >
                     <span>เลือกแบบทดสอบ</span>
                   </Button>
@@ -134,12 +144,12 @@ export default function EducationPage() {
               <div className="flex-1 w-full max-w-lg lg:max-w-xl">
                 <div className="relative aspect-[4/3] w-full">
                   {/* Decorative elements */}
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-amber-100 rounded-full blur-2xl opacity-60" />
-                  <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-teal-100 rounded-full blur-2xl opacity-60" />
+                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-100 rounded-full blur-2xl opacity-60" />
+                  <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-sky-100 rounded-full blur-2xl opacity-60" />
 
                   <div className="relative h-full w-full rounded-3xl overflow-hidden group-hover:-translate-y-2 transition-transform duration-500 shadow-2xl">
                     <Image
-                      src="/images/lawslane-education-book.png"
+                      src="/images/lawslane-education-book-2.png"
                       alt="Skill Score Dashboard"
                       fill
                       className="object-cover"
@@ -164,7 +174,7 @@ export default function EducationPage() {
         <div className="space-y-6">
           <div className="flex justify-between items-center px-4 md:px-0">
             <div className="flex items-center gap-2">
-              <Target className="w-6 h-6 text-indigo-600" />
+              <Target className="w-6 h-6 text-sky-600" />
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900">ข้อสอบยอดนิยม</h2>
             </div>
             <Link href="/exams">
@@ -189,8 +199,10 @@ export default function EducationPage() {
         <RecommendedBooksSection />
       </SectionFadeIn>
 
-      {/* Articles from Main Site */}
-      <ArticlesSection />
+
+
+      
+      
     </div>
   );
 }

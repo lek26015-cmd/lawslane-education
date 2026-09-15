@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Book } from "@/lib/education-types";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,122 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BookOpen, Download, Crown, Lock } from 'lucide-react';
 import { Search, Filter, ArrowUpDown, Book as BookIcon } from "lucide-react";
+import { useEbookDownload } from '@/hooks/use-ebook-download';
+import { useToast } from '@/hooks/use-toast';
 import Link from "next/link";
 
 interface AnimatedBookGridProps {
     books: Book[];
+}
+
+function BookCoverImage({ src, alt }: { src: string; alt: string }) {
+    const [hasError, setHasError] = useState(false);
+
+    // Extract LAW code like "LAW4008" from alt text
+    const lawCode = alt.match(/LAW\d+/)?.[0] || '';
+
+    if (hasError || !src) {
+        return (
+            <div className="w-full h-full bg-gradient-to-br from-sky-800 to-sky-600 flex flex-col items-center justify-center p-4 text-white">
+                <BookOpen className="w-12 h-12 mb-3 opacity-80" />
+                {lawCode && (
+                    <span className="text-lg font-bold opacity-90">{lawCode}</span>
+                )}
+                <span className="text-xs opacity-60 mt-1 text-center line-clamp-2">
+                    {alt.slice(0, 40)}
+                </span>
+            </div>
+        );
+    }
+
+    return (
+        <img
+            src={src}
+            alt={alt}
+            className="object-cover w-full h-full"
+            onError={() => setHasError(true)}
+        />
+    );
+}
+
+/**
+ * ปุ่มดาวน์โหลด E-Book สำหรับ Premium+ 
+ * - Free: แสดง lock + ลิงก์ไป pricing
+ * - Premium: ดาวน์โหลดได้ 5 ชุด/วัน
+ */
+function EbookDownloadButton({ book }: { book: Book }) {
+    const { isPremium, canDownload, remaining, isLimitReached, recordDownload } = useEbookDownload();
+    const { toast } = useToast();
+
+    const handleDownload = () => {
+        if (!canDownload) return;
+
+        const allowed = recordDownload(book.id);
+        if (!allowed) {
+            toast({
+                title: 'ครบโควต้าดาวน์โหลดวันนี้แล้ว',
+                description: `Premium สามารถดาวน์โหลดได้ 5 เล่ม/วัน กลับมาใหม่พรุ่งนี้นะครับ`,
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        // ถ้ามี fileUrl ให้เปิดลิงก์ดาวน์โหลด
+        if (book.fileUrl) {
+            window.open(book.fileUrl, '_blank');
+        } else {
+            toast({
+                title: 'ไฟล์ยังไม่พร้อม',
+                description: 'E-Book เล่มนี้กำลังเตรียมไฟล์อยู่ โปรดลองอีกครั้งในภายหลัง',
+            });
+        }
+    };
+
+    // Free user — แสดง lock
+    if (!isPremium) {
+        return (
+            <Link href="/pricing" className="w-full">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-sky-200 text-sky-500 hover:bg-sky-50 hover:text-sky-700 text-xs h-8"
+                >
+                    <Lock className="w-3 h-3 mr-1.5" />
+                    Premium เท่านั้น
+                    <Crown className="w-3 h-3 ml-1.5 text-sky-400" />
+                </Button>
+            </Link>
+        );
+    }
+
+    // Premium แต่ครบโควต้า
+    if (isLimitReached) {
+        return (
+            <Button
+                variant="outline"
+                size="sm"
+                disabled
+                className="w-full text-xs h-8 border-slate-200 text-slate-400"
+            >
+                ครบโควต้าวันนี้ (5/5)
+            </Button>
+        );
+    }
+
+    // Premium — ดาวน์โหลดได้
+    return (
+        <Button
+            onClick={handleDownload}
+            size="sm"
+            className="w-full bg-sky-600 hover:bg-sky-700 text-white text-xs h-8"
+        >
+            <Download className="w-3 h-3 mr-1.5" />
+            ดาวน์โหลดฟรี
+            <span className="ml-1.5 opacity-70">({remaining}/5)</span>
+        </Button>
+    );
 }
 
 export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
@@ -157,13 +268,12 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                         >
                             <Card className="flex flex-col h-full hover:shadow-lg transition-shadow bg-white border-slate-200">
                                 <CardHeader className="p-0 overflow-hidden rounded-t-xl bg-slate-100 relative aspect-[2/3]">
-                                    <img
+                                    <BookCoverImage
                                         src={book.coverUrl}
                                         alt={book.title}
-                                        className="object-cover w-full h-full"
                                     />
                                     {book.isDigital && (
-                                        <Badge className="absolute top-2 right-2 bg-indigo-600 hover:bg-indigo-700">E-Book</Badge>
+                                        <Badge className="absolute top-2 right-2 bg-sky-600 hover:bg-sky-700">E-Book</Badge>
                                     )}
                                 </CardHeader>
                                 <CardContent className="flex-1 p-4">
@@ -182,15 +292,20 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                                         <span className="font-medium">ผู้แต่ง:</span> {book.author}
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-4 pt-0 flex items-center justify-between mt-auto">
-                                    <span className="text-lg font-bold text-indigo-700">
-                                        ฿{book.price.toLocaleString()}
-                                    </span>
-                                    <Link href={`/books/${book.id}`}>
-                                        <Button variant="outline" size="sm" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-                                            ดูรายละเอียด
-                                        </Button>
-                                    </Link>
+                                <CardFooter className="p-4 pt-0 mt-auto space-y-2">
+                                    <div className="flex items-center justify-between w-full">
+                                        <span className="text-lg font-bold text-sky-700">
+                                            ฿{book.price.toLocaleString()}
+                                        </span>
+                                        <Link href={`/books/${book.id}`}>
+                                            <Button variant="outline" size="sm" className="border-sky-200 text-sky-700 hover:bg-sky-50">
+                                                ดูรายละเอียด
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                    {book.isDigital && (
+                                        <EbookDownloadButton book={book} />
+                                    )}
                                 </CardFooter>
                             </Card>
                         </motion.div>
@@ -204,7 +319,7 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                     <Button
                         variant="link"
                         onClick={() => { setSearchQuery(''); setBookType('all'); }}
-                        className="mt-2 text-indigo-600"
+                        className="mt-2 text-sky-600"
                     >
                         ล้างตัวกรอง
                     </Button>

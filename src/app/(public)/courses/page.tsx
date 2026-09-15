@@ -1,24 +1,12 @@
-import { PageHeader } from "@/components/education/page-header";
-import { AnimatedCourseGrid } from "@/components/education/animated-course-grid";
-import { getCourses } from "@/lib/mock-store";
+import ComingSoonOverlay from '@/components/coming-soon-overlay';
+import type { Metadata } from 'next';
 
-export default async function CourseListingPage() {
-    // Use mock store directly for Server Component
-    const courses = getCourses();
+export const metadata: Metadata = {
+    title: 'คอร์สเรียนกฎหมาย — เรียนออนไลน์ เตรียมสอบทนาย',
+    description: 'คอร์สเรียนกฎหมายออนไลน์ เตรียมสอบทนายความ สอบเนติบัณฑิต สอนโดยอาจารย์ผู้เชี่ยวชาญ จาก Lawslane Wittaya',
+    alternates: { canonical: '/courses' },
+};
 
-    return (
-        <div className="space-y-8">
-            <PageHeader
-                title="คอร์สออนไลน์"
-                description="เรียนรู้กฎหมายได้ทุกที่ทุกเวลา กับคอร์สเรียนออนไลน์คุณภาพจากติวเตอร์ชั้นนำ"
-                icon="PlayCircle"
-                theme="purple"
-                backLink="/"
-                backLabel="กลับหน้าหลัก"
-                badge={`${courses.length} คอร์สเรียน`}
-            />
-
-            <AnimatedCourseGrid courses={courses} />
-        </div>
-    );
+export default function CoursesPage() {
+  return <ComingSoonOverlay title="คอร์สเรียนกฎหมาย" />;
 }

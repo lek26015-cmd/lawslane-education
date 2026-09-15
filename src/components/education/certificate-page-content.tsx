@@ -39,7 +39,7 @@ export function CertificatePageContent({ course }: Props) {
                         <Printer className="w-4 h-4 mr-2" />
                         Print
                     </Button>
-                    <Button onClick={handlePrint} className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button onClick={handlePrint} className="bg-sky-600 hover:bg-sky-700">
                         <Download className="w-4 h-4 mr-2" />
                         Download PDF
                     </Button>

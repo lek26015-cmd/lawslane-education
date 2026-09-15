@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
         <div className="space-y-8">
             <div>
                 <h1 className="text-2xl font-bold text-slate-900">ภาพรวมระบบ (Dashboard)</h1>
-                <p className="text-slate-500">ยินดีต้อนรับสู่ระบบจัดการ Lawslane Education</p>
+                <p className="text-slate-500">ยินดีต้อนรับสู่ระบบจัดการ Lawslane Wittaya</p>
             </div>
 
             {/* Stats Grid */}
