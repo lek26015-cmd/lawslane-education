@@ -4,6 +4,8 @@ import { getAllBooks } from "@/lib/education-data-admin";
 import { GoogleAd } from '@/components/google-ad';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'หนังสือเตรียมสอบทนาย — คู่มือสอบ สรุปย่อ รวมข้อสอบเก่า',
     description: 'หนังสือเตรียมสอบใบอนุญาตว่าความ คู่มือสอบเนติบัณฑิต สรุปย่อกฎหมาย และรวมข้อสอบเก่าพร้อมเฉลย คัดสรรจาก Lawslane Wittaya',

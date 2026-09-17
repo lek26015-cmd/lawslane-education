@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
+import { randomUUID } from 'crypto';
 
 export async function POST(request: NextRequest) {
     try {
@@ -26,8 +27,16 @@ export async function POST(request: NextRequest) {
         // Validate file type
         const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
         const allowedDocTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 
-        const allowedTypes = type === 'video' ? allowedVideoTypes : allowedDocTypes;
+        let allowedTypes: string[];
+        if (type === 'image') {
+            allowedTypes = allowedImageTypes;
+        } else if (type === 'document') {
+            allowedTypes = allowedDocTypes;
+        } else {
+            allowedTypes = allowedVideoTypes;
+        }
 
         if (!allowedTypes.includes(file.type)) {
             return NextResponse.json(
@@ -36,8 +45,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Size limits (100MB for video, 10MB for docs)
-        const maxSize = type === 'video' ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+        // Size limits
+        const maxSizes: Record<string, number> = {
+            video: 100 * 1024 * 1024,
+            document: 10 * 1024 * 1024,
+            image: 10 * 1024 * 1024,
+        };
+        const maxSize = maxSizes[type] || 10 * 1024 * 1024;
         if (file.size > maxSize) {
             return NextResponse.json(
                 { error: `File too large. Max size: ${maxSize / (1024 * 1024)}MB` },
@@ -49,11 +63,13 @@ export async function POST(request: NextRequest) {
         const timestamp = Date.now();
         const randomId = Math.random().toString(36).substring(2, 8);
         const extension = file.name.split('.').pop();
-        const filename = `${type}s/${timestamp}-${randomId}.${extension}`;
+        const folder = type === 'image' ? 'books/covers' : `${type}s`;
+        const filename = `${folder}/${timestamp}-${randomId}.${extension}`;
 
         // Upload to Firebase Storage
         const bucket = admin.storage().bucket();
         const fileBuffer = Buffer.from(await file.arrayBuffer());
+        const downloadToken = randomUUID();
 
         const fileRef = bucket.file(filename);
         await fileRef.save(fileBuffer, {
@@ -61,20 +77,20 @@ export async function POST(request: NextRequest) {
                 contentType: file.type,
                 metadata: {
                     originalName: file.name,
-                    uploadedAt: new Date().toISOString()
+                    uploadedAt: new Date().toISOString(),
+                    firebaseStorageDownloadTokens: downloadToken,
                 }
             }
         });
 
-        // Make the file publicly accessible
-        await fileRef.makePublic();
-
-        // Get public URL
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
+        // Construct Firebase download URL with token
+        const bucketName = bucket.name;
+        const encodedPath = encodeURIComponent(filename);
+        const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media&token=${downloadToken}`;
 
         return NextResponse.json({
             success: true,
-            url: publicUrl,
+            url: downloadUrl,
             filename: file.name,
             size: file.size,
             type: file.type

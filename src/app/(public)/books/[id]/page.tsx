@@ -8,6 +8,8 @@ import { notFound } from "next/navigation";
 import { BookPurchaseSection } from "@/components/education/book-purchase-section";
 import { getBookById, getAllBooks } from "@/lib/education-data-admin";
 
+export const dynamic = 'force-dynamic';
+
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const book = await getBookById(id);

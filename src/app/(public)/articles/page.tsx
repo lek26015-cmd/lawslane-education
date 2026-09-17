@@ -9,6 +9,8 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'บทความกฎหมาย — เทคนิคสอบ เกร็ดความรู้ ข่าวกฎหมาย',
     description: 'บทความเทคนิคการสอบทนายความ เกร็ดความรู้กฎหมาย และข่าวสารทางกฎหมาย อัปเดตล่าสุดจาก Lawslane Wittaya',
@@ -21,9 +23,8 @@ export default async function ArticlesPage() {
         const app = await initAdmin();
         if (app) {
             const db = admin.firestore();
+            // Fetch all articles — main lawslane.com articles may not have 'status' field
             const snap = await db.collection('articles')
-                .where('status', '==', 'published')
-                .orderBy('createdAt', 'desc')
                 .limit(50)
                 .get();
             articles = snap.docs.map(doc => {
@@ -32,15 +33,17 @@ export default async function ArticlesPage() {
                     id: doc.id,
                     slug: data.slug || doc.id,
                     title: data.title || '',
-                    description: data.description || '',
-                    category: data.category || 'ทั่วไป',
-                    coverImage: data.coverImage || '',
-                    author: data.author || 'Admin',
-                    publishedAt: data.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                    views: data.views || 0,
+                    description: data.description || data.excerpt || '',
+                    category: data.category || data.tags?.[0] || 'ทั่วไป',
+                    coverImage: data.coverImage || data.image || data.thumbnail || '',
+                    author: data.author || data.authorName || 'Lawslane',
+                    publishedAt: data.publishedAt?.toDate?.()?.toISOString() || data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                    views: data.views || data.viewCount || 0,
                     status: data.status || 'published',
                 };
             });
+            // Sort by publishedAt desc in JS
+            articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
         }
     } catch (error) {
         console.error('Error fetching articles:', error);

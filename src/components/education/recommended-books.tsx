@@ -6,8 +6,17 @@ import { BookCard } from './book-card';
 
 
 export async function RecommendedBooksSection() {
-    const allBooks = await getAllBooks();
-    const books = allBooks.slice(0, 8); // Show first 8 books
+    let books: any[] = [];
+    try {
+        const allBooks = await getAllBooks();
+        books = allBooks.slice(0, 8); // Show first 8 books
+    } catch (e) {
+        console.error('Error fetching books for recommended section:', e);
+    }
+
+    if (books.length === 0) {
+        return null;
+    }
 
     return (
         <section className="py-12 bg-slate-50 border-y border-slate-200">

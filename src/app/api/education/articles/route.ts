@@ -12,38 +12,38 @@ export async function GET(request: NextRequest) {
         const includeAll = searchParams.get('all') === 'true';
 
         const db = admin.firestore();
-        let query: admin.firestore.Query = db.collection('articles')
-            .orderBy('createdAt', 'desc')
-            .limit(200);
-
-        if (!includeAll) {
-            query = query.where('status', '==', 'published');
-        }
-
-        const snap = await query.get();
+        
+        // Fetch all articles — main lawslane.com articles may not have 'status' field
+        const snap = await db.collection('articles').limit(200).get();
         const articles = snap.docs.map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
                 slug: data.slug || doc.id,
                 title: data.title || '',
-                description: data.description || '',
-                content: data.content || '',
-                category: data.category || 'ทั่วไป',
-                coverImage: data.coverImage || '',
-                author: data.author || 'Admin',
-                publishedAt: data.publishedAt?.toDate?.()?.toISOString() || data.publishedAt || '',
+                description: data.description || data.excerpt || '',
+                content: data.content || data.body || '',
+                category: data.category || data.tags?.[0] || 'ทั่วไป',
+                coverImage: data.coverImage || data.image || data.thumbnail || '',
+                author: data.author || data.authorName || 'Lawslane',
+                publishedAt: data.publishedAt?.toDate?.()?.toISOString() || data.publishedAt || data.createdAt?.toDate?.()?.toISOString() || '',
                 createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
                 updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                views: data.views || 0,
-                status: data.status || 'draft',
+                views: data.views || data.viewCount || 0,
+                status: data.status || 'published',
             };
         });
 
+        // Sort by publishedAt desc in JS (avoids composite index requirement)
+        articles.sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime());
+
         return NextResponse.json(articles);
-    } catch (error) {
-        console.error('Error fetching articles:', error);
-        return NextResponse.json({ error: 'Failed to fetch articles' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Error fetching articles:', error?.message || error);
+        return NextResponse.json({ 
+            error: 'Failed to fetch articles', 
+            detail: error?.message || String(error)
+        }, { status: 500 });
     }
 }
 

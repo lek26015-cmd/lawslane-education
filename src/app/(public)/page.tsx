@@ -14,6 +14,8 @@ import { SampleExamsList } from '@/components/education/sample-exams-list';
 import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'หน้าแรก — คลังข้อสอบทนายความ หนังสือเตรียมสอบ',
   description: 'เตรียมสอบใบอนุญาตว่าความ สอบเนติบัณฑิต ด้วยข้อสอบกฎหมายจริงกว่า 2,000 ชุด หนังสือเตรียมสอบ และ AI ตรวจอัตนัย จาก Lawslane Wittaya',

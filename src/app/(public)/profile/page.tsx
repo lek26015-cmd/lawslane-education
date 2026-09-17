@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,9 @@ export default function ProfilePage() {
 
     const [displayName, setDisplayName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!isUserLoading && !user) {
@@ -29,6 +32,52 @@ export default function ProfilePage() {
             setDisplayName(user.displayName || "");
         }
     }, [user, isUserLoading, router]);
+
+    const handlePhotoUpload = async (file: File) => {
+        if (!file.type.startsWith('image/')) {
+            toast({ title: "กรุณาเลือกไฟล์ภาพ", variant: "destructive" });
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast({ title: "ไฟล์ใหญ่เกิน 5MB", variant: "destructive" });
+            return;
+        }
+
+        // Show preview immediately
+        const reader = new FileReader();
+        reader.onload = (e) => setPhotoPreview(e.target?.result as string);
+        reader.readAsDataURL(file);
+
+        setIsUploadingPhoto(true);
+        try {
+            const uploadData = new FormData();
+            uploadData.append('file', file);
+            uploadData.append('type', 'image');
+
+            const response = await fetch('/api/education/upload', {
+                method: 'POST',
+                body: uploadData,
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                // Update Firebase Auth profile
+                if (user) {
+                    await updateProfile(user, { photoURL: result.url });
+                }
+                toast({ title: "อัปเดตรูปโปรไฟล์สำเร็จ" });
+                router.refresh();
+            } else {
+                const err = await response.json();
+                throw new Error(err.error || 'Upload failed');
+            }
+        } catch (error: any) {
+            setPhotoPreview(null);
+            toast({ title: error.message || "อัปโหลดไม่สำเร็จ", variant: "destructive" });
+        } finally {
+            setIsUploadingPhoto(false);
+        }
+    };
 
     const handleSaveProfile = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,7 +93,6 @@ export default function ProfilePage() {
                 description: "ข้อมูลส่วนตัวของคุณได้รับการอัปเดตแล้ว",
                 duration: 3000,
             });
-            // Force reload to update header avatar (optional, but ensuring context updates)
             router.refresh();
         } catch (error) {
             console.error("Error updating profile:", error);
@@ -66,9 +114,10 @@ export default function ProfilePage() {
         );
     }
 
+    const currentPhotoUrl = photoPreview || user.photoURL || '';
+
     return (
         <div className="max-w-2xl mx-auto space-y-6">
-            {/* Beautiful Page Header */}
             <PageHeader
                 title="จัดการบัญชี"
                 description="จัดการข้อมูลส่วนตัวและการเข้าสู่ระบบของคุณ"
@@ -90,22 +139,49 @@ export default function ProfilePage() {
                     <div className="flex flex-col items-center sm:flex-row gap-6">
                         <div className="relative group">
                             <Avatar className="h-24 w-24 border-2 border-slate-100">
-                                <AvatarImage src={user.photoURL || ''} />
+                                <AvatarImage src={currentPhotoUrl} />
                                 <AvatarFallback className="text-2xl bg-slate-100 text-slate-400">
                                     {displayName?.charAt(0) || 'U'}
                                 </AvatarFallback>
                             </Avatar>
-                            {/* Placeholder for image upload feature */}
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-not-allowed">
-                                <Camera className="h-6 w-6" />
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handlePhotoUpload(file);
+                                }}
+                            />
+                            <div 
+                                className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                {isUploadingPhoto ? (
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                ) : (
+                                    <Camera className="h-6 w-6" />
+                                )}
                             </div>
                         </div>
-                        <div className="space-y-1 text-center sm:text-left">
+                        <div className="space-y-2 text-center sm:text-left">
                             <h3 className="font-medium text-slate-900">รูปโปรไฟล์</h3>
                             <p className="text-sm text-slate-500">
-                                รูปภาพจะแสดงในความคิดเห็นและหน้าโปรไฟล์ของคุณ
-                                <br />(ปัจจุบันรองรับการดึงรูปจาก Google เท่านั้น)
+                                คลิกที่รูปเพื่ออัปโหลดรูปโปรไฟล์ใหม่
                             </p>
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploadingPhoto}
+                            >
+                                {isUploadingPhoto ? (
+                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />กำลังอัปโหลด...</>
+                                ) : (
+                                    <><Camera className="w-4 h-4 mr-2" />เปลี่ยนรูป</>
+                                )}
+                            </Button>
                         </div>
                     </div>
 

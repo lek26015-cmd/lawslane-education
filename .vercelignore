@@ -1,0 +1,8 @@
+node_modules
+.next
+ข้อสอบเก่า
+lawslane-element
+.git
+*.pdf
+*.DS_Store
+public/exam-images
