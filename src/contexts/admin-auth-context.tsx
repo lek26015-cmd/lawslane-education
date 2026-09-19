@@ -11,29 +11,25 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
-const AUTH_KEY = 'education_admin_auth';
-
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Check if already logged in
-        const stored = localStorage.getItem(AUTH_KEY);
-        if (stored) {
+        // The session is an httpOnly cookie set by the server, so ask the
+        // server whether it's valid instead of reading anything client-side.
+        const checkSession = async () => {
             try {
-                const data = JSON.parse(stored);
-                // Check if token is still valid (within 24 hours)
-                if (data.timestamp && Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
-                    setIsAuthenticated(true);
-                } else {
-                    localStorage.removeItem(AUTH_KEY);
-                }
+                const response = await fetch('/api/admin/session');
+                const data = await response.json();
+                setIsAuthenticated(!!data.authenticated);
             } catch {
-                localStorage.removeItem(AUTH_KEY);
+                setIsAuthenticated(false);
+            } finally {
+                setIsLoading(false);
             }
-        }
-        setIsLoading(false);
+        };
+        checkSession();
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
@@ -47,10 +43,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
-                    localStorage.setItem(AUTH_KEY, JSON.stringify({
-                        email,
-                        timestamp: Date.now()
-                    }));
                     setIsAuthenticated(true);
                     return true;
                 }
@@ -62,8 +54,9 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = () => {
-        localStorage.removeItem(AUTH_KEY);
-        setIsAuthenticated(false);
+        fetch('/api/admin/logout', { method: 'POST' }).finally(() => {
+            setIsAuthenticated(false);
+        });
     };
 
     return (

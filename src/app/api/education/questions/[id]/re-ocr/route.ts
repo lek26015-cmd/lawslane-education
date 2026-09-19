@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
+import { requireAdmin } from '@/lib/admin-session';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY || '');
 
@@ -15,6 +16,10 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { id: questionId } = await params;
         const { examId, pageImageUrl } = await request.json();
 

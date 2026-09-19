@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
+import { requireAdmin } from '@/lib/admin-session';
 
 const EXAM_DATA = [
     // ===== กฎหมายอาญา 1 =====
@@ -278,6 +279,10 @@ const EXAM_DATA = [
 
 export async function POST(request: NextRequest) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 

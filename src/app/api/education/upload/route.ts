@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import { randomUUID } from 'crypto';
+import { requireUserOrAdmin } from '@/lib/user-auth';
 
 export async function POST(request: NextRequest) {
     try {
+        if (!(await requireUserOrAdmin(request))) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const admin = await initAdmin();
 
         if (!admin) {

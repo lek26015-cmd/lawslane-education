@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
+import { requireAdmin } from '@/lib/admin-session';
 
 // Helper: find article by slug or ID
 async function findArticle(db: admin.firestore.Firestore, slugOrId: string) {
@@ -64,6 +65,10 @@ export async function PUT(
     { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { slug } = await params;
         const body = await request.json();
         const app = await initAdmin();
@@ -108,6 +113,10 @@ export async function DELETE(
     { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { slug } = await params;
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });

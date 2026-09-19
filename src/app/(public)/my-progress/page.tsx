@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
     Brain, TrendingUp, TrendingDown, Sparkles, Target,
@@ -10,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useUser } from '@/firebase';
 
 interface WeaknessAnalysis {
     overallAssessment: string;
@@ -21,17 +23,29 @@ interface WeaknessAnalysis {
 }
 
 export default function MyProgressPage() {
+    const { user, isUserLoading } = useUser();
+    const router = useRouter();
     const [analysis, setAnalysis] = useState<WeaknessAnalysis | null>(null);
     const [totalAttempts, setTotalAttempts] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, isUserLoading, router]);
+
     const fetchAnalysis = async (showRefresh = false) => {
+        if (!user) return;
         if (showRefresh) setIsRefreshing(true);
         else setIsLoading(true);
 
         try {
-            const response = await fetch('/api/education/analyze-weakness');
+            const token = await user.getIdToken();
+            const response = await fetch('/api/education/analyze-weakness', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (response.ok) {
                 const data = await response.json();
                 setAnalysis(data.analysis);
@@ -46,8 +60,8 @@ export default function MyProgressPage() {
     };
 
     useEffect(() => {
-        fetchAnalysis();
-    }, []);
+        if (user) fetchAnalysis();
+    }, [user]);
 
     if (isLoading) {
         return (

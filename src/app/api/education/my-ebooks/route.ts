@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
+import { requireUser } from '@/lib/user-auth';
 
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-
+    const userId = await requireUser(request);
     if (!userId) {
-        return NextResponse.json({ error: 'User ID required' }, { status: 400 });
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     try {

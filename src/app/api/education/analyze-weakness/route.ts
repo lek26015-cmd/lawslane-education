@@ -2,24 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { analyzeWeaknesses } from '@/lib/ai-weakness-analyzer';
+import { requireUser } from '@/lib/user-auth';
 
-// GET /api/education/analyze-weakness - Analyze user's weaknesses from exam attempts
+// GET /api/education/analyze-weakness - Analyze the logged-in user's weaknesses from exam attempts
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
+        const userId = await requireUser(request);
+        if (!userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
         const db = admin.firestore();
-        let query: admin.firestore.Query = db.collection('examAttempts')
+        const query: admin.firestore.Query = db.collection('examAttempts')
+            .where('userId', '==', userId)
             .orderBy('completedAt', 'desc')
             .limit(50);
-
-        if (userId) {
-            query = query.where('userId', '==', userId);
-        }
 
         const snap = await query.get();
 

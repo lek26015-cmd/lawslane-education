@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
+import { requireAdmin } from '@/lib/admin-session';
 
 // GET /api/education/courses - Get all courses
 export async function GET(request: NextRequest) {
@@ -10,6 +11,10 @@ export async function GET(request: NextRequest) {
 
         const { searchParams } = new URL(request.url);
         const includeAll = searchParams.get('all') === 'true';
+
+        if (includeAll && !requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
         const db = admin.firestore();
         let query: admin.firestore.Query = db.collection('courses')
@@ -54,6 +59,10 @@ export async function GET(request: NextRequest) {
 // POST /api/education/courses - Create new course
 export async function POST(request: NextRequest) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 

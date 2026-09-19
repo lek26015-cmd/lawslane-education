@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { randomUUID } from 'crypto';
+import { requireAdmin } from '@/lib/admin-session';
 
 // Helper to get a download URL for Firebase Storage paths
 async function getDownloadCoverUrl(coverUrl: string): Promise<string> {
@@ -89,6 +90,10 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { id } = await params;
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
@@ -134,6 +139,10 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { id } = await params;
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });

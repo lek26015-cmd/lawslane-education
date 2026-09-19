@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
+import { requireAdmin } from '@/lib/admin-session';
 
 const SETTINGS_DOC = 'education_config';
 
@@ -27,6 +28,10 @@ export async function GET() {
 // PUT /api/education/settings
 export async function PUT(request: NextRequest) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 

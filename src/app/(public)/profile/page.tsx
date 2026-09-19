@@ -54,8 +54,10 @@ export default function ProfilePage() {
             uploadData.append('file', file);
             uploadData.append('type', 'image');
 
+            const token = await user?.getIdToken();
             const response = await fetch('/api/education/upload', {
                 method: 'POST',
+                headers: token ? { 'Authorization': `Bearer ${token}` } : undefined,
                 body: uploadData,
             });
 

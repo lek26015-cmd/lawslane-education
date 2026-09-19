@@ -42,36 +42,56 @@ export default function FinancePage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [orders, setOrders] = useState<OrderData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [approvingId, setApprovingId] = useState<string | null>(null);
+
+    const fetchOrders = async () => {
+        try {
+            const response = await fetch('/api/education/orders?all=true');
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    setOrders(data.map((o: any) => ({
+                        id: o.id || '',
+                        customer: o.userName || o.customer || 'ไม่ระบุ',
+                        email: o.userEmail || o.email || '',
+                        items: o.items?.map((i: any) => i.title || i.name || '') || [],
+                        type: o.type || o.items?.[0]?.type || 'OTHER',
+                        amount: o.totalAmount || o.amount || 0,
+                        status: o.status || 'PENDING',
+                        date: o.createdAt || '',
+                    })));
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await fetch('/api/education/orders?all=true');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (Array.isArray(data)) {
-                        setOrders(data.map((o: any) => ({
-                            id: o.id || '',
-                            customer: o.userName || o.customer || 'ไม่ระบุ',
-                            email: o.userEmail || o.email || '',
-                            items: o.items?.map((i: any) => i.title || i.name || '') || [],
-                            type: o.type || o.items?.[0]?.type || 'OTHER',
-                            amount: o.totalAmount || o.amount || 0,
-                            status: o.status || 'pending',
-                            date: o.createdAt || '',
-                        })));
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
         fetchOrders();
     }, []);
 
-    const completedOrders = orders.filter(o => o.status === 'completed' || o.status === 'paid');
+    const approveOrder = async (orderId: string) => {
+        setApprovingId(orderId);
+        try {
+            const response = await fetch(`/api/education/orders/${orderId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'PAID' }),
+            });
+            if (response.ok) {
+                await fetchOrders();
+            }
+        } catch (error) {
+            console.error('Error approving order:', error);
+        } finally {
+            setApprovingId(null);
+        }
+    };
+
+    const completedOrders = orders.filter(o => o.status === 'PAID' || o.status === 'COMPLETED');
     const totalRevenue = completedOrders.reduce((sum, o) => sum + o.amount, 0);
     const totalOrders = orders.length;
 
@@ -91,11 +111,13 @@ export default function FinancePage() {
 
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case 'completed': case 'paid':
+            case 'COMPLETED': case 'PAID':
                 return <Badge className="bg-emerald-100 text-emerald-700 border-0">สำเร็จ</Badge>;
-            case 'pending':
+            case 'PENDING':
                 return <Badge className="bg-amber-100 text-amber-700 border-0">รอดำเนินการ</Badge>;
-            case 'failed': case 'cancelled':
+            case 'SHIPPING':
+                return <Badge className="bg-sky-100 text-sky-700 border-0">กำลังจัดส่ง</Badge>;
+            case 'REJECTED': case 'FAILED': case 'CANCELLED':
                 return <Badge className="bg-red-100 text-red-700 border-0">ล้มเหลว</Badge>;
             default:
                 return <Badge variant="outline">{status}</Badge>;
@@ -228,6 +250,7 @@ export default function FinancePage() {
                                     <TableHead>จำนวนเงิน</TableHead>
                                     <TableHead>สถานะ</TableHead>
                                     <TableHead>วันที่</TableHead>
+                                    <TableHead className="text-right">ดำเนินการ</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -251,6 +274,22 @@ export default function FinancePage() {
                                         <TableCell>{getStatusBadge(order.status)}</TableCell>
                                         <TableCell className="text-sm text-slate-500">
                                             {order.date ? new Date(order.date).toLocaleDateString('th-TH') : '-'}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            {order.status === 'PENDING' && (
+                                                <Button
+                                                    size="sm"
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                                                    disabled={approvingId === order.id}
+                                                    onClick={() => approveOrder(order.id)}
+                                                >
+                                                    {approvingId === order.id ? (
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                    ) : (
+                                                        'อนุมัติ'
+                                                    )}
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}

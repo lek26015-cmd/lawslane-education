@@ -3,11 +3,16 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
+import { requireAdmin } from '@/lib/admin-session';
 
 const OCR_JSON_PATH = path.join(process.cwd(), 'ข้อสอบเก่า', 'ocr_cleaned.json');
 
 export async function POST(request: NextRequest) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 

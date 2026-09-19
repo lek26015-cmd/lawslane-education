@@ -4,6 +4,8 @@ import * as admin from 'firebase-admin';
 import { stripAnswerFromQuestion, formatExamText } from '@/lib/exam-utils';
 import { anonymizeExamTexts } from '@/lib/name-anonymizer';
 
+// Public "ดูเฉลย" feature — students can view model answers without logging in
+// (linked directly from /exams listing), so this intentionally has no auth guard.
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }

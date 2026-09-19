@@ -3,6 +3,7 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
+import { requireAdmin } from '@/lib/admin-session';
 
 const IMAGE_RESULTS_PATH = path.join(process.cwd(), 'ข้อสอบเก่า', 'image_extraction_results.json');
 
@@ -21,6 +22,10 @@ interface ImageResult {
  */
 export async function POST(request: NextRequest) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const app = await initAdmin();
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 

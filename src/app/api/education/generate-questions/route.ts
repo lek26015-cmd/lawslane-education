@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateQuestions } from '@/lib/ai-question-generator';
+import { requireAdmin } from '@/lib/admin-session';
 
 // POST /api/education/generate-questions - Generate questions with AI
 export async function POST(request: NextRequest) {
     try {
+        if (!requireAdmin(request)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const body = await request.json();
         const { topic, category, difficulty, questionType, count } = body;
 

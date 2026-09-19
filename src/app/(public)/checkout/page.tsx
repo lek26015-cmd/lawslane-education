@@ -122,25 +122,29 @@ function CheckoutContent() {
             return;
         }
 
+        if (!user) {
+            toast({ variant: 'destructive', title: 'กรุณาเข้าสู่ระบบก่อนทำรายการ' });
+            router.push('/login');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
-            // Create Order Payload
-            const userId = user?.uid || 'user-123';
+            // Create Order Payload — price/status are resolved server-side, not trusted from here
             const orderData = {
-                userId,
                 items: effectiveItems,
-                totalAmount: totalPrice,
                 shippingInfo: requiresShipping ? shippingInfo : null,
                 paymentMethod: activeTab,
                 slipUrl: 'https://placehold.co/400x600/png?text=Slip', // Mock slip URL since we don't have real upload yet
-                status: 'PAID'
             };
 
+            const token = await user.getIdToken();
             const response = await fetch('/api/education/orders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(orderData),
             });
@@ -409,49 +413,6 @@ function CheckoutContent() {
                                 ) : (
                                     'ยืนยันการสั่งซื้อ'
                                 )}
-                            </Button>
-
-                            {/* DEMO BUTTON: REMOVE IN PRODUCTION */}
-                            <Button
-                                onClick={async () => {
-                                    if (confirm("ใช้โหมดทดสอบ (Test Mode) เพื่อข้ามการชำระเงิน?")) {
-                                        setIsLoading(true);
-                                        try {
-                                            const userId = user?.uid || 'user-123';
-                                            const orderData = {
-                                                userId,
-                                                items: effectiveItems,
-                                                totalAmount: totalPrice,
-                                                shippingInfo: requiresShipping ? { name: 'Test User', phone: '0000000000', address: 'Test Address' } : null,
-                                                paymentMethod: 'TEST_MODE',
-                                                slipUrl: 'https://placehold.co/400x600/png?text=Test+Slip',
-                                                status: 'PAID',
-                                                isTestMode: true
-                                            };
-
-                                            const response = await fetch('/api/education/orders', {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify(orderData),
-                                            });
-
-                                            if (!response.ok) throw new Error('Test order failed');
-
-                                            setIsLoading(false);
-                                            setIsSuccess(true);
-                                            if (!isDirectCheckout) clearCart();
-                                            window.scrollTo(0, 0);
-                                        } catch (e) {
-                                            console.error(e);
-                                            setIsLoading(false);
-                                            toast({ title: "Test Failed", variant: "destructive" });
-                                        }
-                                    }
-                                }}
-                                variant="ghost"
-                                className="w-full text-xs text-slate-400 hover:text-amber-600 h-8"
-                            >
-                                [DEV] Bypass Payment / Test Mode
                             </Button>
                         </CardFooter>
                     </Card>

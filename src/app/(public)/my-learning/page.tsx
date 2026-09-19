@@ -47,9 +47,6 @@ export default function MyLearningPage() {
 
 
             try {
-                // Use actual UID or fallback for dev/demo to match Checkout
-                const userId = auth.currentUser?.uid || 'user-123';
-
                 // Fetch Exam History from API (bypassing Client SDK rules)
                 const token = await auth.currentUser.getIdToken();
                 const response = await fetch('/api/education/student-history', {
@@ -59,7 +56,11 @@ export default function MyLearningPage() {
                 });
 
                 // Fetch My E-Books/Courses
-                const ebooksResponse = await fetch(`/api/education/my-ebooks?userId=${userId}`);
+                const ebooksResponse = await fetch('/api/education/my-ebooks', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 if (ebooksResponse.ok) {
                     const ebooksData = await ebooksResponse.json();
                     setEbooks(ebooksData);
