@@ -79,6 +79,33 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    // หลังยกส่วนที่ซ้ำไป admin.lawslane.com (แผนรวมหลังบ้าน Module 2)
+    // บทความ/หนังสือ/ผู้ใช้/แดชบอร์ด เคยมีสองที่เขียนลง collection เดียวกัน
+    return [
+      {
+        source: '/education-admin/articles/:path*',
+        destination: 'https://admin.lawslane.com/content',
+        permanent: false,
+      },
+      {
+        source: '/education-admin/books/:path*',
+        destination: 'https://admin.lawslane.com/books',
+        permanent: false,
+      },
+      {
+        source: '/education-admin/users/:path*',
+        destination: 'https://admin.lawslane.com/customers',
+        permanent: false,
+      },
+      {
+        // แดชบอร์ดเดิมถูกลบ — ส่งไปหน้าแรกที่ยังเหลืออยู่ในรีโปนี้
+        source: '/education-admin',
+        destination: '/education-admin/courses',
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

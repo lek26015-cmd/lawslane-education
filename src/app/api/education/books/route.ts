@@ -3,18 +3,14 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { randomUUID } from 'crypto';
 
-// Firebase Storage billing is disabled, so all storage URLs return 403.
-// Fall back to local placeholder for any Firebase Storage URLs.
+// ใช้เมื่อหนังสือยังไม่มีปกเท่านั้น
+//
+// เดิมที่นี่มี sanitizeCoverUrl() ที่แทน URL ของ Firebase Storage "ทุกอัน" ด้วย
+// placeholder เพราะตอนนั้น Storage ปิด billing อยู่แล้วคืน 403 — ตอนนี้เปิดแล้ว
+// (ตรวจเมื่อ 2026-09-22: storage.googleapis.com/.../books/covers/law1003.jpg
+// คืน HTTP 200) ฟังก์ชันนั้นจึงกลายเป็นตัวที่ทำให้ปกหายเสียเอง: 16 จาก 20 เล่ม
+// แรกใน production ใช้ URL ของ Firebase Storage ทั้งหมด
 const FALLBACK_COVER = '/images/lawslane-cover-book.png';
-
-function sanitizeCoverUrl(coverUrl: string): string {
-    if (!coverUrl) return FALLBACK_COVER;
-    // If it's a Firebase Storage URL, it will 403 — use fallback
-    if (coverUrl.includes('firebasestorage') || coverUrl.includes('storage.googleapis.com')) {
-        return FALLBACK_COVER;
-    }
-    return coverUrl;
-}
 
 
 export async function GET(request: NextRequest) {
@@ -37,7 +33,7 @@ export async function GET(request: NextRequest) {
                 description: data.description || '',
                 price: data.price || 0,
                 originalPrice: data.originalPrice,
-                coverUrl: sanitizeCoverUrl(rawCoverUrl),
+                coverUrl: rawCoverUrl || FALLBACK_COVER,
 
                 author: data.author || 'Lawslane',
                 publisher: data.publisher || '',

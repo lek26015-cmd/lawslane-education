@@ -4,10 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-    LayoutDashboard,
-    FileText,
-    BookOpen,
-    Users,
     Settings,
     LogOut,
     Menu,
@@ -63,14 +59,10 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     }
 
     const NAV_ITEMS = [
-        { href: '/education-admin', label: 'ภาพรวม (Dashboard)', icon: LayoutDashboard },
-        { href: '/education-admin/articles', label: 'จัดการบทความ', icon: FileText },
         { href: '/education-admin/courses', label: 'จัดการคอร์สเรียน', icon: GraduationCap },
-        { href: '/education-admin/books', label: 'จัดการหนังสือ', icon: BookOpen },
         { href: '/education-admin/exams', label: 'จัดการข้อสอบ', icon: ClipboardList },
         { href: '/education-admin/finance', label: 'การเงิน', icon: CreditCard },
         { href: '/education-admin/shipping', label: 'การจัดส่ง', icon: Truck },
-        { href: '/education-admin/users', label: 'ผู้ใช้งาน', icon: Users },
         { href: '/education-admin/settings', label: 'ตั้งค่าระบบ', icon: Settings },
     ];
 
