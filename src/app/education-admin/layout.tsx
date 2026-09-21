@@ -12,7 +12,6 @@ import {
     GraduationCap,
     Globe,
     ClipboardList,
-    CreditCard,
     Loader2,
     Truck
 } from 'lucide-react';
@@ -61,8 +60,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     const NAV_ITEMS = [
         { href: '/education-admin/courses', label: 'จัดการคอร์สเรียน', icon: GraduationCap },
         { href: '/education-admin/exams', label: 'จัดการข้อสอบ', icon: ClipboardList },
-        { href: '/education-admin/finance', label: 'การเงิน', icon: CreditCard },
-        { href: '/education-admin/shipping', label: 'การจัดส่ง', icon: Truck },
         { href: '/education-admin/settings', label: 'ตั้งค่าระบบ', icon: Settings },
     ];
 

@@ -99,6 +99,18 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        // การเงิน + การจัดส่ง รวมเป็นหน้าเดียวที่ admin/orders (Module 3)
+        // ทั้งคู่ทำงานกับ collection `orders` เดียวกับที่ admin อ่านอยู่แล้ว
+        source: '/education-admin/finance/:path*',
+        destination: 'https://admin.lawslane.com/orders',
+        permanent: false,
+      },
+      {
+        source: '/education-admin/shipping/:path*',
+        destination: 'https://admin.lawslane.com/orders',
+        permanent: false,
+      },
+      {
         // แดชบอร์ดเดิมถูกลบ — ส่งไปหน้าแรกที่ยังเหลืออยู่ในรีโปนี้
         source: '/education-admin',
         destination: '/education-admin/courses',
