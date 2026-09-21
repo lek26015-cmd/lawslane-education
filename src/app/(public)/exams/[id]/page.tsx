@@ -5,26 +5,40 @@ import { Clock, HelpCircle, CheckCircle, AlertTriangle, PlayCircle, ChevronLeft 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StartExamButton } from "@/components/education/start-exam-button";
+import { initAdmin } from "@/lib/firebase-admin";
+import * as admin from "firebase-admin";
 
-const MOCK_EXAM: Exam = {
-    id: "exam-1",
-    title: "จำลองสอบใบอนุญาตว่าความ (ภาคทฤษฎี) ชุดที่ 1",
-    description: "ข้อสอบเสมือนจริง 100 ข้อ ครอบคลุมเนื้อหากฎหมายวิธีพิจารณาความแพ่ง กฎหมายวิธีพิจารณาความอาญา พระราชบัญญัติทนายความ และมรรยาททนายความ",
-    price: 0,
-    durationMinutes: 240,
-    passingScore: 50,
-    totalQuestions: 100,
-    category: 'license',
-    difficulty: 'medium',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-};
+// ดึงข้อสอบจริงจาก Firestore collection `examSets`
+// (mapping ชุดเดียวกับ /api/education/exams/[id] เพื่อให้หน้ารายละเอียด
+//  กับหน้าทำข้อสอบแสดงข้อมูลตรงกัน)
+async function getExam(id: string): Promise<Exam | null> {
+    const app = await initAdmin();
+    if (!app) return null;
+
+    const doc = await admin.firestore().collection('examSets').doc(id).get();
+    if (!doc.exists) return null;
+
+    const data = doc.data()!;
+    return {
+        id: doc.id,
+        title: data.title || '',
+        description: data.description || data.instructions || '',
+        price: data.price ?? 0,
+        durationMinutes: data.timeLimitMinutes || 180,
+        passingScore: data.passingScore ?? 50,
+        totalQuestions: data.totalQuestions || data.essayCount || 0,
+        category: data.subjectCode || data.category || 'other',
+        difficulty: data.difficulty || 'medium',
+        createdAt: data.createdAt?.toDate?.() || new Date(),
+        updatedAt: data.updatedAt?.toDate?.() || new Date(),
+    } as Exam;
+}
 
 export default async function ExamDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
-    // In real app, fetch exam by ID
-    const exam = MOCK_EXAM;
+    const exam = await getExam(id);
+    if (!exam) notFound();
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">

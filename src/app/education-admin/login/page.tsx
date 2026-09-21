@@ -127,13 +127,6 @@ export default function AdminLoginPage() {
                             )}
                         </Button>
                     </form>
-
-                    <div className="mt-6 pt-6 border-t text-center">
-                        <p className="text-sm text-slate-500">
-                            Development Credentials:<br />
-                            <code className="bg-slate-100 px-2 py-1 rounded text-xs">admin@lawlanes.com / admin123</code>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>

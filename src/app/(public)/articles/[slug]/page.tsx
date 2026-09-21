@@ -7,7 +7,7 @@ import { ChevronLeft, Calendar, Facebook, Twitter, Link as LinkIcon } from 'luci
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export default async function ArticleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;

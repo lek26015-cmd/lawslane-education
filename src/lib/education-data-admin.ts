@@ -1,96 +1,7 @@
 'use server';
 
 import { initAdmin } from './firebase-admin';
-import { Book, Exam, Order, Course } from './education-types';
-
-// Mock Courses
-const MOCK_COURSES: Course[] = [
-    {
-        id: "course-1",
-        title: "ติวสรุปกฎหมายแพ่งและพาณิชย์ (ฉบับรวบรัด)",
-        description: "สรุปเนื้อหากฎหมายแพ่งและพาณิชย์ครบทุกบรรพ เน้นจุดที่ออกข้อสอบบ่อย พร้อมเทคนิคการจดจำ",
-        longDescription: `
-            <p>คอร์สนี้เหมาะสำหรับผู้ที่ต้องการทบทวนเนื้อหากฎหมายแพ่งและพาณิชย์อย่างรวดเร็วและกระชับ...</p>
-            <h3>สิ่งที่คุณจะได้เรียนรู้</h3>
-            <ul>
-                <li>สรุปหลักกฎหมายนิติกรรมสัญญา</li>
-                <li>เจาะลึกเรื่องหนี้และละเมิด</li>
-                <li>ครอบครัวและมรดกที่ควรรู้</li>
-            </ul>
-        `,
-        price: 1500,
-        coverUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=500&fit=crop",
-        instructor: {
-            name: "อ.ชัยชนะ กฎหมาย",
-            avatarUrl: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
-            bio: "ติวเตอร์กฎหมายประสบการณ์กว่า 10 ปี"
-        },
-        category: "Civil Law",
-        level: "Intermediate",
-        totalDurationMinutes: 480,
-        totalLessons: 12,
-        rating: 4.8,
-        reviewCount: 120,
-        modules: [
-            {
-                id: "m1",
-                title: "บทนำและนิติกรรม",
-                items: [],
-                lessons: [
-                    { id: "l1", type: 'lesson' as const, title: "ภาพรวมกฎหมายแพ่ง", durationMinutes: 45, isFreePreview: true, videoUrl: "https://example.com/video1", order: 0 },
-                    { id: "l2", type: 'lesson' as const, title: "หลักนิติกรรมสัญญา", durationMinutes: 60, isFreePreview: false, order: 1 }
-                ]
-            }
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "course-2",
-        title: "คอร์สตะลุยโจทย์เนติบัณฑิต ภาค 1",
-        description: "ฝึกทำข้อสอบเก่าเนติบัณฑิต ภาค 1 ย้อนหลัง 10 ปี พร้อมธงคำตอบและวิเคราะห์แนวข้อสอบ",
-        price: 2500,
-        coverUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=500&fit=crop",
-        instructor: {
-            name: "ทีมติวเตอร์ Lawlanes",
-            avatarUrl: "",
-            bio: "ทีมอาจารย์ผู้เชี่ยวชาญจาก Lawlanes Education"
-        },
-        category: "Exam Prep",
-        level: "Advanced",
-        totalDurationMinutes: 1200,
-        totalLessons: 20,
-        rating: 4.9,
-        reviewCount: 85,
-        modules: [
-            {
-                id: "m2-1",
-                title: "วิเคราะห์ข้อสอบเนติฯ ภาค 1 (สมัยที่ 70-72)",
-                items: [],
-                lessons: [
-                    { id: "l2-1", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 70)", durationMinutes: 120, isFreePreview: true, order: 0 },
-                    { id: "l2-2", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 70)", durationMinutes: 120, isFreePreview: false, order: 1 },
-                    { id: "l2-3", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false, order: 2 },
-                    { id: "l2-4", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 71)", durationMinutes: 120, isFreePreview: false, order: 3 }
-                ]
-            },
-            {
-                id: "m2-2",
-                title: "วิเคราะห์ข้อสอบเนติฯ ภาค 1 (สมัยที่ 73-75)",
-                items: [],
-                lessons: [
-                    { id: "l2-5", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false, order: 0 },
-                    { id: "l2-6", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 73)", durationMinutes: 120, isFreePreview: false, order: 1 },
-                    { id: "l2-7", type: 'lesson' as const, title: "ข้อสอบกฎหมายอาญา (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false, order: 2 },
-                    { id: "l2-8", type: 'lesson' as const, title: "ข้อสอบกฎหมายแพ่ง (สมัยที่ 74)", durationMinutes: 120, isFreePreview: false, order: 3 }
-                ]
-            }
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    }
-];
-
+import { Book } from './education-types';
 
 export async function getBookById(id: string): Promise<Book | null> {
     // First try to get from Firestore
@@ -113,10 +24,14 @@ export async function getBookById(id: string): Promise<Book | null> {
     return null;
 }
 
-export async function getAllBooks(): Promise<Book[]> {
+export async function getAllBooks(limitCount?: number): Promise<Book[]> {
     const admin = await initAdmin();
     if (admin) {
-        const snapshot = await admin.firestore().collection('books').get();
+        let query: FirebaseFirestore.Query = admin.firestore().collection('books');
+        if (limitCount) {
+            query = query.limit(limitCount);
+        }
+        const snapshot = await query.get();
         if (snapshot.docs.length > 0) {
             return snapshot.docs.map(doc => {
                 const data = doc.data();
@@ -133,90 +48,4 @@ export async function getAllBooks(): Promise<Book[]> {
 
     // No mock fallback
     return [];
-}
-
-export async function getAllCourses(): Promise<Course[]> {
-    const admin = await initAdmin();
-    // In real implementation, fetch from Firestore 'courses' collection
-    return MOCK_COURSES;
-}
-
-export async function getCourseById(id: string): Promise<Course | null> {
-    // In real implementation, fetch from Firestore
-    return MOCK_COURSES.find(c => c.id === id) || null;
-}
-
-// Mock Orders
-export async function getUserOrders(userId: string): Promise<Order[]> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    return [
-        {
-            id: 'ORD-202601001',
-            userId: userId,
-            items: [
-                {
-                    id: '1',
-                    title: 'ชุดเตรียมสอบตั๋วทนาย ภาคทฤษฎี (ฉบับสมบูรณ์)',
-                    type: 'BOOK',
-                    price: 450,
-                    quantity: 1,
-                    coverUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop'
-                }
-            ],
-            totalAmount: 450,
-            status: 'SHIPPING',
-            shippingInfo: {
-                name: 'สมชาย รักเรียน',
-                phone: '081-234-5678',
-                address: '123 ถ.สุขุมวิท แขวงคลองเตย เขตคลองเตย กทม. 10110',
-                trackingNumber: 'TH0123456789A',
-                carrier: 'Kerry Express'
-            },
-            createdAt: new Date('2026-01-08T10:30:00'),
-            updatedAt: new Date('2026-01-09T14:20:00')
-        },
-        {
-            id: 'ORD-202601002',
-            userId: userId,
-            items: [
-                {
-                    id: '3',
-                    title: 'คู่มือสอบอัยการผู้ช่วย สนามเล็ก',
-                    type: 'BOOK',
-                    price: 650,
-                    quantity: 1,
-                    coverUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop'
-                },
-                {
-                    id: 'mock-exam-1',
-                    title: 'ข้อสอบจำลอง O-NET กฎหมาย',
-                    type: 'EXAM',
-                    price: 199,
-                    quantity: 1
-                },
-                {
-                    id: 'course-2',
-                    title: 'คอร์สตะลุยโจทย์เนติบัณฑิต ภาค 1',
-                    type: 'COURSE',
-                    price: 2500,
-                    quantity: 1,
-                    coverUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=500&fit=crop'
-                },
-                {
-                    id: 'course-1',
-                    title: 'ติวสรุปกฎหมายแพ่งและพาณิชย์ (ฉบับรวบรัด)',
-                    type: 'COURSE',
-                    price: 1500,
-                    quantity: 1,
-                    coverUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=500&fit=crop"
-                }
-            ],
-            totalAmount: 849,
-            status: 'PENDING',
-            createdAt: new Date('2026-01-10T09:15:00'),
-            updatedAt: new Date('2026-01-10T09:15:00')
-        }
-    ];
 }

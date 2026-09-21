@@ -3,9 +3,19 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { requireAdmin } from '@/lib/admin-session';
 
-// Helper: find question across all examSets sub-collections
-async function findQuestion(db: admin.firestore.Firestore, questionId: string) {
-    // Search in all examSets for this question ID
+// Helper: find question, given its parent exam id directly when known
+// (avoids scanning every examSets doc — see LAWSLANE-PLAN-01 2.1).
+async function findQuestion(db: admin.firestore.Firestore, questionId: string, examId?: string | null) {
+    if (examId) {
+        const qRef = db.collection('examSets').doc(examId).collection('questions').doc(questionId);
+        const qSnap = await qRef.get();
+        if (qSnap.exists) {
+            return { ref: qRef, data: { id: qSnap.id, ...qSnap.data() }, examId };
+        }
+        // Fall through to the full scan in case the given examId was stale/wrong.
+    }
+
+    // Fallback: search every examSets sub-collection for this question ID.
     const examSetsSnap = await db.collection('examSets').get();
     for (const examDoc of examSetsSnap.docs) {
         const qRef = examDoc.ref.collection('questions').doc(questionId);
@@ -28,7 +38,8 @@ export async function GET(
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
         const db = admin.firestore();
-        const result = await findQuestion(db, id);
+        const examId = request.nextUrl.searchParams.get('examId');
+        const result = await findQuestion(db, id, examId);
 
         if (!result) {
             return NextResponse.json({ error: 'Question not found' }, { status: 404 });
@@ -57,7 +68,7 @@ export async function PUT(
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
         const db = admin.firestore();
-        const result = await findQuestion(db, id);
+        const result = await findQuestion(db, id, body.examId);
 
         if (!result) {
             return NextResponse.json({ error: 'Question not found' }, { status: 404 });
@@ -101,7 +112,8 @@ export async function DELETE(
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
         const db = admin.firestore();
-        const result = await findQuestion(db, id);
+        const examId = request.nextUrl.searchParams.get('examId');
+        const result = await findQuestion(db, id, examId);
 
         if (!result) {
             return NextResponse.json({ error: 'Question not found' }, { status: 404 });

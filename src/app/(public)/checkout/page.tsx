@@ -131,15 +131,37 @@ function CheckoutContent() {
         setIsLoading(true);
 
         try {
+            const token = await user.getIdToken();
+
+            // อัปโหลดสลิปจริงก่อนสร้างออเดอร์
+            // เดิมส่ง placehold.co URL ตายตัวไปเก็บใน Firestore ทุกออเดอร์
+            // → แอดมินไม่มีสลิปจริงให้ตรวจสอบตอนอนุมัติการชำระเงิน
+            // (ไปที่ Cloudflare Images เพราะ Firebase Storage billing ปิดอยู่ — ดู
+            //  api/education/upload/route.ts)
+            const slipForm = new FormData();
+            slipForm.append('file', slipFile);
+            slipForm.append('type', 'image');
+
+            const slipRes = await fetch('/api/education/upload', {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: slipForm,
+            });
+
+            if (!slipRes.ok) {
+                const detail = await slipRes.json().catch(() => ({}));
+                throw new Error(detail.error || 'อัปโหลดสลิปไม่สำเร็จ');
+            }
+
+            const { url: slipUrl } = await slipRes.json();
+
             // Create Order Payload — price/status are resolved server-side, not trusted from here
             const orderData = {
                 items: effectiveItems,
                 shippingInfo: requiresShipping ? shippingInfo : null,
                 paymentMethod: activeTab,
-                slipUrl: 'https://placehold.co/400x600/png?text=Slip', // Mock slip URL since we don't have real upload yet
+                slipUrl,
             };
-
-            const token = await user.getIdToken();
             const response = await fetch('/api/education/orders', {
                 method: 'POST',
                 headers: {
@@ -167,7 +189,9 @@ function CheckoutContent() {
             toast({
                 variant: 'destructive',
                 title: 'เกิดข้อผิดพลาด',
-                description: 'ไม่สามารถทำรายการได้ กรุณาลองใหม่อีกครั้ง'
+                description: error instanceof Error && error.message
+                    ? error.message
+                    : 'ไม่สามารถทำรายการได้ กรุณาลองใหม่อีกครั้ง'
             });
         }
     };

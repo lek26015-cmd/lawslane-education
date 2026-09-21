@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { BookPurchaseSection } from "@/components/education/book-purchase-section";
 import { getBookById, getAllBooks } from "@/lib/education-data-admin";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -19,7 +19,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
     }
 
     // Get related books (excluding current book)
-    const allBooks = await getAllBooks();
+    const allBooks = await getAllBooks(5);
     const relatedBooks = allBooks.filter(b => b.id !== id).slice(0, 4);
 
     return (

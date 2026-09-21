@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
-import fs from 'fs';
-import path from 'path';
+import { unstable_cache } from 'next/cache';
 
-// In-memory cache for all exams (lightweight metadata only)
-let cachedExams: any[] | null = null;
-let cacheTimestamp = 0;
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
-const CACHE_FILE = path.join(process.cwd(), 'src', 'lib', 'exams-meta-cache.json');
+const CACHE_TTL_SECONDS = 30 * 60; // 30 minutes
+
+// Last known-good result, kept in memory only, purely as a fallback if a
+// Firestore fetch throws (e.g. transient outage) — never touches disk. The
+// previous implementation also cached to a file under src/lib/, which is
+// read-only on Vercel (writes silently failed) and, worse, that file was
+// committed to git, so a stale snapshot could get served on every cold start
+// regardless of what's actually in Firestore. See LAWSLANE-PLAN-01 2.10.
+let lastGoodExams: any[] | null = null;
 
 // Subject code to year mapping (kept from original)
 function mapYear(code: string): string {
@@ -143,25 +146,7 @@ function inferSubjectFromTitle(title: string): { category: string; subjectGroup:
     return { category: 'year2', subjectGroup: title || 'อื่นๆ' };
 }
 
-async function getAllExams(forceRefresh = false): Promise<any[]> {
-    const g = globalThis as any;
-    if (!forceRefresh) {
-        if (g._cachedLawExams && Date.now() - (g._cachedLawExamsTimestamp || 0) < CACHE_TTL) {
-            return g._cachedLawExams;
-        }
-        if (fs.existsSync(CACHE_FILE)) {
-            try {
-                const fileData = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
-                if (Array.isArray(fileData) && fileData.length > 0) {
-                    g._cachedLawExams = fileData;
-                    g._cachedLawExamsTimestamp = Date.now();
-                    return fileData;
-                }
-            } catch (e) {}
-        }
-    }
-
-    try {
+async function fetchExamsFromFirestore(): Promise<any[]> {
         const app = await initAdmin();
         if (!app) throw new Error('Firebase not initialized');
 
@@ -217,25 +202,23 @@ async function getAllExams(forceRefresh = false): Promise<any[]> {
             };
         });
 
-        g._cachedLawExams = exams;
-        g._cachedLawExamsTimestamp = Date.now();
-        try {
-            fs.writeFileSync(CACHE_FILE, JSON.stringify(exams));
-        } catch (e) {}
-
+        lastGoodExams = exams;
         return exams;
+}
+
+// Cached across requests/warm invocations via Next.js's data cache (works correctly
+// in serverless, unlike the old fs-based cache). `clearCache=true` bypasses this by
+// calling fetchExamsFromFirestore() directly instead of going through getCachedExams.
+const getCachedExams = unstable_cache(fetchExamsFromFirestore, ['education-all-exams'], {
+    revalidate: CACHE_TTL_SECONDS,
+});
+
+async function getAllExams(forceRefresh = false): Promise<any[]> {
+    try {
+        return forceRefresh ? await fetchExamsFromFirestore() : await getCachedExams();
     } catch (err) {
-        console.warn('getAllExams: Firestore fetch error or quota reached. Using fallback cache.', err);
-        if (g._cachedLawExams) return g._cachedLawExams;
-        if (fs.existsSync(CACHE_FILE)) {
-            try {
-                const fileData = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
-                if (Array.isArray(fileData) && fileData.length > 0) {
-                    return fileData;
-                }
-            } catch (e) {}
-        }
-        return [];
+        console.warn('getAllExams: Firestore fetch error or quota reached. Using last known-good data.', err);
+        return lastGoodExams || [];
     }
 }
 
@@ -245,10 +228,6 @@ export async function GET(request: NextRequest) {
         const mode = searchParams.get('mode');
 
         const clearCache = searchParams.get('clearCache') === 'true';
-        if (clearCache) {
-            cachedExams = null;
-            cacheTimestamp = 0;
-        }
 
         // Mode 1: "summary" — return only counts for tabs/filters (ultra fast)
         if (mode === 'summary') {
@@ -318,7 +297,7 @@ export async function GET(request: NextRequest) {
         });
     } catch (error) {
         console.error('Error fetching exams:', error);
-        if (cachedExams) return NextResponse.json(cachedExams);
+        if (lastGoodExams) return NextResponse.json(lastGoodExams);
         return NextResponse.json({ error: 'Failed to fetch exams' }, { status: 500 });
     }
 }

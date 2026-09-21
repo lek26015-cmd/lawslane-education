@@ -64,30 +64,54 @@ export async function POST(
             answer: q.modelAnswer || q.correctAnswer || '',
         }));
 
+        // Generate in concurrency-limited groups instead of one-at-a-time with a
+        // fixed 1s sleep between every call — for 40 questions that was ~2-4
+        // minutes serial. Groups of 4 (rather than firing all N at once) keep
+        // this from hammering the AI provider's rate limit, and each group's
+        // Firestore writes go through a single batch instead of N awaited
+        // updates. See LAWSLANE-PLAN-01 2.6.
+        const CONCURRENCY = 4;
+        const GROUP_PAUSE_MS = 500;
         const results: any[] = [];
         let generated = 0;
         let failed = 0;
 
-        for (const q of unansweredQuestions) {
-            try {
-                const qData = q as any;
-                const answer = await generateAnswer({
-                    questionText: qData.questionText || '',
-                    questionType: qData.type || 'essay',
-                    choices: qData.choices?.map((c: any) => typeof c === 'string' ? c : c.text || c) || [],
-                    subjectCode: examData.subjectCode || '',
-                    examLevel: examData.examLevel || '',
-                    fewShotExamples,
-                });
+        for (let i = 0; i < unansweredQuestions.length; i += CONCURRENCY) {
+            const group = unansweredQuestions.slice(i, i + CONCURRENCY);
 
-                // Save to Firestore
-                await (q as any).ref.update({
+            const groupResults = await Promise.all(group.map(async (q) => {
+                const qData = q as any;
+                try {
+                    const answer = await generateAnswer({
+                        questionText: qData.questionText || '',
+                        questionType: qData.type || 'essay',
+                        choices: qData.choices?.map((c: any) => typeof c === 'string' ? c : c.text || c) || [],
+                        subjectCode: examData.subjectCode || '',
+                        examLevel: examData.examLevel || '',
+                        fewShotExamples,
+                    });
+                    return { q, answer, error: null as unknown };
+                } catch (error) {
+                    return { q, answer: null, error };
+                }
+            }));
+
+            const batch = db.batch();
+            let hasWrites = false;
+            for (const { q, answer, error } of groupResults) {
+                if (error || !answer) {
+                    console.error(`Failed to generate answer for question ${q.id}:`, error);
+                    results.push({ questionId: q.id, success: false, error: String(error) });
+                    failed++;
+                    continue;
+                }
+                batch.update((q as any).ref, {
                     modelAnswer: answer.modelAnswer,
                     explanation: answer.explanation,
                     isAiGenerated: true,
                     aiGeneratedAt: admin.firestore.FieldValue.serverTimestamp(),
                 });
-
+                hasWrites = true;
                 results.push({
                     questionId: q.id,
                     success: true,
@@ -95,19 +119,11 @@ export async function POST(
                     explanation: answer.explanation,
                 });
                 generated++;
+            }
+            if (hasWrites) await batch.commit();
 
-                // Rate limiting — wait 1 second between API calls
-                if (unansweredQuestions.indexOf(q) < unansweredQuestions.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-            } catch (error) {
-                console.error(`Failed to generate answer for question ${q.id}:`, error);
-                results.push({
-                    questionId: q.id,
-                    success: false,
-                    error: String(error),
-                });
-                failed++;
+            if (i + CONCURRENCY < unansweredQuestions.length) {
+                await new Promise(resolve => setTimeout(resolve, GROUP_PAUSE_MS));
             }
         }
 

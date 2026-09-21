@@ -30,7 +30,12 @@ export async function GET(request: Request) {
         const snapshot = await admin.firestore()
             .collection('examResults')
             .where('userId', '==', userId)
-            // .orderBy('createdAt', 'desc') // Requires index, removing for now to be safe, or client can sort
+            // The composite index for this (examResults: userId + createdAt) is defined in
+            // Lawslane/firestore.indexes.json but not deployed yet — enabling orderBy() before
+            // the index is live would make Firestore reject this query outright. Once the index
+            // is deployed (`firebase deploy --only firestore:indexes` from Lawslane/) and built,
+            // uncomment this and drop the in-memory sort below.
+            // .orderBy('createdAt', 'desc')
             .get();
 
         const history = snapshot.docs.map(doc => {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { getUserOrders } from "@/lib/education-data-admin";
+import { fetchMyOrders } from "@/lib/orders-client";
 import { Order } from "@/lib/education-types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,10 +26,10 @@ export default function OrderHistoryPage() {
         }
     }, [user, isUserLoading, router]);
 
-    const fetchOrders = async (userId: string) => {
+    const fetchOrders = async (_userId: string) => {
         setIsLoading(true);
         try {
-            const data = await getUserOrders(userId);
+            const data = await fetchMyOrders(() => user!.getIdToken());
             setOrders(data);
         } catch (error) {
             console.error("Failed to fetch orders:", error);

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { getUserOrders } from "@/lib/education-data-admin";
+import { fetchMyOrders } from "@/lib/orders-client";
 import { Order } from "@/lib/education-types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +32,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     const fetchOrder = async (userId: string, orderId: string) => {
         setIsLoading(true);
         try {
-            const allOrders = await getUserOrders(userId);
+            const allOrders = await fetchMyOrders(() => user!.getIdToken());
             const foundOrder = allOrders.find(o => o.id === orderId);
             if (foundOrder) {
                 setOrder(foundOrder);

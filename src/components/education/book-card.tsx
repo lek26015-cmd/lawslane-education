@@ -41,12 +41,18 @@ export function BookCard({
             {/* Image Section */}
             <Link href={href}>
                 <div className="relative aspect-[2/3] w-full bg-slate-100 overflow-hidden">
-                    <Image
-                        src={coverUrl}
-                        alt={title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    {coverUrl ? (
+                        <Image
+                            src={coverUrl}
+                            alt={title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center w-full h-full bg-slate-200 text-slate-400 text-sm">
+                            ไม่มีรูปปก
+                        </div>
+                    )}
                     {isEbook && (
                         <Badge className="absolute top-2 right-2 bg-sky-600 hover:bg-sky-700">E-Book</Badge>
                     )}

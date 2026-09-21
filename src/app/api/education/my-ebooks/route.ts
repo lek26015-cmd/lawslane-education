@@ -11,35 +11,13 @@ export async function GET(request: Request) {
     try {
         const admin = await initAdmin();
         if (!admin) {
-            // If admin cannot be initialized (e.g. build time), return empty
-            // If admin cannot be initialized (e.g. build time), return mock data for development
-            const mockItems = [
-                {
-                    id: 'course-1',
-                    title: 'ติวสรุปกฎหมายแพ่งและพาณิชย์ (ฉบับรวบรัด)',
-                    type: 'COURSE',
-                    price: 1500,
-                    coverUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=500&fit=crop",
-                    purchasedAt: new Date().toISOString()
-                },
-                {
-                    id: 'course-2',
-                    title: 'คอร์สตะลุยโจทย์เนติบัณฑิต ภาค 1',
-                    type: 'COURSE',
-                    price: 2500,
-                    coverUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=500&fit=crop',
-                    purchasedAt: new Date().toISOString()
-                },
-                {
-                    id: '3',
-                    title: 'คู่มือสอบอัยการผู้ช่วย สนามเล็ก',
-                    type: 'BOOK',
-                    price: 650,
-                    coverUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop',
-                    purchasedAt: new Date().toISOString()
-                }
-            ];
-            return NextResponse.json(mockItems, { status: 200 });
+            // fail closed — เดิมคืนคอร์ส mock 3 ตัวเสมือนซื้อแล้ว ถ้า credential
+            // ตั้งค่าผิดบน production จะกลายเป็นปลดล็อกคอนเทนต์ให้ฟรีทันที
+            console.error('Firebase Admin not initialized — cannot resolve entitlements');
+            return NextResponse.json(
+                { error: 'Service temporarily unavailable' },
+                { status: 503 }
+            );
         }
 
         // Fetch successful orders
@@ -49,6 +27,7 @@ export async function GET(request: Request) {
             .collection('orders')
             .where('userId', '==', userId)
             // .where('status', 'in', ['PAID', 'COMPLETED', 'SHIPPING', 'DELIVERED']) // 'in' query supports up to 10
+            .limit(200)
             .get();
 
         const items: any[] = [];

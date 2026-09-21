@@ -14,7 +14,7 @@ import { SampleExamsList } from '@/components/education/sample-exams-list';
 import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'หน้าแรก — คลังข้อสอบทนายความ หนังสือเตรียมสอบ',

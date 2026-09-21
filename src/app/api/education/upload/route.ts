@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import { randomUUID } from 'crypto';
 import { requireUserOrAdmin } from '@/lib/user-auth';
+import { uploadFileToCloudflareImages } from '@/lib/cloudflare-images';
 
 export async function POST(request: NextRequest) {
     try {
@@ -32,7 +33,9 @@ export async function POST(request: NextRequest) {
         // Validate file type
         const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
         const allowedDocTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+        // ไม่รับ image/svg+xml — SVG รันสคริปต์ได้ ถ้าถูกเสิร์ฟกลับมาแบบ inline
+        // จะกลายเป็น stored XSS บน origin ที่เก็บไฟล์
+        const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
         let allowedTypes: string[];
         if (type === 'image') {
@@ -64,11 +67,44 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Images go through Cloudflare Images instead of Firebase Storage —
+        // Storage billing is disabled, so any firebasestorage.googleapis.com URL
+        // 403s (this was the actual cause of book covers and profile photos
+        // silently disappearing). Non-image types (video/document) are unaffected
+        // by this bug in the same way and still go to Firebase Storage below.
+        // See LAWSLANE-PLAN-01 3.3.
+        if (type === 'image') {
+            const url = await uploadFileToCloudflareImages(file);
+            return NextResponse.json({
+                success: true,
+                url,
+                filename: file.name,
+                size: file.size,
+                type: file.type
+            });
+        }
+
         // Generate unique filename
+        // นามสกุลต้องมาจาก MIME ที่ผ่าน allowlist แล้วเท่านั้น
+        // เดิมใช้ file.name.split('.').pop() ซึ่งคืนทุกอย่างหลังจุดสุดท้าย รวมทั้ง '/'
+        // → ชื่อไฟล์ที่จงใจตั้งมาเขียน object ออกนอกโฟลเดอร์ที่ตั้งใจได้
+        const EXTENSION_BY_TYPE: Record<string, string> = {
+            'video/mp4': 'mp4',
+            'video/webm': 'webm',
+            'video/quicktime': 'mov',
+            'video/x-msvideo': 'avi',
+            'application/pdf': 'pdf',
+            'application/msword': 'doc',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+        };
+        const extension = EXTENSION_BY_TYPE[file.type];
+        if (!extension) {
+            return NextResponse.json({ error: 'Unsupported file type' }, { status: 400 });
+        }
+
         const timestamp = Date.now();
         const randomId = Math.random().toString(36).substring(2, 8);
-        const extension = file.name.split('.').pop();
-        const folder = type === 'image' ? 'books/covers' : `${type}s`;
+        const folder = `${type}s`;
         const filename = `${folder}/${timestamp}-${randomId}.${extension}`;
 
         // Upload to Firebase Storage

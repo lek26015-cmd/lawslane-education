@@ -3,6 +3,7 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { gradeEssayAnswer, gradeMultipleChoice } from '@/lib/ai-grading';
 import { stripAnswerFromQuestion, formatExamText } from '@/lib/exam-utils';
+import { requireUser } from '@/lib/user-auth';
 
 interface SubmitAnswerInput {
     questionId: string;
@@ -17,6 +18,13 @@ interface SubmitExamRequest {
 }
 
 export async function POST(request: NextRequest) {
+    // ต้องล็อกอินอยู่จริง — route นี้เรียก AI ตรวจข้อเขียน 1 ครั้งต่อ 1 ข้อ ต่อ 1 request
+    // เดิมเปิดให้คนนิรนามยิงได้ = ค่า Gemini บานปลายแบบไม่มีเพดาน
+    const uid = await requireUser(request);
+    if (!uid) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const body: SubmitExamRequest = await request.json();
         const { examId, userName, answers, startedAt } = body;
@@ -74,15 +82,19 @@ export async function POST(request: NextRequest) {
             };
         });
 
-        // Grade each answer
-        const gradedAnswers: any[] = [];
-        let totalScore = 0;
+        // Grade each answer. Multiple-choice grading is synchronous (no AI call), so
+        // only essay questions are graded concurrently — sequentially, 5 essays at
+        // ~4s each was ~20s; grading them in groups instead of one-at-a-time cuts
+        // that roughly by the group size. See LAWSLANE-PLAN-01 2.6.
+        const ESSAY_CONCURRENCY = 4;
+        const gradedAnswers: any[] = new Array(questions.length);
+        const essayJobs: { index: number; question: typeof questions[number]; submittedAnswer: SubmitAnswerInput }[] = [];
 
-        for (const question of questions) {
+        questions.forEach((question, index) => {
             const submittedAnswer = answers.find(a => a.questionId === question.id);
 
             if (!submittedAnswer) {
-                gradedAnswers.push({
+                gradedAnswers[index] = {
                     questionId: question.id,
                     questionText: question.text,
                     questionType: question.type,
@@ -90,8 +102,8 @@ export async function POST(request: NextRequest) {
                     isCorrect: false,
                     aiScore: 0,
                     aiFeedback: 'ไม่ได้ตอบคำถามนี้'
-                });
-                continue;
+                };
+                return;
             }
 
             if (question.type === 'MULTIPLE_CHOICE') {
@@ -100,11 +112,9 @@ export async function POST(request: NextRequest) {
                     question.correctOptionIndex || 0,
                     question.explanation
                 );
-
                 const questionScore = result.isCorrect ? 100 : 0;
-                totalScore += questionScore;
 
-                gradedAnswers.push({
+                gradedAnswers[index] = {
                     questionId: question.id,
                     questionText: question.text,
                     questionType: 'MULTIPLE_CHOICE',
@@ -115,9 +125,15 @@ export async function POST(request: NextRequest) {
                     aiFeedback: result.isCorrect
                         ? 'ถูกต้อง! ' + (question.explanation || '')
                         : 'ไม่ถูกต้อง คำตอบที่ถูกคือ: ' + (question.options?.[question.correctOptionIndex || 0] || '') + '. ' + (question.explanation || '')
-                });
+                };
             } else {
-                // Grade essay with AI
+                essayJobs.push({ index, question, submittedAnswer });
+            }
+        });
+
+        for (let i = 0; i < essayJobs.length; i += ESSAY_CONCURRENCY) {
+            const group = essayJobs.slice(i, i + ESSAY_CONCURRENCY);
+            await Promise.all(group.map(async ({ index, question, submittedAnswer }) => {
                 try {
                     const aiResult = await gradeEssayAnswer({
                         questionText: question.text,
@@ -125,8 +141,7 @@ export async function POST(request: NextRequest) {
                         studentAnswer: submittedAnswer.answer as string,
                         subject: question.subject
                     });
-                    totalScore += aiResult.score;
-                    gradedAnswers.push({
+                    gradedAnswers[index] = {
                         questionId: question.id,
                         questionText: question.text,
                         questionType: 'ESSAY',
@@ -137,13 +152,12 @@ export async function POST(request: NextRequest) {
                         aiStrengths: aiResult.strengths,
                         aiWeaknesses: aiResult.weaknesses,
                         aiSuggestions: aiResult.suggestions
-                    });
+                    };
                 } catch (aiError) {
                     console.error('AI grading error:', aiError);
                     // Fallback: give partial score if answer is not empty
                     const hasAnswer = (submittedAnswer.answer as string)?.trim().length > 0;
-                    totalScore += hasAnswer ? 50 : 0;
-                    gradedAnswers.push({
+                    gradedAnswers[index] = {
                         questionId: question.id,
                         questionText: question.text,
                         questionType: 'ESSAY',
@@ -151,11 +165,12 @@ export async function POST(request: NextRequest) {
                         correctAnswer: question.correctAnswerText,
                         aiScore: hasAnswer ? 50 : 0,
                         aiFeedback: 'ไม่สามารถตรวจด้วย AI ได้ในขณะนี้ ให้คะแนนเบื้องต้น',
-                    });
+                    };
                 }
-            }
+            }));
         }
 
+        const totalScore = gradedAnswers.reduce((sum, a) => sum + (a?.aiScore || 0), 0);
         const finalScore = questions.length > 0 ? Math.round(totalScore / questions.length) : 0;
         const passingScore = 50;
         const passed = finalScore >= passingScore;

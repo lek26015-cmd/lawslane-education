@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Eye } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Loader2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
+import { uploadToCloudflareImages } from '@/app/actions/upload-cloudflare-images';
 
 const CATEGORIES = ['เตรียมสอบ', 'ข้อสอบเก่า', 'กฎหมายแพ่ง', 'กฎหมายอาญา', 'ทั่วไป'];
 const TYPES = [
@@ -21,6 +22,7 @@ export default function CreateBookPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -34,6 +36,26 @@ export default function CreateBookPage() {
         type: 'ebook' as 'ebook' | 'physical' | 'both',
         status: 'draft' as 'draft' | 'published'
     });
+
+    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', file);
+            const url = await uploadToCloudflareImages(uploadFormData);
+            setFormData(prev => ({ ...prev, coverUrl: url }));
+            toast({ title: "อัปโหลดรูปสำเร็จ" });
+        } catch (error) {
+            console.error('Cover upload failed:', error);
+            toast({ title: "อัปโหลดรูปไม่สำเร็จ", variant: "destructive" });
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     const handleSubmit = async (status: 'draft' | 'published') => {
         if (!formData.title.trim()) {
@@ -140,8 +162,21 @@ export default function CreateBookPage() {
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-700">รูปภาพปก (URL)</label>
-                    <Input value={formData.coverUrl} onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))} />
+                    <label className="text-sm font-medium text-slate-700">รูปภาพปก</label>
+                    <div className="flex gap-2">
+                        <Input
+                            value={formData.coverUrl}
+                            onChange={(e) => setFormData(prev => ({ ...prev, coverUrl: e.target.value }))}
+                            placeholder="วาง URL หรืออัปโหลดไฟล์"
+                        />
+                        <Button type="button" variant="outline" className="shrink-0" disabled={isUploading} asChild>
+                            <label className="cursor-pointer">
+                                {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                <span className="ml-2">อัปโหลด</span>
+                                <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={isUploading} />
+                            </label>
+                        </Button>
+                    </div>
                     {formData.coverUrl && (
                         <div className="mt-2 rounded-lg overflow-hidden border w-48">
                             <img src={formData.coverUrl} alt="Preview" className="w-full h-64 object-cover" />

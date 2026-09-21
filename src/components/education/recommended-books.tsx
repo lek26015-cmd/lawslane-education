@@ -8,8 +8,7 @@ import { BookCard } from './book-card';
 export async function RecommendedBooksSection() {
     let books: any[] = [];
     try {
-        const allBooks = await getAllBooks();
-        books = allBooks.slice(0, 8); // Show first 8 books
+        books = await getAllBooks(8);
     } catch (e) {
         console.error('Error fetching books for recommended section:', e);
     }

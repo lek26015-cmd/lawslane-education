@@ -193,7 +193,7 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
                 const response = await fetch(`/api/education/questions/${editingQuestion.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newQuestion)
+                    body: JSON.stringify({ ...newQuestion, examId: id })
                 });
 
                 if (response.ok) {
@@ -225,7 +225,7 @@ export default function EditExamPage({ params }: { params: Promise<{ id: string 
         if (!questionToDelete) return;
 
         try {
-            const response = await fetch(`/api/education/questions/${questionToDelete.id}`, { method: 'DELETE' });
+            const response = await fetch(`/api/education/questions/${questionToDelete.id}?examId=${id}`, { method: 'DELETE' });
 
             if (response.ok) {
                 setQuestions(prev => prev.filter(q => q.id !== questionToDelete.id));

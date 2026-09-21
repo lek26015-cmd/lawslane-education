@@ -76,30 +76,35 @@ export async function POST(request: NextRequest) {
         const db = admin.firestore();
 
         // Look up the real price/title for every item server-side —
-        // never trust price or totalAmount from the client.
-        const resolvedItems = [];
+        // never trust price or totalAmount from the client. Refs are resolved with
+        // a single db.getAll() instead of one sequential get() per item.
         for (const item of items) {
-            const collection = COLLECTION_BY_TYPE[item.type];
-            if (!collection) {
+            if (!COLLECTION_BY_TYPE[item.type]) {
                 return NextResponse.json({ error: `Unsupported item type: ${item.type}` }, { status: 400 });
             }
+        }
 
-            const doc = await db.collection(collection).doc(item.id).get();
-            if (!doc.exists) {
-                return NextResponse.json({ error: `Item not found: ${item.id}` }, { status: 400 });
-            }
+        const refs = items.map(item => db.collection(COLLECTION_BY_TYPE[item.type]).doc(item.id));
+        const docs = refs.length > 0 ? await db.getAll(...refs) : [];
 
+        const missing = docs.find(doc => !doc.exists);
+        if (missing) {
+            return NextResponse.json({ error: `Item not found: ${missing.id}` }, { status: 400 });
+        }
+
+        const resolvedItems = docs.map((doc, i) => {
+            const item = items[i];
             const data = doc.data()!;
             const quantity = Number(item.quantity) > 0 ? Number(item.quantity) : 1;
-            resolvedItems.push({
+            return {
                 id: doc.id,
                 type: item.type,
                 title: data.title || '',
                 price: Number(data.price) || 0,
                 coverUrl: data.coverUrl || data.imageUrl || '',
                 quantity,
-            });
-        }
+            };
+        });
 
         const totalAmount = resolvedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 

@@ -14,6 +14,10 @@ export async function GET(request: NextRequest) {
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
         const db = admin.firestore();
+        // Not sorting at the query level: orderBy('createdAt') would silently
+        // exclude any user doc that's missing that field (legacy accounts created
+        // before it existed), which is worse for an admin tool than sorting ≤500
+        // already-bounded results in JS.
         const snap = await db.collection('users').limit(500).get();
 
         const users = snap.docs.map(doc => {
