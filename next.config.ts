@@ -111,9 +111,15 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        // คอร์สย้ายไปหลังบ้านรวมแล้ว (Module 4)
+        source: '/education-admin/courses/:path*',
+        destination: 'https://admin.lawslane.com/education/courses',
+        permanent: false,
+      },
+      {
         // แดชบอร์ดเดิมถูกลบ — ส่งไปหน้าแรกที่ยังเหลืออยู่ในรีโปนี้
         source: '/education-admin',
-        destination: '/education-admin/courses',
+        destination: '/education-admin/exams',
         permanent: false,
       },
     ];

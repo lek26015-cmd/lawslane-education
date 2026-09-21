@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+    GraduationCap,
     Settings,
     LogOut,
     Menu,
     X,
     ChevronRight,
-    GraduationCap,
     Globe,
     ClipboardList,
     Loader2,
@@ -58,7 +58,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     }
 
     const NAV_ITEMS = [
-        { href: '/education-admin/courses', label: 'จัดการคอร์สเรียน', icon: GraduationCap },
         { href: '/education-admin/exams', label: 'จัดการข้อสอบ', icon: ClipboardList },
         { href: '/education-admin/settings', label: 'ตั้งค่าระบบ', icon: Settings },
     ];
