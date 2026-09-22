@@ -99,7 +99,25 @@ async function main() {
         const title = exam.examSet?.title ?? '(ไม่มีชื่อ)';
         const questions = exam.questions || [];
 
-        const existing = await db.collection('examSets').where('title', '==', title).limit(1).get();
+        // จับคู่ด้วย sourceFile (ชื่อไฟล์ PDF ต้นทาง) ไม่ใช่ title
+        //
+        // title มาจากข้อความที่ OCR อ่านได้จากหน้าปก จึงเปลี่ยนไปได้ทุกครั้งที่รัน
+        // ใหม่ — รอบ 2026-09-22 มี 5 ชุดที่ชื่อขยับ เช่น "กฎหมายอาญา 1" →
+        // "กฎหมายอาญา1" และ "กฎหมายว่าด้วยมรดก" → "กม.มรดก" ถ้าจับคู่ด้วย title
+        // ชุดพวกนี้จะถูกสร้างใหม่ซ้ำแทนที่จะอัปเดตของเดิม
+        //
+        // sourceFile นิ่งกว่าเพราะเป็นชื่อไฟล์บนดิสก์ ตรวจ production แล้ว:
+        // 124 ชุดที่มาจาก OCR มี sourceFile ครบและไม่ซ้ำกันเลย
+        // (อีก 1,885 ชุดใน examSets มาจากทางอื่น ไม่มี sourceFile — จะไม่ถูกแตะ)
+        const sourceFile = exam.examSet?.sourceFile;
+        let existing = sourceFile
+            ? await db.collection('examSets').where('sourceFile', '==', sourceFile).limit(1).get()
+            : { empty: true, docs: [] };
+
+        // ชุดเก่าที่ seed ไว้ก่อนมี sourceFile ยังต้องจับคู่ด้วย title ได้
+        if (existing.empty) {
+            existing = await db.collection('examSets').where('title', '==', title).limit(1).get();
+        }
 
         if (!existing.empty && !args.update) {
             console.log(`   [${i}] ข้าม — มีอยู่แล้ว: ${title}`);
@@ -129,6 +147,7 @@ async function main() {
             }
             if (delN > 0) await delBatch.commit();
 
+            // เขียน title/metadata ใหม่ทับด้วย เพราะ OCR รอบใหม่อาจอ่านหน้าปกได้ต่างไป
             await ref.set({ ...exam.examSet, updatedAt: now }, { merge: true });
 
             let batch = db.batch();
