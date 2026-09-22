@@ -11,7 +11,6 @@ import {
     X,
     ChevronRight,
     Globe,
-    ClipboardList,
     Loader2,
     Truck
 } from 'lucide-react';
@@ -58,7 +57,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     }
 
     const NAV_ITEMS = [
-        { href: '/education-admin/exams', label: 'จัดการข้อสอบ', icon: ClipboardList },
         { href: '/education-admin/settings', label: 'ตั้งค่าระบบ', icon: Settings },
     ];
 

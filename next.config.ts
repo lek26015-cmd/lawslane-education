@@ -117,9 +117,15 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        // ข้อสอบ + หน้าตรวจ OCR ย้ายไปหลังบ้านรวมแล้ว (Module 5)
+        source: '/education-admin/exams/:path*',
+        destination: 'https://admin.lawslane.com/education/exams',
+        permanent: false,
+      },
+      {
         // แดชบอร์ดเดิมถูกลบ — ส่งไปหน้าแรกที่ยังเหลืออยู่ในรีโปนี้
         source: '/education-admin',
-        destination: '/education-admin/exams',
+        destination: '/education-admin/settings',
         permanent: false,
       },
     ];

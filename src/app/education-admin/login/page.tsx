@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
 
     useEffect(() => {
         if (!isLoading && isAuthenticated) {
-            router.push('/education-admin/exams');
+            router.push('/education-admin/settings');
         }
     }, [isAuthenticated, isLoading, router]);
 
@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
         const success = await login(email, password);
 
         if (success) {
-            router.push('/education-admin/exams');
+            router.push('/education-admin/settings');
         } else {
             setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
         }
