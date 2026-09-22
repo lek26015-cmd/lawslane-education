@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { CheckoutSteps } from '@/components/education/checkout-steps';
 import { CheckCircle2, CreditCard, Loader2, MapPin, Phone, User, Upload, Copy, Landmark, ArrowLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -237,6 +238,8 @@ function CheckoutContent() {
                     <ArrowLeft className="mr-2 h-4 w-4" /> กลับ
                 </Button>
             </div>
+
+            <CheckoutSteps current={1} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Order Summary */}
