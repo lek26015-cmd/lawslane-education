@@ -114,9 +114,16 @@ async function main() {
             ? await db.collection('examSets').where('sourceFile', '==', sourceFile).limit(1).get()
             : { empty: true, docs: [] };
 
-        // ชุดเก่าที่ seed ไว้ก่อนมี sourceFile ยังต้องจับคู่ด้วย title ได้
+        // ชุดเก่าที่ seed ไว้ก่อนมีฟิลด์ sourceFile ยังต้องจับคู่ด้วย title ได้
+        //
+        // แต่ต้องรับเฉพาะ doc ที่ "ยังไม่มี sourceFile" เท่านั้น — ถ้ารับหมด
+        // entry ที่ยังไม่เคยขึ้น Firestore จะไปจับชุดที่เพิ่งอัปเดตไปในรอบเดียวกัน
+        // (title ซ้ำกันหลายชุด เช่น "เอกเทศสัญญา2" มี 5 ไฟล์) แล้วเขียนทับกันเอง
+        // แทนที่จะสร้างใหม่ — รอบแรกที่รันเสีย 14 ชุดด้วยเหตุนี้
         if (existing.empty) {
-            existing = await db.collection('examSets').where('title', '==', title).limit(1).get();
+            const byTitle = await db.collection('examSets').where('title', '==', title).get();
+            const legacy = byTitle.docs.filter(d => !d.data().sourceFile);
+            existing = { empty: legacy.length === 0, docs: legacy.slice(0, 1) };
         }
 
         if (!existing.empty && !args.update) {
