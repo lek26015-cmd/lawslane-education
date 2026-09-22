@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as adminSDK from 'firebase-admin';
 import { requireUser } from '@/lib/user-auth';
-import { requireAdmin } from '@/lib/admin-session';
+import { requireAdminClaim } from '@/lib/admin-guard';
 
 interface OrderItemInput {
     id: string;
@@ -17,7 +17,7 @@ const COLLECTION_BY_TYPE: Record<string, string> = {
 
 // GET /api/education/orders?all=true - Admin: list all orders
 export async function GET(request: NextRequest) {
-    if (!requireAdmin(request)) {
+    if (!await requireAdminClaim(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

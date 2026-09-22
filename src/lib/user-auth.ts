@@ -1,7 +1,7 @@
 import 'server-only';
 import type { NextRequest } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
-import { requireAdmin } from '@/lib/admin-session';
+import { requireAdminClaim } from '@/lib/admin-guard';
 
 export async function requireUser(request: NextRequest | Request): Promise<string | null> {
     const authHeader = request.headers.get('Authorization');
@@ -21,6 +21,6 @@ export async function requireUser(request: NextRequest | Request): Promise<strin
 
 // For endpoints shared by both the public site (logged-in student) and the admin panel
 export async function requireUserOrAdmin(request: NextRequest | Request): Promise<boolean> {
-    if (requireAdmin(request)) return true;
+    if (await requireAdminClaim(request)) return true;
     return (await requireUser(request)) !== null;
 }

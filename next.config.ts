@@ -123,9 +123,21 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
-        // แดชบอร์ดเดิมถูกลบ — ส่งไปหน้าแรกที่ยังเหลืออยู่ในรีโปนี้
+        source: '/education-admin/settings/:path*',
+        destination: 'https://admin.lawslane.com/settings/education',
+        permanent: false,
+      },
+      {
+        // Module 6: หลังบ้านของ education ถูกยกไปรวมที่ admin.lawslane.com หมดแล้ว
+        // รวมถึงหน้า login เดิมที่ใช้ระบบ email/password แยกต่างหาก
+        // ที่เหลือทั้งหมดส่งไปหน้าแรกของหลังบ้านรวม
+        source: '/education-admin/:path*',
+        destination: 'https://admin.lawslane.com/',
+        permanent: false,
+      },
+      {
         source: '/education-admin',
-        destination: '/education-admin/settings',
+        destination: 'https://admin.lawslane.com/',
         permanent: false,
       },
     ];

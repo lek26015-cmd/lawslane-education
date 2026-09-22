@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
-import { requireAdmin } from '@/lib/admin-session';
+import { requireAdminClaim } from '@/lib/admin-guard';
 
 // GET /api/education/articles - Get all articles
 export async function GET(request: NextRequest) {
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 // POST /api/education/articles - Create new article
 export async function POST(request: NextRequest) {
     try {
-        if (!requireAdmin(request)) {
+        if (!await requireAdminClaim(request)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 

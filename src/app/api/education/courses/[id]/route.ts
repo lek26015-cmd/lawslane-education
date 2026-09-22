@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
-import { requireAdmin } from '@/lib/admin-session';
+import { requireAdminClaim } from '@/lib/admin-guard';
 
 // GET /api/education/courses/[id] - Get single course
 export async function GET(
@@ -52,7 +52,7 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        if (!requireAdmin(request)) {
+        if (!await requireAdminClaim(request)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -97,7 +97,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        if (!requireAdmin(request)) {
+        if (!await requireAdminClaim(request)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 

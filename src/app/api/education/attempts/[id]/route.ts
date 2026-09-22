@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { requireUser } from '@/lib/user-auth';
-import { requireAdmin } from '@/lib/admin-session';
+import { requireAdminClaim } from '@/lib/admin-guard';
 
 // GET /api/education/attempts/[id] - Get single attempt
 export async function GET(
@@ -25,7 +25,7 @@ export async function GET(
 
         // เดิม route นี้ไม่ตรวจอะไรเลย → มี id ก็ดึงคำตอบ/คะแนน/ชื่อของนักเรียนคนอื่นได้
         // (route พี่น้อง attempts/route.ts gate ด้วยแอดมินอยู่แล้ว — ตรงนี้หลุดไป)
-        const isAdmin = requireAdmin(request);
+        const isAdmin = await requireAdminClaim(request);
         if (!isAdmin) {
             const uid = await requireUser(request);
             if (!uid || uid !== data.userId) {

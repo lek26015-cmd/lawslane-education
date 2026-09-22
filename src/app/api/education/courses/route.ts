@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
-import { requireAdmin } from '@/lib/admin-session';
+import { requireAdminClaim } from '@/lib/admin-guard';
 
 // GET /api/education/courses - Get all courses
 export async function GET(request: NextRequest) {
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const includeAll = searchParams.get('all') === 'true';
 
-        if (includeAll && !requireAdmin(request)) {
+        if (includeAll && !await requireAdminClaim(request)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 // POST /api/education/courses - Create new course
 export async function POST(request: NextRequest) {
     try {
-        if (!requireAdmin(request)) {
+        if (!await requireAdminClaim(request)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
