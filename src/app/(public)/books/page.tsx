@@ -1,5 +1,5 @@
 import { AnimatedBookGrid } from "@/components/education/animated-book-grid";
-import { PageHeader } from "@/components/education/page-header";
+import { BookstoreHero } from "@/components/education/bookstore-hero";
 import { getAllBooks } from "@/lib/education-data-admin";
 import { GoogleAd } from '@/components/google-ad';
 import type { Metadata } from 'next';
@@ -17,15 +17,7 @@ export default async function BookListingPage() {
 
     return (
         <div className="space-y-6">
-            <PageHeader
-                title="ร้านหนังสือแนะนำ"
-                description="คัดสรรหนังสือคุณภาพเพื่อนักกฎหมายโดยเฉพาะ ทั้งคู่มือสอบ สรุปย่อ และรวมข้อสอบเก่า"
-                icon="BookOpen"
-                theme="sky"
-                backLink="/"
-                backLabel="กลับหน้าหลัก"
-                badge={`${books.length} เล่ม`}
-            />
+            <BookstoreHero bookCount={books.length} />
 
             {/* Ad Banner */}
             <GoogleAd variant="banner" />

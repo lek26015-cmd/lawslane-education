@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import Image, { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,11 @@ interface BookCardProps {
     rating?: number; // 0-5
     badges?: Array<{ text: string; color: string; icon?: 'thumbs-up' | 'zap' }>;
     isEbook?: boolean;
+    /** จำนวนหน้า — mockup ร้านหนังสือแสดงไว้ข้างราคาเพื่อให้เทียบความคุ้มค่าได้ */
+    pageCount?: number;
     href?: string;
+    /** ปุ่มเพิ่มใต้ราคา เช่น ปุ่มดาวน์โหลดอีบุ๊กของผู้ที่ซื้อแล้ว */
+    footerExtra?: React.ReactNode;
 }
 
 export function BookCard({
@@ -34,8 +39,16 @@ export function BookCard({
     level,
     badges = [],
     isEbook = false,
-    href = '#'
+    pageCount,
+    href = '#',
+    footerExtra,
 }: BookCardProps) {
+    // ส่วนลดคำนวณจากราคาจริง ไม่ใช่ค่าที่กรอกมือ — กันกรณี originalPrice ต่ำกว่า price
+    const discountPercent =
+        originalPrice && originalPrice > price
+            ? Math.round(((originalPrice - price) / originalPrice) * 100)
+            : 0;
+
     return (
         <Card className="flex flex-col h-full hover:shadow-lg transition-shadow bg-white border-slate-200 overflow-hidden group">
             {/* Image Section */}
@@ -55,6 +68,11 @@ export function BookCard({
                     )}
                     {isEbook && (
                         <Badge className="absolute top-2 right-2 bg-sky-600 hover:bg-sky-700">E-Book</Badge>
+                    )}
+                    {discountPercent > 0 && (
+                        <Badge className="absolute top-2 left-2 bg-rose-600 hover:bg-rose-600">
+                            -{discountPercent}%
+                        </Badge>
                     )}
                 </div>
             </Link>
@@ -104,12 +122,18 @@ export function BookCard({
             </CardContent>
 
             {/* Footer: Price & Action */}
-            <CardFooter className="p-4 pt-0 flex items-center justify-between mt-auto border-t border-slate-50/50">
+            <CardFooter className="p-4 pt-0 mt-auto border-t border-slate-50/50 flex flex-col gap-2">
+              <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col items-start pt-4">
-                    {originalPrice && (
-                        <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
-                    )}
-                    <span className="text-lg font-bold text-sky-700">฿{price.toLocaleString()}</span>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-lg font-bold text-sky-700">฿{price.toLocaleString()}</span>
+                        {discountPercent > 0 && originalPrice && (
+                            <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
+                        )}
+                    </div>
+                    {pageCount ? (
+                        <span className="text-[11px] text-slate-400">{pageCount.toLocaleString()} หน้า</span>
+                    ) : null}
                 </div>
                 <Link href={href} className="pt-4">
                     <Button
@@ -118,6 +142,8 @@ export function BookCard({
                         ดูรายละเอียด
                     </Button>
                 </Link>
+              </div>
+              {footerExtra}
             </CardFooter>
         </Card>
     );

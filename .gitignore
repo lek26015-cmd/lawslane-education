@@ -43,3 +43,6 @@ next-env.d.ts
 # Large data files
 /ข้อสอบเก่า/
 /public/exam-images/
+
+# legal-doc: ผลลัพธ์ที่สร้างขึ้น และฟอนต์ที่ไม่ commit (TH Sarabun New)
+/fonts/vendor/

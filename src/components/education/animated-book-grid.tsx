@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Book } from "@/lib/education-types";
+import { BookCard } from "@/components/education/book-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -266,48 +267,20 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                             }}
                             whileHover={{ y: -5, transition: { duration: 0.2 } }}
                         >
-                            <Card className="flex flex-col h-full hover:shadow-lg transition-shadow bg-white border-slate-200">
-                                <CardHeader className="p-0 overflow-hidden rounded-t-xl bg-slate-100 relative aspect-[2/3]">
-                                    <BookCoverImage
-                                        src={book.coverUrl}
-                                        alt={book.title}
-                                    />
-                                    {book.isDigital && (
-                                        <Badge className="absolute top-2 right-2 bg-sky-600 hover:bg-sky-700">E-Book</Badge>
-                                    )}
-                                </CardHeader>
-                                <CardContent className="flex-1 p-4">
-                                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3rem] text-slate-900">
-                                        {book.title}
-                                    </h3>
-                                    <p className="text-sm text-slate-500 mb-2 line-clamp-2">
-                                        {book.description}
-                                    </p>
-                                    {book.level && (
-                                        <Badge variant="outline" className="mb-3 text-xs font-normal text-slate-500 border-slate-300">
-                                            {book.level}
-                                        </Badge>
-                                    )}
-                                    <div className="text-sm text-slate-500 flex items-center gap-1">
-                                        <span className="font-medium">ผู้แต่ง:</span> {book.author}
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="p-4 pt-0 mt-auto space-y-2">
-                                    <div className="flex items-center justify-between w-full">
-                                        <span className="text-lg font-bold text-sky-700">
-                                            ฿{book.price.toLocaleString()}
-                                        </span>
-                                        <Link href={`/books/${book.id}`}>
-                                            <Button variant="outline" size="sm" className="border-sky-200 text-sky-700 hover:bg-sky-50">
-                                                ดูรายละเอียด
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                    {book.isDigital && (
-                                        <EbookDownloadButton book={book} />
-                                    )}
-                                </CardFooter>
-                            </Card>
+                            <BookCard
+                                id={book.id}
+                                title={book.title}
+                                coverUrl={book.coverUrl}
+                                price={book.price}
+                                originalPrice={book.originalPrice}
+                                description={book.description}
+                                author={book.author}
+                                level={book.level}
+                                pageCount={book.pageCount}
+                                isEbook={book.isDigital}
+                                href={`/books/${book.id}`}
+                                footerExtra={book.isDigital ? <EbookDownloadButton book={book} /> : undefined}
+                            />
                         </motion.div>
                     ))}
                 </motion.div>

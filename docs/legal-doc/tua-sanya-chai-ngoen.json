@@ -1,0 +1,158 @@
+{
+  "schema": "wittaya.legal-doc/1",
+  "kind": "stimulus",
+  "title": "ตั๋วสัญญาใช้เงิน — ตัวอย่างประกอบข้อสอบ",
+  "docType": "ตั๋วสัญญาใช้เงิน",
+  "source": {
+    "sourceFile": "ตัวอย่างที่เขียนขึ้นเพื่อทดสอบ renderer"
+  },
+  "defaults": {
+    "sizePt": 16,
+    "lineHeightPt": 28
+  },
+  "notice": {
+    "enabled": true,
+    "text": "เอกสารประกอบการเรียน Lawslane Wittaya — จัดพิมพ์ใหม่เพื่อการศึกษา"
+  },
+  "pages": [
+    {
+      "margins": {
+        "top": 90,
+        "right": 70,
+        "bottom": 80,
+        "left": 85
+      },
+      "blocks": [
+        {
+          "id": "b01",
+          "role": "heading",
+          "align": "center",
+          "sizePt": 22,
+          "lineHeightPt": 34,
+          "lines": [
+            {
+              "id": "b01.l1",
+              "runs": [
+                {
+                  "text": "ตั๋วสัญญาใช้เงิน",
+                  "bold": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b02",
+          "role": "meta",
+          "align": "right",
+          "spaceBeforePt": 18,
+          "lineHeightPt": 26,
+          "lines": [
+            {
+              "id": "b02.l1",
+              "runs": [
+                {
+                  "text": "เขียนที่ บริษัท สยามพาณิชย์ จำกัด"
+                }
+              ]
+            },
+            {
+              "id": "b02.l2",
+              "runs": [
+                {
+                  "text": "วันที่ ๑๕ มีนาคม ๒๕๖๗"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b03",
+          "role": "body",
+          "align": "left",
+          "indentFirstPt": 56,
+          "spaceBeforePt": 24,
+          "lines": [
+            {
+              "id": "b03.l1",
+              "runs": [
+                {
+                  "text": "ข้าพเจ้า นายสมชาย ใจดี อยู่บ้านเลขที่ ๔๘ ถนนสุขุมวิท"
+                }
+              ]
+            },
+            {
+              "id": "b03.l2",
+              "runs": [
+                {
+                  "text": "แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร สัญญาว่าจะใช้เงิน"
+                }
+              ]
+            },
+            {
+              "id": "b03.l3",
+              "runs": [
+                {
+                  "text": "จำนวน "
+                },
+                {
+                  "text": "๕๐๐,๐๐๐ บาท",
+                  "bold": true
+                },
+                {
+                  "text": " (ห้าแสนบาทถ้วน) ให้แก่ นายวิชัย มั่นคง"
+                }
+              ]
+            },
+            {
+              "id": "b03.l4",
+              "runs": [
+                {
+                  "text": "หรือตามคำสั่ง ในวันที่ ๑๕ กันยายน ๒๕๖๗ ณ ที่ทำการของผู้รับเงิน"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b04",
+          "role": "signature",
+          "align": "left",
+          "indentLeftPt": 250,
+          "spaceBeforePt": 40,
+          "lineHeightPt": 30,
+          "lines": [
+            {
+              "id": "b04.l1",
+              "runs": [
+                {
+                  "text": "ลงชื่อ "
+                }
+              ],
+              "leader": {
+                "style": "dot",
+                "toXPt": 470
+              }
+            },
+            {
+              "id": "b04.l2",
+              "runs": [
+                {
+                  "text": "        (นายสมชาย ใจดี)"
+                }
+              ]
+            },
+            {
+              "id": "b04.l3",
+              "runs": [
+                {
+                  "text": "             ผู้ออกตั๋ว"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
