@@ -13,7 +13,13 @@
  * ใช้งาน:
  *   node scripts/seed-ocr-exams.mjs                 # dry-run ทั้งไฟล์ (ค่าเริ่มต้น)
  *   node scripts/seed-ocr-exams.mjs --apply         # เขียนจริง
+ *   node scripts/seed-ocr-exams.mjs --update           # dry-run แบบเขียนทับของเดิม
+ *   node scripts/seed-ocr-exams.mjs --update --apply    # เขียนทับจริง
  *   node scripts/seed-ocr-exams.mjs --start 0 --batch 20 --apply
+ *
+ * --update ใช้เมื่อรัน OCR ใหม่แล้วต้องการให้ข้อสอบใน Firestore ใช้ผลชุดใหม่
+ * (ค่าเริ่มต้นจะข้ามชุดที่มีอยู่แล้ว ซึ่งตอนนี้มีครบทุกชุด จึงจะไม่เขียนอะไรเลย)
+ * คง document id เดิมไว้เสมอ เพราะคอร์สอ้างถึงชุดข้อสอบผ่าน linkedExamIds
  *
  * ต้องมี env: NEXT_PUBLIC_FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL,
  * FIREBASE_PRIVATE_KEY (โหลดจาก .env.local ให้อัตโนมัติ)
@@ -40,9 +46,10 @@ function loadEnvLocal() {
 }
 
 function parseArgs(argv) {
-    const args = { apply: false, start: 0, batch: Infinity };
+    const args = { apply: false, update: false, start: 0, batch: Infinity };
     for (let i = 0; i < argv.length; i++) {
         if (argv[i] === '--apply') args.apply = true;
+        else if (argv[i] === '--update') args.update = true;
         else if (argv[i] === '--start') args.start = parseInt(argv[++i], 10);
         else if (argv[i] === '--batch') args.batch = parseInt(argv[++i], 10);
     }
@@ -76,6 +83,7 @@ async function main() {
     console.log(`📖 ${OCR_JSON_PATH}`);
     console.log(`   ชุดข้อสอบในไฟล์: ${examData.length} · จะทำ index ${start}–${end - 1}`);
     console.log(`   โหมด: ${args.apply ? '⚠️  APPLY (เขียน Firestore จริง)' : 'DRY-RUN (ไม่เขียนอะไร)'}`);
+    console.log(`   ชุดที่มีอยู่แล้ว: ${args.update ? '♻️  เขียนทับคำถามด้วยผล OCR ใหม่' : 'ข้าม'}`);
     console.log(`   โปรเจ็ค: ${projectId}\n`);
 
     admin.initializeApp({
@@ -84,7 +92,7 @@ async function main() {
     });
     const db = admin.firestore();
 
-    let created = 0, skipped = 0, totalQuestions = 0;
+    let created = 0, skipped = 0, updated = 0, totalQuestions = 0;
 
     for (let i = start; i < end; i++) {
         const exam = examData[i];
@@ -92,9 +100,48 @@ async function main() {
         const questions = exam.questions || [];
 
         const existing = await db.collection('examSets').where('title', '==', title).limit(1).get();
-        if (!existing.empty) {
+
+        if (!existing.empty && !args.update) {
             console.log(`   [${i}] ข้าม — มีอยู่แล้ว: ${title}`);
             skipped++;
+            continue;
+        }
+
+        // เขียนทับชุดที่มีอยู่: คง document id เดิมไว้ เพราะคอร์สอ้างถึงผ่าน
+        // linkedExamIds ถ้าสร้างใหม่ลิงก์จะขาด — แทนที่เฉพาะ subcollection questions
+        if (!existing.empty && args.update) {
+            const ref = existing.docs[0].ref;
+            if (!args.apply) {
+                const old = await ref.collection('questions').count().get();
+                console.log(`   [${i}] จะเขียนทับ: ${title} (${old.data().count} → ${questions.length} ข้อ)`);
+                updated++;
+                totalQuestions += questions.length;
+                continue;
+            }
+
+            const now = admin.firestore.FieldValue.serverTimestamp();
+            const oldQs = await ref.collection('questions').get();
+            let delBatch = db.batch();
+            let delN = 0;
+            for (const d of oldQs.docs) {
+                delBatch.delete(d.ref);
+                if (++delN >= 450) { await delBatch.commit(); delBatch = db.batch(); delN = 0; }
+            }
+            if (delN > 0) await delBatch.commit();
+
+            await ref.set({ ...exam.examSet, updatedAt: now }, { merge: true });
+
+            let batch = db.batch();
+            let n = 0;
+            for (const q of questions) {
+                batch.set(ref.collection('questions').doc(), { ...q, createdAt: now, updatedAt: now });
+                if (++n >= 450) { await batch.commit(); batch = db.batch(); n = 0; }
+            }
+            if (n > 0) await batch.commit();
+
+            console.log(`   [${i}] ♻️  เขียนทับแล้ว: ${title} (${oldQs.size} → ${questions.length} ข้อ)`);
+            updated++;
+            totalQuestions += questions.length;
             continue;
         }
 
@@ -126,8 +173,9 @@ async function main() {
     }
 
     console.log(`\n${args.apply ? '✅ เขียนเสร็จ' : '📝 สรุป dry-run'}`);
-    console.log(`   สร้าง ${created} ชุด · ข้าม ${skipped} ชุด · รวม ${totalQuestions} ข้อ`);
+    console.log(`   สร้าง ${created} ชุด · เขียนทับ ${updated} ชุด · ข้าม ${skipped} ชุด · รวม ${totalQuestions} ข้อ`);
     if (!args.apply) console.log('\n   ใส่ --apply เพื่อเขียนจริง');
+    if (!args.update) console.log('   ใส่ --update ถ้าต้องการเขียนทับชุดที่มีอยู่แล้วด้วยผล OCR ใหม่');
     if (end < examData.length) console.log(`   ทำต่อด้วย: --start ${end}`);
 
     await admin.app().delete();
