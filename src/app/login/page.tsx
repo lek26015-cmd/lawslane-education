@@ -8,7 +8,15 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    GoogleAuthProvider,
+    sendPasswordResetEmail,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
+} from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useFirebase } from '@/firebase';
 import Image from 'next/image';
@@ -26,7 +34,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { TurnstileWidget } from '@/components/turnstile-widget';
 import { verifyTurnstileToken } from '@/app/actions/turnstile';
 
@@ -42,6 +50,31 @@ export default function EducationLoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const [turnstileToken, setTurnstileToken] = useState<string>('');
+    const [showPassword, setShowPassword] = useState(false);
+    // ติ๊กไว้ = ค้างล็อกอินข้ามการปิดเบราว์เซอร์ (browserLocalPersistence)
+    // ไม่ติ๊ก = ออกจากระบบเมื่อปิดแท็บ (browserSessionPersistence)
+    // เป็นพฤติกรรมจริงของ Firebase ไม่ใช่ช่องติ๊กหลอก
+    const [rememberMe, setRememberMe] = useState(true);
+    const [isSendingReset, setIsSendingReset] = useState(false);
+
+    const handleForgotPassword = async () => {
+        const email = form.getValues('email');
+        if (!email) {
+            toast({ variant: 'destructive', title: 'กรอกอีเมลก่อน', description: 'ใส่อีเมลที่ใช้สมัครไว้ในช่องด้านบน แล้วกดอีกครั้ง' });
+            return;
+        }
+        if (!auth) return;
+        setIsSendingReset(true);
+        try {
+            await sendPasswordResetEmail(auth, email);
+            toast({ title: 'ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว', description: `ตรวจอีเมล ${email} (อาจอยู่ในกล่องสแปม)` });
+        } catch {
+            // ไม่บอกว่าอีเมลนี้มีอยู่ในระบบไหม — กันการไล่เดาว่าใครเป็นสมาชิก
+            toast({ title: 'ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว', description: `ถ้ามีบัญชีที่ใช้ ${email} จะได้รับอีเมลภายในไม่กี่นาที` });
+        } finally {
+            setIsSendingReset(false);
+        }
+    };
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -115,6 +148,7 @@ export default function EducationLoginPage() {
                 if (!validation.success) throw new Error('การยืนยันตัวตนล้มเหลว');
             }
 
+            await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
             await signInWithEmailAndPassword(auth, values.email, values.password);
 
             toast({
@@ -238,15 +272,47 @@ export default function EducationLoginPage() {
                                         <FormItem>
                                             <div className="flex items-center justify-between">
                                                 <FormLabel className="text-slate-700">รหัสผ่าน</FormLabel>
-                                                <Link href="#" className="text-xs text-indigo-600 hover:underline">ลืมรหัสผ่าน?</Link>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleForgotPassword}
+                                                    disabled={isSendingReset}
+                                                    className="text-xs text-indigo-600 hover:underline disabled:opacity-50"
+                                                >
+                                                    {isSendingReset ? 'กำลังส่ง...' : 'ลืมรหัสผ่าน?'}
+                                                </button>
                                             </div>
                                             <FormControl>
-                                                <Input type="password" placeholder="********" {...field} className="h-11 bg-white" />
+                                                <div className="relative">
+                                                    <Input
+                                                        type={showPassword ? 'text' : 'password'}
+                                                        placeholder="********"
+                                                        {...field}
+                                                        className="h-11 bg-white pr-10"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPassword(v => !v)}
+                                                        aria-label={showPassword ? 'ซ่อนรหัสผ่าน' : 'แสดงรหัสผ่าน'}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                                    >
+                                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                    </button>
+                                                </div>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+
+                                <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+                                    <input
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={e => setRememberMe(e.target.checked)}
+                                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    จดจำฉันในระบบบนอุปกรณ์นี้
+                                </label>
 
                                 <TurnstileWidget onSuccess={setTurnstileToken} />
 
