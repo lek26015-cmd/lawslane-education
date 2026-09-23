@@ -7,17 +7,30 @@
  */
 import { parseArgs } from 'node:util';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { parseLegalDoc, allText } from '../../src/lib/legal-doc/ir';
 import { renderLegalDoc } from '../../src/lib/legal-doc/render/render-pdf';
 import { loadAssets } from '../../src/lib/legal-doc/node/assets';
 import { extractPdfText } from '../../src/lib/legal-doc/node/pdf-text';
 import { rasterizePdf } from '../../src/lib/legal-doc/node/rasterize';
+import { cropImage, parseCrop, sideBySide } from '../../src/lib/legal-doc/node/crop';
+import { ocrImage } from '../../src/lib/legal-doc/node/typhoon';
+import { SCHEMA_VERSION } from '../../src/lib/legal-doc/ir';
 import { normalize, extractNumerals } from '../../src/lib/legal-doc/thai';
 
 function fail(msg: string): never {
     console.error(`✗ ${msg}`);
     process.exit(1);
+}
+
+/** โปรเจกต์นี้เก็บคีย์ไว้ใน .env.local — Node 24 อ่านให้ได้เองไม่ต้องพึ่ง dotenv */
+function loadEnv() {
+    for (const f of ['.env.local', '.env']) {
+        if (existsSync(f)) {
+            try { process.loadEnvFile(f); } catch { /* ไฟล์เสียก็ข้ามไป */ }
+        }
+    }
 }
 
 async function cmdBuild(args: string[]) {
@@ -122,6 +135,100 @@ async function verify(pdfPath: string, doc: ReturnType<typeof parseLegalDoc>) {
     if (!textOk || !numOk) process.exitCode = 1;
 }
 
+/**
+ * ครอปเอกสารออกจากหน้าต้นฉบับ แล้วให้ Typhoon อ่านเป็นร่างข้อความ
+ *
+ * เขียนออกสามไฟล์: PNG ครอป (ไว้ดูว่าครอปถูกกรอบไหม), ข้อความดิบจาก Typhoon,
+ * และโครง IR เปล่าที่ใส่ที่มาไว้ให้แล้ว — คนเอาข้อความไปจัดลงโครงนั้นเอง
+ * ไม่มีการเอาผล OCR เข้า IR อัตโนมัติ เพราะ Typhoon แก้ตัวโจทย์ได้
+ */
+async function cmdExtract(args: string[]) {
+    const { values, positionals } = parseArgs({
+        args,
+        allowPositionals: true,
+        options: {
+            page: { type: 'string', default: '1' },
+            crop: { type: 'string' },
+            dpi: { type: 'string', default: '300' },
+            out: { type: 'string', short: 'o' },
+            'no-ocr': { type: 'boolean', default: false },
+        },
+    });
+
+    const src = positionals[0];
+    if (!src) fail('ใช้: extract <source.pdf> --page N [--crop 0.1,0.28,0.9,0.62] -o draft.json');
+
+    const pageNo = Number(values.page);
+    if (!Number.isInteger(pageNo) || pageNo < 1) fail(`--page ต้องเป็นจำนวนเต็มบวก (ได้: ${values.page})`);
+
+    const pages = await rasterizePdf(src, { dpi: Number(values.dpi), maxPages: pageNo });
+    if (pages.length < pageNo) fail(`ไฟล์มี ${pages.length} หน้า แต่ขอหน้า ${pageNo}`);
+
+    const cropFrac = values.crop ? parseCrop(values.crop) : undefined;
+    const image = cropFrac ? await cropImage(pages[pageNo - 1], cropFrac) : pages[pageNo - 1];
+
+    const outJson = values.out ?? `docs/legal-doc/draft-p${pageNo}.json`;
+    const base = outJson.replace(/\.json$/, '');
+    await mkdir(path.dirname(outJson), { recursive: true });
+    await writeFile(`${base}.crop.png`, image);
+    console.log(`✓ ${base}.crop.png  (${(image.length / 1024).toFixed(0)} KB) — เปิดดูว่าครอปได้กรอบที่ต้องการไหม`);
+
+    let ocrText = '';
+    if (!values['no-ocr']) {
+        const r = await ocrImage(image);
+        if (r.ok) {
+            ocrText = r.text;
+            await writeFile(`${base}.ocr.txt`, ocrText);
+            console.log(`✓ ${base}.ocr.txt  (${ocrText.length} ตัวอักษร)`);
+            if (r.truncated) console.warn('  ⚠ Typhoon ตัดข้อความกลางคัน (ชน token cap) — ลองครอปให้เล็กลง');
+        } else {
+            console.warn(`  ⚠ OCR ไม่สำเร็จ (${r.reason}): ${r.detail}`);
+        }
+    }
+
+    const skeleton = {
+        schema: SCHEMA_VERSION,
+        kind: 'stimulus',
+        title: path.basename(base),
+        docType: '(ระบุชนิดเอกสาร)',
+        source: {
+            sourceFile: src,
+            sourcePage: pageNo,
+            ...(cropFrac ? { cropPx: { x: cropFrac.left, y: cropFrac.top, w: cropFrac.right - cropFrac.left, h: cropFrac.bottom - cropFrac.top } } : {}),
+        },
+        defaults: { sizePt: 16, lineHeightPt: 26 },
+        notice: { enabled: true, text: 'เอกสารประกอบการเรียน Lawslane Wittaya — จัดพิมพ์ใหม่เพื่อการศึกษา' },
+        pages: [{
+            margins: { top: 85, right: 70, bottom: 80, left: 85 },
+            blocks: [{ id: 'b01', role: 'body', align: 'left', lines: [] }],
+        }],
+    };
+    await writeFile(outJson, JSON.stringify(skeleton, null, 2) + '\n');
+    console.log(`✓ ${outJson} — โครงเปล่า เอาข้อความจาก .ocr.txt มาจัดลง blocks/lines เอง`);
+}
+
+/** วางภาพต้นฉบับกับที่เรนเดอร์เรียงกัน — เกณฑ์ตรวจหลักของเฟสนี้คือตาคน */
+async function cmdCompare(args: string[]) {
+    const { values, positionals } = parseArgs({
+        args,
+        allowPositionals: true,
+        options: {
+            scan: { type: 'string' },
+            out: { type: 'string', short: 'o' },
+            dpi: { type: 'string', default: '150' },
+        },
+    });
+    const pdfPath = positionals[0];
+    if (!pdfPath || !values.scan) fail('ใช้: compare <out.pdf> --scan <ต้นฉบับ.png> [-o diff.png]');
+
+    const [rendered] = await rasterizePdf(pdfPath, { dpi: Number(values.dpi), maxPages: 1 });
+    const scan = new Uint8Array(await readFile(values.scan));
+    const out = values.out ?? pdfPath.replace(/\.pdf$/, '.compare.png');
+    await mkdir(path.dirname(out), { recursive: true });
+    await writeFile(out, await sideBySide(scan, rendered));
+    console.log(`✓ ${out}  (ซ้าย = ต้นฉบับ, ขวา = ที่เรนเดอร์)`);
+}
+
 /** เรนเดอร์ PDF เป็น PNG เพื่อดูด้วยตา — เกณฑ์หลักของการตรวจในเฟสนี้ */
 async function cmdPreview(args: string[]) {
     const { values, positionals } = parseArgs({
@@ -143,13 +250,16 @@ async function cmdPreview(args: string[]) {
 }
 
 async function main() {
+    loadEnv();
     const [, , cmd, ...rest] = process.argv;
     switch (cmd) {
         case 'build': await cmdBuild(rest); break;
         case 'verify': await cmdVerify(rest); break;
         case 'preview': await cmdPreview(rest); break;
+        case 'extract': await cmdExtract(rest); break;
+        case 'compare': await cmdCompare(rest); break;
         default:
-            console.log('ใช้: legal-doc <build|verify|preview> ...');
+            console.log('ใช้: legal-doc <extract|build|preview|compare|verify> ...');
             process.exit(cmd ? 1 : 0);
     }
 }

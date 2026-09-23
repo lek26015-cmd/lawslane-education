@@ -1,0 +1,333 @@
+{
+  "schema": "wittaya.legal-doc/1",
+  "kind": "model-answer",
+  "title": "ธงคำตอบ — คำร้องขอเลื่อนคดี",
+  "docType": "คำร้อง",
+  "source": {},
+  "defaults": {
+    "sizePt": 14,
+    "lineHeightPt": 22
+  },
+  "notice": {
+    "enabled": true,
+    "text": "ธงคำตอบประกอบการเรียน Lawslane Wittaya — จัดพิมพ์ใหม่เพื่อการศึกษา ไม่ใช่เอกสารของศาล"
+  },
+  "pages": [
+    {
+      "widthPt": 595.28,
+      "heightPt": 841.89,
+      "margins": {
+        "top": 48,
+        "right": 56,
+        "bottom": 58,
+        "left": 78
+      },
+      "blocks": [
+        {
+          "id": "b01",
+          "role": "emblem",
+          "align": "center",
+          "emblem": {
+            "heightPt": 44
+          }
+        },
+        {
+          "id": "b02",
+          "role": "meta",
+          "align": "left",
+          "indentLeftPt": 246,
+          "spaceBeforePt": 8,
+          "sizePt": 13,
+          "lineHeightPt": 22,
+          "lines": [
+            {
+              "id": "b02.l1",
+              "runs": [
+                {
+                  "text": "คดีหมายเลขดำที่ ๘๘๗/๒๕๖๗"
+                }
+              ]
+            },
+            {
+              "id": "b02.l2",
+              "runs": [
+                {
+                  "text": "คดีหมายเลขแดงที่ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 58,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " /"
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 42,
+                    "style": "dot"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b03",
+          "role": "heading",
+          "align": "center",
+          "spaceBeforePt": 12,
+          "sizePt": 17,
+          "lineHeightPt": 28,
+          "lines": [
+            {
+              "id": "b03.l1",
+              "runs": [
+                {
+                  "text": "ศาลแพ่งกรุงเทพใต้",
+                  "bold": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b04",
+          "role": "meta",
+          "align": "center",
+          "sizePt": 13,
+          "lineHeightPt": 24,
+          "lines": [
+            {
+              "id": "b04.l1",
+              "runs": [
+                {
+                  "text": "วันที่ ๑๕ เดือน ตุลาคม พุทธศักราช ๒๕๖๗"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b05",
+          "role": "party",
+          "align": "left",
+          "spaceBeforePt": 14,
+          "lineHeightPt": 22,
+          "lines": [
+            {
+              "id": "b05.l1",
+              "runs": [
+                {
+                  "text": "ความแพ่ง"
+                }
+              ]
+            },
+            {
+              "id": "b05.l2",
+              "runs": [
+                {
+                  "text": "บริษัท สยามพาณิชย์ จำกัด   โจทก์"
+                }
+              ],
+              "indentPt": 120
+            },
+            {
+              "id": "b05.l3",
+              "runs": [
+                {
+                  "text": "ระหว่าง"
+                }
+              ],
+              "indentPt": 60
+            },
+            {
+              "id": "b05.l4",
+              "runs": [
+                {
+                  "text": "นายสมชาย ใจดี   จำเลย"
+                }
+              ],
+              "indentPt": 120
+            }
+          ]
+        },
+        {
+          "id": "b06",
+          "role": "body",
+          "align": "left",
+          "spaceBeforePt": 12,
+          "lineHeightPt": 22,
+          "lines": [
+            {
+              "id": "b06.l1",
+              "runs": [
+                {
+                  "text": "เรื่อง  ขอเลื่อนคดี"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b07",
+          "role": "body",
+          "align": "left",
+          "spaceBeforePt": 10,
+          "indentFirstPt": 48,
+          "lineHeightPt": 22,
+          "lines": [
+            {
+              "id": "b07.l1",
+              "runs": [
+                {
+                  "text": "ข้าพเจ้า นายสมชาย ใจดี จำเลย ขอยื่นคำร้องมีข้อความตามที่จะกล่าวต่อไปนี้"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b08",
+          "role": "clause",
+          "align": "justify",
+          "indentFirstPt": 48,
+          "spaceBeforePt": 6,
+          "lineHeightPt": 22,
+          "lines": [
+            {
+              "id": "b08.l01",
+              "runs": [
+                {
+                  "text": "ข้อ ๑. คดีนี้ศาลได้นัดสืบพยานโจทก์ในวันที่ ๒๐ ตุลาคม ๒๕๖๗ เวลา ๐๙.๐๐ นาฬิกา ซึ่งผู้ร้องได้ทราบวันนัดโดยชอบแล้ว"
+                }
+              ]
+            },
+            {
+              "id": "b08.l02",
+              "spaceBeforePt": 6,
+              "runs": [
+                {
+                  "text": "ข้อ ๒. ก่อนถึงวันนัด ผู้ร้องป่วยด้วยโรคไข้เลือดออก แพทย์มีคำสั่งให้พักรักษาตัวในโรงพยาบาลเป็นเวลาไม่น้อยกว่าเจ็ดวัน รายละเอียดปรากฏตามใบรับรองแพทย์เอกสารท้ายคำร้องหมายเลข ๑ ผู้ร้องจึงไม่อาจมาศาลตามกำหนดนัดได้"
+                }
+              ]
+            },
+            {
+              "id": "b08.l03",
+              "spaceBeforePt": 6,
+              "runs": [
+                {
+                  "text": "ข้อ ๓. การที่ผู้ร้องไม่อาจมาศาลได้ในวันนัดมิได้เกิดจากความจงใจหรือประวิงคดี แต่เป็นเหตุสุดวิสัยอันเกิดจากความเจ็บป่วย หากศาลไม่อนุญาตให้เลื่อนคดี ย่อมทำให้ผู้ร้องเสียเปรียบในเชิงคดีและเสียความเป็นธรรม"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b09",
+          "role": "body",
+          "align": "left",
+          "spaceBeforePt": 8,
+          "indentFirstPt": 48,
+          "lineHeightPt": 22,
+          "lines": [
+            {
+              "id": "b09.l1",
+              "runs": [
+                {
+                  "text": "จึงขอประทานกราบเรียนต่อศาลเพื่อโปรดอนุญาตให้เลื่อนคดีไปนัดหน้า"
+                }
+              ]
+            },
+            {
+              "id": "b09.l2",
+              "runs": [
+                {
+                  "text": "ควรมิควรแล้วแต่จะโปรด"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b10",
+          "role": "signature",
+          "align": "left",
+          "indentLeftPt": 230,
+          "spaceBeforePt": 16,
+          "lineHeightPt": 26,
+          "lines": [
+            {
+              "id": "b10.l1",
+              "runs": [
+                {
+                  "text": "ลงชื่อ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 130,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " ผู้ร้อง"
+                }
+              ]
+            },
+            {
+              "id": "b10.l2",
+              "runs": [
+                {
+                  "text": "(นายสมชาย ใจดี)"
+                }
+              ],
+              "indentPt": 30
+            }
+          ]
+        },
+        {
+          "id": "b11",
+          "role": "attestation",
+          "align": "left",
+          "spaceBeforePt": 10,
+          "sizePt": 13,
+          "lineHeightPt": 22,
+          "indentFirstPt": 48,
+          "lines": [
+            {
+              "id": "b11.l1",
+              "runs": [
+                {
+                  "text": "ข้าพเจ้าขอรับรองว่า คำร้องฉบับนี้ข้าพเจ้าเป็นผู้เรียงและพิมพ์เอง"
+                }
+              ]
+            },
+            {
+              "id": "b11.l2",
+              "runs": [
+                {
+                  "text": "ลงชื่อ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 120,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " ผู้เรียงและพิมพ์"
+                }
+              ],
+              "indentPt": 150
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
