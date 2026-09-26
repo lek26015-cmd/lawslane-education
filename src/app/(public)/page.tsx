@@ -3,7 +3,7 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { GoogleAd } from '@/components/google-ad';
-import { Target, ChevronRight } from "lucide-react";
+import { Target, ChevronRight, Briefcase, Languages, ArrowRight } from "lucide-react";
 import { RecommendedBooksSection } from '@/components/education/recommended-books';
 import {
   FeatureCardsAnimated,
@@ -11,6 +11,7 @@ import {
   ExamCategoriesAnimated,
 } from '@/components/education/animated-sections';
 import { SampleExamsList } from '@/components/education/sample-exams-list';
+import { LatestArticlesSection } from '@/components/education/latest-articles';
 import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
 import type { Metadata } from 'next';
 
@@ -148,6 +149,54 @@ export default function EducationPage() {
         <RecommendedBooksSection />
       </SectionFadeIn>
 
+      {/* รับสมัครทนายและล่าม — ลิงก์ไปหน้าสมัครบนเว็บหลัก */}
+      <SectionFadeIn delay={0.2}>
+        <section className="rounded-3xl text-white p-6 md:p-12 bg-[linear-gradient(135deg,#082a5a,#0B3979,#0B3979)]">
+          <div className="text-center mb-8 md:mb-10">
+            <h2 className="text-2xl md:text-4xl font-bold">ร่วมงานกับ Lawslane</h2>
+            <p className="mt-3 text-blue-100 md:text-lg max-w-2xl mx-auto">
+              สอบผ่านแล้วหรือเป็นทนายความอยู่แล้ว? ใช้ความรู้กฎหมายหารายได้บนแพลตฟอร์มของเรา
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+            {[
+              {
+                icon: Briefcase,
+                title: 'สมัครเป็นทนายความ',
+                description: 'สร้างโปรไฟล์ทนาย รับเคสและลูกความใหม่ผ่าน Lawslane พร้อมระบบนัดหมายและแชทปรึกษาออนไลน์',
+                href: 'https://lawslane.com/th/for-lawyers',
+                cta: 'สมัครเป็นทนาย',
+              },
+              {
+                icon: Languages,
+                title: 'สมัครเป็นล่ามกฎหมาย',
+                description: 'ใช้ภาษาต่างประเทศรับงานล่ามศาล สถานีตำรวจ และแปลเอกสารกฎหมาย ตั้งเรทราคาเอง รับงานได้ทั้งในพื้นที่และออนไลน์',
+                href: 'https://lawslane.com/th/for-interpreters',
+                cta: 'สมัครเป็นล่าม',
+              },
+            ].map(({ icon: Icon, title, description, href, cta }) => (
+              <div key={href} className="rounded-2xl bg-white/10 border border-white/15 p-6 md:p-8 flex flex-col">
+                <div className="w-12 h-12 rounded-xl bg-white text-[#0B3979] flex items-center justify-center mb-4">
+                  <Icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold">{title}</h3>
+                <p className="mt-2 text-blue-100 flex-1">{description}</p>
+                <a
+                  href={href}
+                  className="mt-6 inline-flex items-center justify-center gap-2 self-start rounded-full bg-white text-[#0B3979] font-bold px-6 h-11 hover:bg-slate-100 transition-colors"
+                >
+                  {cta} <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            ))}
+          </div>
+        </section>
+      </SectionFadeIn>
+
+      {/* บทความล่าสุด — ส่วนท้ายหน้าแรก */}
+      <SectionFadeIn delay={0.2}>
+        <LatestArticlesSection />
+      </SectionFadeIn>
 
 
       
