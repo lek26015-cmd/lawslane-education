@@ -147,12 +147,12 @@ export function TestimonialsAnimated() {
                             initial={{ rotate: 0 }}
                             whileHover={{ rotate: -5 }}
                         >
-                            <Quote className="w-8 h-8 text-sky-200 mb-4" />
+                            <Quote className="w-8 h-8 text-blue-200 mb-4" />
                         </motion.div>
                         <p className="text-slate-600 mb-4">"{t.quote}"</p>
                         <div className="flex items-center gap-3">
                             <motion.div
-                                className="w-10 h-10 bg-gradient-to-br from-sky-400 to-sky-500 rounded-full flex items-center justify-center text-white font-medium"
+                                className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center text-white font-medium"
                                 whileHover={{ scale: 1.1 }}
                             >
                                 {t.initial}
@@ -175,7 +175,7 @@ export function ExamCategoriesAnimated() {
         { name: "กฎหมายแพ่ง", count: "25 ชุด", href: "/exams?category=civil", colors: "from-blue-50 to-blue-100 border-blue-200 hover:border-blue-400", iconBg: "bg-blue-500", textColor: "text-blue-900", countColor: "text-blue-600" },
         { name: "วิ.แพ่ง", count: "18 ชุด", href: "/exams?category=civil-procedure", colors: "from-green-50 to-green-100 border-green-200 hover:border-green-400", iconBg: "bg-green-500", textColor: "text-green-900", countColor: "text-green-600" },
         { name: "กฎหมายอาญา", count: "22 ชุด", href: "/exams?category=criminal", colors: "from-red-50 to-red-100 border-red-200 hover:border-red-400", iconBg: "bg-red-500", textColor: "text-red-900", countColor: "text-red-600" },
-        { name: "วิ.อาญา", count: "20 ชุด", href: "/exams?category=criminal-procedure", colors: "from-sky-50 to-sky-100 border-sky-200 hover:border-sky-400", iconBg: "bg-sky-500", textColor: "text-sky-900", countColor: "text-sky-600" }
+        { name: "วิ.อาญา", count: "20 ชุด", href: "/exams?category=criminal-procedure", colors: "from-blue-50 to-blue-100 border-blue-200 hover:border-blue-400", iconBg: "bg-blue-500", textColor: "text-blue-900", countColor: "text-[#0B3979]" }
     ];
 
     const containerVariants = {

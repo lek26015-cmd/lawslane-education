@@ -58,7 +58,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     if (isUserLoading || isLoading || !order) {
         return (
             <div className="container mx-auto py-12 flex justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#0B3979]" />
             </div>
         );
     }
@@ -77,7 +77,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
                         คำสั่งซื้อ #{order.id}
-                        {order.status === 'SHIPPING' && <Badge className="bg-sky-600">กำลังจัดส่ง</Badge>}
+                        {order.status === 'SHIPPING' && <Badge className="bg-[#0B3979]">กำลังจัดส่ง</Badge>}
                         {order.status === 'PENDING' && <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50">รอชำระเงิน</Badge>}
                         {order.status === 'COMPLETED' && <Badge className="bg-green-600">เสร็จสิ้น</Badge>}
                     </h1>
@@ -89,9 +89,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
             {/* Tracking Section */}
             {(order.status === 'SHIPPING' || order.status === 'COMPLETED') && order.shippingInfo?.trackingNumber && (
-                <Card className="mb-8 border-sky-100 bg-sky-50/30 overflow-hidden">
-                    <CardHeader className="bg-sky-100/50 border-b border-sky-100 pb-4">
-                        <CardTitle className="text-lg flex items-center gap-2 text-sky-900">
+                <Card className="mb-8 border-blue-100 bg-blue-50/30 overflow-hidden">
+                    <CardHeader className="bg-blue-100/50 border-b border-blue-100 pb-4">
+                        <CardTitle className="text-lg flex items-center gap-2 text-blue-900">
                             <Truck className="h-5 w-5" /> ข้อมูลการจัดส่ง
                         </CardTitle>
                     </CardHeader>
@@ -103,14 +103,14 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                     <span className="text-2xl font-mono font-bold text-slate-900 tracking-wider">
                                         {order.shippingInfo.trackingNumber}
                                     </span>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-sky-600" onClick={() => handleCopy(order.shippingInfo!.trackingNumber!)}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-[#0B3979]" onClick={() => handleCopy(order.shippingInfo!.trackingNumber!)}>
                                         <Copy className="h-4 w-4" />
                                     </Button>
 
                                 </div>
-                                <p className="text-sm text-sky-700 font-medium">ขนส่งโดย: {order.shippingInfo.carrier}</p>
+                                <p className="text-sm text-[#082a5a] font-medium">ขนส่งโดย: {order.shippingInfo.carrier}</p>
                             </div>
-                            <Button className="bg-sky-600 hover:bg-sky-700 text-white shadow-md">
+                            <Button className="bg-[#0B3979] hover:bg-[#082a5a] text-white shadow-md">
                                 ตรวจสอบสถานะพัสดุ
                             </Button>
                         </div>
@@ -160,7 +160,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                 <Separator className="my-2" />
                                 <div className="flex justify-between font-bold text-lg">
                                     <span>ยอดสุทธิ</span>
-                                    <span className="text-sky-700">฿{order.totalAmount.toLocaleString()}</span>
+                                    <span className="text-[#082a5a]">฿{order.totalAmount.toLocaleString()}</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -204,9 +204,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                     <p className="text-sm font-medium">ชำระเงินแล้ว</p>
                                 </div>
                                 <div className="relative">
-                                    <div className={`absolute -left-[31px] top-0 h-4 w-4 rounded-full border-2 ${['SHIPPING', 'COMPLETED'].includes(order.status) ? 'bg-sky-100 border-sky-500' : 'bg-slate-100 border-slate-300'}`} />
+                                    <div className={`absolute -left-[31px] top-0 h-4 w-4 rounded-full border-2 ${['SHIPPING', 'COMPLETED'].includes(order.status) ? 'bg-blue-100 border-blue-500' : 'bg-slate-100 border-slate-300'}`} />
                                     <p className="text-sm font-medium">กำลังจัดส่ง</p>
-                                    {order.status === 'SHIPPING' && <p className="text-xs text-sky-600 font-medium mt-1">สถานะปัจจุบัน</p>}
+                                    {order.status === 'SHIPPING' && <p className="text-xs text-[#0B3979] font-medium mt-1">สถานะปัจจุบัน</p>}
                                 </div>
                                 <div className="relative">
                                     <div className={`absolute -left-[31px] top-0 h-4 w-4 rounded-full border-2 ${order.status === 'COMPLETED' ? 'bg-green-100 border-green-500' : 'bg-slate-100 border-slate-300'}`} />

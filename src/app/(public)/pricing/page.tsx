@@ -41,9 +41,9 @@ const tiers = [
         yearlyPrice: 1490,
         icon: Crown,
         color: 'sky',
-        gradient: 'from-sky-50 to-blue-50',
-        borderColor: 'border-sky-300',
-        buttonStyle: 'bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white shadow-lg shadow-sky-200/50',
+        gradient: 'from-blue-50 to-blue-50',
+        borderColor: 'border-blue-300',
+        buttonStyle: 'bg-gradient-to-r from-blue-500 to-[#0B3979] hover:from-[#0B3979] hover:to-[#082a5a] text-white shadow-lg shadow-blue-200/50',
         badge: 'แนะนำ',
         features: [
             { text: 'ทำข้อสอบไม่จำกัด ทุกวัน', included: true },
@@ -64,9 +64,9 @@ const tiers = [
         yearlyPrice: 2990,
         icon: Sparkles,
         color: 'navy',
-        gradient: 'from-slate-50 to-sky-50',
-        borderColor: 'border-sky-800',
-        buttonStyle: 'bg-gradient-to-r from-sky-800 to-sky-900 hover:from-sky-900 hover:to-slate-900 text-white shadow-lg shadow-sky-900/30',
+        gradient: 'from-slate-50 to-blue-50',
+        borderColor: 'border-blue-800',
+        buttonStyle: 'bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-slate-900 text-white shadow-lg shadow-blue-900/30',
         badge: null,
         features: [
             { text: 'ทุกอย่างใน Premium', included: true },
@@ -122,7 +122,7 @@ export default function PricingPage() {
                     </span>
                     <button
                         onClick={() => setIsYearly(!isYearly)}
-                        className={`relative w-14 h-7 rounded-full transition-colors ${isYearly ? 'bg-sky-500' : 'bg-slate-300'}`}
+                        className={`relative w-14 h-7 rounded-full transition-colors ${isYearly ? 'bg-blue-500' : 'bg-slate-300'}`}
                     >
                         <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${isYearly ? 'translate-x-7' : ''}`} />
                     </button>
@@ -130,7 +130,7 @@ export default function PricingPage() {
                         รายปี
                     </span>
                     {isYearly && (
-                        <Badge className="bg-sky-100 text-sky-700 border-sky-200 text-xs">
+                        <Badge className="bg-blue-100 text-[#082a5a] border-blue-200 text-xs">
                             ประหยัด 38%
                         </Badge>
                     )}
@@ -149,7 +149,7 @@ export default function PricingPage() {
                     >
                         {/* Recommended badge */}
                         {tier.badge && (
-                            <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-sky-500 to-sky-600 text-white text-center py-1.5 text-xs font-bold tracking-wider">
+                            <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-[#0B3979] text-white text-center py-1.5 text-xs font-bold tracking-wider">
                                 <Star className="w-3 h-3 inline mr-1" />
                                 {tier.badge}
                             </div>
@@ -159,7 +159,7 @@ export default function PricingPage() {
                             {/* Tier header */}
                             <div className="flex items-center gap-3 mb-4">
                                 <div className={`w-10 h-10 rounded-xl bg-white shadow flex items-center justify-center`}>
-                                    <tier.icon className={`w-5 h-5 ${tier.color === 'navy' ? 'text-sky-900' : 'text-sky-500'}`} />
+                                    <tier.icon className={`w-5 h-5 ${tier.color === 'navy' ? 'text-blue-900' : 'text-blue-500'}`} />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg text-slate-900">{tier.name}</h3>

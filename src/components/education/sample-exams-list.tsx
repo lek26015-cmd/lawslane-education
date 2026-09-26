@@ -63,21 +63,21 @@ export async function SampleExamsList() {
                 <Link
                     key={exam.id}
                     href={`/exams/${exam.id}/take`}
-                    className="group flex gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-sky-200 transition-all"
+                    className="group flex gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all"
                 >
-                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center">
+                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-[#0B3979] flex items-center justify-center">
                         <FileText className="w-10 h-10 text-white/60" />
-                        <div className="absolute top-0 left-0 bg-sky-600 text-[10px] text-white px-2 py-0.5 font-bold">
+                        <div className="absolute top-0 left-0 bg-[#0B3979] text-[10px] text-white px-2 py-0.5 font-bold">
                             ฟรี
                         </div>
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-medium text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full">
+                            <span className="text-xs font-medium text-[#0B3979] bg-blue-50 px-2 py-0.5 rounded-full">
                                 {mapCategory(exam.category, exam.subjectCode)}
                             </span>
                         </div>
-                        <h3 className="font-bold text-slate-900 leading-tight mb-1 group-hover:text-sky-700 transition-colors line-clamp-2">
+                        <h3 className="font-bold text-slate-900 leading-tight mb-1 group-hover:text-[#082a5a] transition-colors line-clamp-2">
                             {exam.title}
                         </h3>
                         <div className="flex items-center gap-3 text-xs text-slate-400">
@@ -88,7 +88,7 @@ export async function SampleExamsList() {
                             {exam.session && <span>{exam.session}</span>}
                         </div>
                     </div>
-                    <div className="flex items-center justify-center text-slate-300 group-hover:text-sky-500 transition-colors">
+                    <div className="flex items-center justify-center text-slate-300 group-hover:text-blue-500 transition-colors">
                         <ChevronRight className="w-5 h-5" />
                     </div>
                 </Link>

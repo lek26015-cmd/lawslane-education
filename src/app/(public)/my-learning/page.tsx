@@ -171,11 +171,11 @@ export default function MyLearningPage() {
                 <Card className="bg-white border-slate-200 shadow-sm h-full rounded-2xl overflow-hidden">
                     <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <User className="w-5 h-5 text-sky-600" />
+                            <User className="w-5 h-5 text-[#0B3979]" />
                             ข้อมูลส่วนตัว
                         </CardTitle>
                         <Link href="/profile">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-sky-600">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-[#0B3979]">
                                 <Settings className="w-4 h-4" />
                             </Button>
                         </Link>
@@ -185,7 +185,7 @@ export default function MyLearningPage() {
                             {user?.photoURL ? (
                                 <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-sky-100 text-sky-600 text-3xl font-bold">
+                                <div className="w-full h-full flex items-center justify-center bg-blue-100 text-[#0B3979] text-3xl font-bold">
                                     {user?.displayName?.charAt(0) || 'U'}
                                 </div>
                             )}
@@ -195,11 +195,11 @@ export default function MyLearningPage() {
 
                         <div className="w-full grid grid-cols-2 gap-4 border-t border-slate-100 pt-6">
                             <div className="text-center">
-                                <p className="text-2xl font-bold text-sky-600">{examHistory.length}</p>
+                                <p className="text-2xl font-bold text-[#0B3979]">{examHistory.length}</p>
                                 <p className="text-xs text-slate-500">ชุดข้อสอบ</p>
                             </div>
                             <div className="text-center">
-                                <p className="text-2xl font-bold text-sky-600">{ebooks.length}</p>
+                                <p className="text-2xl font-bold text-[#0B3979]">{ebooks.length}</p>
                                 <p className="text-xs text-slate-500">คอร์ส/หนังสือ</p>
                             </div>
                         </div>
@@ -210,7 +210,7 @@ export default function MyLearningPage() {
                 <Card className="bg-white border-slate-200 shadow-sm md:col-span-2 rounded-2xl overflow-hidden">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <TrendingUp className="w-5 h-5 text-sky-600" />
+                            <TrendingUp className="w-5 h-5 text-[#0B3979]" />
                             สมรรถนะรายวิชา (Performance)
                         </CardTitle>
                     </CardHeader>
@@ -239,28 +239,28 @@ export default function MyLearningPage() {
                     <TabsList className="bg-transparent h-auto p-0 flex flex-wrap gap-2">
                         <TabsTrigger
                             value="exams"
-                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-sky-600 hover:bg-slate-50 data-[state=active]:border-sky-600 data-[state=active]:text-sky-600 data-[state=active]:bg-sky-50 shadow-none whitespace-nowrap transition-colors"
+                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-[#0B3979] hover:bg-slate-50 data-[state=active]:border-[#0B3979] data-[state=active]:text-[#0B3979] data-[state=active]:bg-blue-50 shadow-none whitespace-nowrap transition-colors"
                         >
                             <FileText className="mr-2 h-4 w-4" />
                             คลังข้อสอบ
                         </TabsTrigger>
                         <TabsTrigger
                             value="orders"
-                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-sky-600 hover:bg-slate-50 data-[state=active]:border-sky-600 data-[state=active]:text-sky-600 data-[state=active]:bg-sky-50 shadow-none whitespace-nowrap transition-colors"
+                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-[#0B3979] hover:bg-slate-50 data-[state=active]:border-[#0B3979] data-[state=active]:text-[#0B3979] data-[state=active]:bg-blue-50 shadow-none whitespace-nowrap transition-colors"
                         >
                             <ShoppingBag className="mr-2 h-4 w-4" />
                             ประวัติการสั่งซื้อ
                         </TabsTrigger>
                         <TabsTrigger
                             value="ebooks"
-                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-sky-600 hover:bg-slate-50 data-[state=active]:border-sky-600 data-[state=active]:text-sky-600 data-[state=active]:bg-sky-50 shadow-none whitespace-nowrap transition-colors"
+                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-[#0B3979] hover:bg-slate-50 data-[state=active]:border-[#0B3979] data-[state=active]:text-[#0B3979] data-[state=active]:bg-blue-50 shadow-none whitespace-nowrap transition-colors"
                         >
                             <BookOpen className="mr-2 h-4 w-4" />
                             หนังสือของฉัน
                         </TabsTrigger>
                         <TabsTrigger
                             value="courses"
-                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-sky-600 hover:bg-slate-50 data-[state=active]:border-sky-600 data-[state=active]:text-sky-600 data-[state=active]:bg-sky-50 shadow-none whitespace-nowrap transition-colors"
+                            className="rounded-t-lg border-b-2 border-transparent px-4 py-3 font-medium text-slate-500 hover:text-[#0B3979] hover:bg-slate-50 data-[state=active]:border-[#0B3979] data-[state=active]:text-[#0B3979] data-[state=active]:bg-blue-50 shadow-none whitespace-nowrap transition-colors"
                         >
                             <PlayCircle className="mr-2 h-4 w-4" />
                             คอร์สเรียน
@@ -299,7 +299,7 @@ export default function MyLearningPage() {
                                             <span className="text-xs text-slate-500">
                                                 ซื้อเมื่อ: {new Date(book.purchasedAt).toLocaleDateString('th-TH')}
                                             </span>
-                                            <Button size="sm" className="bg-sky-600 hover:bg-sky-700 text-white rounded-full px-5">
+                                            <Button size="sm" className="bg-[#0B3979] hover:bg-[#082a5a] text-white rounded-full px-5">
                                                 {book.type === 'COURSE' ? 'เข้าเรียน' : 'อ่านเลย'}
                                             </Button>
                                         </div>
@@ -314,7 +314,7 @@ export default function MyLearningPage() {
                                 <h3 className="text-lg font-bold text-slate-900 mb-2">ยังไม่มีหนังสือหรือคอร์สเรียน</h3>
                                 <p className="text-slate-500 mb-6">เลือกซื้อหนังสือ E-Book หรือคอร์สเรียนเพื่อเริ่มเรียนรู้ได้เลย</p>
                                 <Link href="/books">
-                                    <Button className="bg-sky-600 hover:bg-sky-700 text-white">
+                                    <Button className="bg-[#0B3979] hover:bg-[#082a5a] text-white">
                                         เลือกซื้อหนังสือ
                                     </Button>
                                 </Link>
@@ -348,7 +348,7 @@ export default function MyLearningPage() {
                                     </div>
                                     <div className="p-5">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="bg-sky-100 text-sky-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                            <span className="bg-blue-100 text-[#082a5a] text-[10px] font-bold px-2 py-0.5 rounded-full">
                                                 COURSE
                                             </span>
                                             <span className="text-[10px] text-slate-400">
@@ -359,14 +359,14 @@ export default function MyLearningPage() {
                                             {course.title}
                                         </h4>
                                         <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-4">
-                                            <div className="bg-sky-500 h-full w-[0%]" />
+                                            <div className="bg-blue-500 h-full w-[0%]" />
                                         </div>
                                         <div className="flex items-center justify-between text-xs text-slate-500 mb-4">
                                             <span>ความคืบหน้า</span>
                                             <span>0%</span>
                                         </div>
                                         <Link href={`/courses/${course.id}`}>
-                                            <Button className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl">
+                                            <Button className="w-full bg-[#0B3979] hover:bg-[#082a5a] text-white rounded-xl">
                                                 เข้าเรียน
                                             </Button>
                                         </Link>
@@ -385,7 +385,7 @@ export default function MyLearningPage() {
                                             คุณยังไม่ได้ลงทะเบียนเรียนคอร์สใดๆ เริ่มต้นเรียนรู้กฎหมายได้เลยวันนี้
                                         </p>
                                     </div>
-                                    <Button asChild variant="default" className="bg-sky-600 hover:bg-sky-700">
+                                    <Button asChild variant="default" className="bg-[#0B3979] hover:bg-[#082a5a]">
                                         <Link href="/courses">
                                             ดูคอร์สเรียนทั้งหมด
                                         </Link>
@@ -399,7 +399,7 @@ export default function MyLearningPage() {
                 <TabsContent value="exams" className="space-y-4">
                     {isLoading ? (
                         <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0B3979]"></div>
                         </div>
                     ) : examHistory.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -420,7 +420,7 @@ export default function MyLearningPage() {
                                     </div>
                                     <CardHeader className="pb-3 pt-4">
                                         <div className="flex justify-between items-start">
-                                            <div className="bg-sky-50 text-sky-700 px-2 py-0.5 rounded text-[10px] font-bold mb-2 inline-block">
+                                            <div className="bg-blue-50 text-[#082a5a] px-2 py-0.5 rounded text-[10px] font-bold mb-2 inline-block">
                                                 {(exam as any).examId || 'EXAM'}
                                             </div>
                                             <span className="text-xs text-slate-400">
@@ -434,12 +434,12 @@ export default function MyLearningPage() {
                                     <CardContent>
                                         <div className="flex items-center justify-between text-sm text-slate-600 mb-4">
                                             <span>คะแนนที่ได้:</span>
-                                            <span className="font-bold text-lg text-sky-600">
+                                            <span className="font-bold text-lg text-[#0B3979]">
                                                 {(exam as any).result?.totalScore !== undefined ? (exam as any).result.totalScore : ((exam as any).score || 0)}
                                                 /10
                                             </span>
                                         </div>
-                                        <Button variant="outline" className="w-full text-sky-600 border-sky-200 hover:bg-sky-50" disabled>
+                                        <Button variant="outline" className="w-full text-[#0B3979] border-blue-200 hover:bg-blue-50" disabled>
                                             ดูผลการวิเคราะห์
                                         </Button>
                                     </CardContent>
@@ -458,7 +458,7 @@ export default function MyLearningPage() {
                                         คุณยังไม่ได้เริ่มทำข้อสอบรายการใด เริ่มต้นฝึกฝนวันนี้เพื่อเตรียมความพร้อม
                                     </p>
                                 </div>
-                                <Button asChild variant="default" className="bg-sky-600 hover:bg-sky-700">
+                                <Button asChild variant="default" className="bg-[#0B3979] hover:bg-[#082a5a]">
                                     <Link href="/exams">
                                         ดูคลังข้อสอบทั้งหมด
                                     </Link>
@@ -491,9 +491,9 @@ export default function MyLearningPage() {
             </Tabs>
 
             {/* AI Recommendations Card (Moved to Bottom) */}
-            <Card className="bg-gradient-to-br from-sky-50 to-white border-sky-100 shadow-sm rounded-2xl overflow-hidden">
+            <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100 shadow-sm rounded-2xl overflow-hidden">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg text-sky-900">
+                    <CardTitle className="flex items-center gap-2 text-lg text-blue-900">
                         <Sparkles className="w-5 h-5 text-amber-500" />
                         บทความแนะนำสำหรับคุณ
                     </CardTitle>
@@ -505,12 +505,12 @@ export default function MyLearningPage() {
                     <div className="grid md:grid-cols-3 gap-4">
                         {articles.length > 0 ? (
                             articles.map((article, idx) => (
-                                <Link href={`/articles/${article.slug}`} key={idx} className="flex gap-3 items-start bg-white p-4 rounded-xl border border-sky-50 shadow-sm hover:shadow-md transition-shadow group cursor-pointer h-full">
-                                    <div className="mt-1 bg-sky-100 p-2 rounded-lg text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                                <Link href={`/articles/${article.slug}`} key={idx} className="flex gap-3 items-start bg-white p-4 rounded-xl border border-blue-50 shadow-sm hover:shadow-md transition-shadow group cursor-pointer h-full">
+                                    <div className="mt-1 bg-blue-100 p-2 rounded-lg text-[#0B3979] group-hover:bg-[#0B3979] group-hover:text-white transition-colors">
                                         <BookOpen className="w-5 h-5" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-semibold text-slate-900 group-hover:text-sky-700 transition-colors line-clamp-2 mb-1">{article.title}</h4>
+                                        <h4 className="text-sm font-semibold text-slate-900 group-hover:text-[#082a5a] transition-colors line-clamp-2 mb-1">{article.title}</h4>
                                         <p className="text-xs text-slate-500 line-clamp-2">{article.description || 'บทความน่ารู้จาก Lawslane'}</p>
                                     </div>
                                 </Link>

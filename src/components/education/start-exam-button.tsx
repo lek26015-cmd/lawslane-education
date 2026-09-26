@@ -56,7 +56,7 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
         <>
             <Button
                 size="lg"
-                className="h-14 px-8 text-lg bg-gradient-to-r from-sky-600 to-sky-600 hover:from-sky-700 hover:to-sky-700 shadow-lg shadow-sky-200"
+                className="h-14 px-8 text-lg bg-gradient-to-r from-[#0B3979] to-[#0B3979] hover:from-[#082a5a] hover:to-[#082a5a] shadow-lg shadow-blue-200"
                 onClick={() => {
                     setAgreed(false);
                     setShowRules(true);
@@ -132,7 +132,7 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
                             type="checkbox"
                             checked={agreed}
                             onChange={(e) => setAgreed(e.target.checked)}
-                            className="w-4 h-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                            className="w-4 h-4 rounded border-slate-300 text-[#0B3979] focus:ring-blue-500"
                         />
                         <span className="text-sm text-slate-600">
                             ข้าพเจ้ายอมรับกฎระเบียบการทำข้อสอบทั้งหมดแล้ว
@@ -149,7 +149,7 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
                             ยกเลิก
                         </Button>
                         <Button
-                            className="flex-1 h-11 bg-[#0c4a6e] hover:bg-[#0a3d5c] text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex-1 h-11 bg-[#082a5a] hover:bg-[#0a3d5c] text-white disabled:opacity-40 disabled:cursor-not-allowed"
                             disabled={!agreed}
                             onClick={handleStartExam}
                         >

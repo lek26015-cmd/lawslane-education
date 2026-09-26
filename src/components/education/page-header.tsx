@@ -31,7 +31,7 @@ interface PageHeaderProps {
 }
 
 const THEME_GRADIENTS = {
-    sky: 'from-sky-900 via-sky-800 to-slate-900',
+    sky: 'from-blue-900 via-blue-800 to-slate-900',
     emerald: 'from-emerald-900 via-emerald-800 to-slate-900',
     amber: 'from-amber-800 via-amber-700 to-slate-900',
     slate: 'from-slate-800 via-slate-700 to-slate-900',
@@ -69,7 +69,7 @@ export function PageHeader({
                         >
                             <Link
                                 href={backLink}
-                                className="inline-flex items-center text-slate-500 hover:text-sky-600 transition-colors mb-4 text-sm font-medium"
+                                className="inline-flex items-center text-slate-500 hover:text-[#0B3979] transition-colors mb-4 text-sm font-medium"
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2" />
                                 {backLabel}
@@ -83,9 +83,9 @@ export function PageHeader({
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-                                className="w-14 h-14 md:w-16 md:h-16 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0"
+                                className="w-14 h-14 md:w-16 md:h-16 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0"
                             >
-                                <Icon className={`w-7 h-7 md:w-8 md:h-8 ${iconColor || 'text-sky-600'}`} />
+                                <Icon className={`w-7 h-7 md:w-8 md:h-8 ${iconColor || 'text-[#0B3979]'}`} />
                             </motion.div>
                         )}
 
@@ -105,7 +105,7 @@ export function PageHeader({
                                         initial={{ opacity: 0, scale: 0.8 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: 0.25 }}
-                                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeColor || 'bg-sky-100 text-sky-700'}`}
+                                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeColor || 'bg-blue-100 text-[#082a5a]'}`}
                                     >
                                         {badge}
                                     </motion.span>
@@ -151,8 +151,8 @@ export function PageHeader({
         <div className={containerClasses}>
             {/* Background decoration - glow effects */}
             <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-                <div className="absolute top-10 right-10 w-48 h-48 bg-sky-300 rounded-full blur-[80px]" />
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-sky-400 rounded-full blur-[100px]" />
+                <div className="absolute top-10 right-10 w-48 h-48 bg-blue-300 rounded-full blur-[80px]" />
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-400 rounded-full blur-[100px]" />
             </div>
 
             <motion.div
@@ -220,7 +220,7 @@ export function PageHeader({
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="text-blue-50/90 text-sm md:text-base max-w-3xl leading-relaxed font-light"
+                                className="text-blue-50/90 text-sm md:text-base max-w-3xl leading-relaxed font-normal"
                             >
                                 {description}
                             </motion.p>
@@ -272,7 +272,7 @@ export function CompactPageHeader({
             {backLink && (
                 <Link
                     href={backLink}
-                    className="inline-flex items-center text-slate-600 hover:text-sky-600 transition-colors mb-3 text-sm"
+                    className="inline-flex items-center text-slate-600 hover:text-[#0B3979] transition-colors mb-3 text-sm"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     {backLabel}

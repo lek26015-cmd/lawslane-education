@@ -27,7 +27,7 @@ function BookCoverImage({ src, alt }: { src: string; alt: string }) {
 
     if (hasError || !src) {
         return (
-            <div className="w-full h-full bg-gradient-to-br from-sky-800 to-sky-600 flex flex-col items-center justify-center p-4 text-white">
+            <div className="w-full h-full bg-gradient-to-br from-blue-800 to-[#0B3979] flex flex-col items-center justify-center p-4 text-white">
                 <BookOpen className="w-12 h-12 mb-3 opacity-80" />
                 {lawCode && (
                     <span className="text-lg font-bold opacity-90">{lawCode}</span>
@@ -89,11 +89,11 @@ function EbookDownloadButton({ book }: { book: Book }) {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="w-full border-sky-200 text-sky-500 hover:bg-sky-50 hover:text-sky-700 text-xs h-8"
+                    className="w-full border-blue-200 text-blue-500 hover:bg-blue-50 hover:text-[#082a5a] text-xs h-8"
                 >
                     <Lock className="w-3 h-3 mr-1.5" />
                     Premium เท่านั้น
-                    <Crown className="w-3 h-3 ml-1.5 text-sky-400" />
+                    <Crown className="w-3 h-3 ml-1.5 text-blue-400" />
                 </Button>
             </Link>
         );
@@ -118,7 +118,7 @@ function EbookDownloadButton({ book }: { book: Book }) {
         <Button
             onClick={handleDownload}
             size="sm"
-            className="w-full bg-sky-600 hover:bg-sky-700 text-white text-xs h-8"
+            className="w-full bg-[#0B3979] hover:bg-[#082a5a] text-white text-xs h-8"
         >
             <Download className="w-3 h-3 mr-1.5" />
             ดาวน์โหลดฟรี
@@ -292,7 +292,7 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                     <Button
                         variant="link"
                         onClick={() => { setSearchQuery(''); setBookType('all'); }}
-                        className="mt-2 text-sky-600"
+                        className="mt-2 text-[#0B3979]"
                     >
                         ล้างตัวกรอง
                     </Button>

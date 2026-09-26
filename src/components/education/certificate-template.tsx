@@ -10,7 +10,7 @@ interface CertificateTemplateProps {
 
 export function CertificateTemplate({ studentName, courseName, completionDate, certificateId }: CertificateTemplateProps) {
     return (
-        <div className="w-full h-full bg-white text-slate-900 font-serif relative overflow-hidden flex flex-col items-center justify-center p-12 border-[20px] border-double border-sky-900">
+        <div className="w-full h-full bg-white text-slate-900 font-serif relative overflow-hidden flex flex-col items-center justify-center p-12 border-[20px] border-double border-blue-900">
 
             {/* Background Watermark */}
             <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
@@ -23,10 +23,10 @@ export function CertificateTemplate({ studentName, courseName, completionDate, c
             <div className="text-center space-y-2 mb-12">
                 <div className="flex items-center justify-center gap-3 mb-6">
                     {/* Lawlanes Logo Mockup */}
-                    <div className="w-12 h-12 bg-sky-900 text-white flex items-center justify-center rounded-lg font-bold text-2xl">L</div>
-                    <span className="text-2xl font-bold text-sky-900 tracking-widest uppercase font-sans">Lawlanes Education</span>
+                    <div className="w-12 h-12 bg-blue-900 text-white flex items-center justify-center rounded-lg font-bold text-2xl">L</div>
+                    <span className="text-2xl font-bold text-blue-900 tracking-widest uppercase font-sans">Lawlanes Education</span>
                 </div>
-                <h1 className="text-6xl font-bold text-sky-900 uppercase tracking-widest">Certificate</h1>
+                <h1 className="text-6xl font-bold text-blue-900 uppercase tracking-widest">Certificate</h1>
                 <p className="text-2xl text-slate-500 uppercase tracking-widest">of Completion</p>
             </div>
 
@@ -34,7 +34,7 @@ export function CertificateTemplate({ studentName, courseName, completionDate, c
             <div className="text-center space-y-8 max-w-4xl">
                 <p className="text-xl text-slate-600 italic">This is to certify that</p>
 
-                <h2 className="text-5xl font-bold text-sky-700 border-b-2 border-sky-100 pb-4 px-12 inline-block min-w-[400px]">
+                <h2 className="text-5xl font-bold text-[#082a5a] border-b-2 border-blue-100 pb-4 px-12 inline-block min-w-[400px]">
                     {studentName}
                 </h2>
 
@@ -54,7 +54,7 @@ export function CertificateTemplate({ studentName, courseName, completionDate, c
                 <div className="text-center">
                     <div className="h-16 flex items-end justify-center mb-2">
                         {/* Mock Signature */}
-                        <span className="font-cursive text-3xl text-sky-800 rotate-[-5deg] block">Thawi L.</span>
+                        <span className="font-cursive text-3xl text-blue-800 rotate-[-5deg] block">Thawi L.</span>
                     </div>
                     <div className="border-t border-slate-400 w-64 pt-2">
                         <p className="font-bold text-slate-900">Thawit Lert</p>
@@ -69,8 +69,8 @@ export function CertificateTemplate({ studentName, courseName, completionDate, c
             </div>
 
             {/* Decorative Corner */}
-            <div className="absolute top-0 left-0 w-32 h-32 border-t-[20px] border-l-[20px] border-sky-900/20"></div>
-            <div className="absolute bottom-0 right-0 w-32 h-32 border-b-[20px] border-r-[20px] border-sky-900/20"></div>
+            <div className="absolute top-0 left-0 w-32 h-32 border-t-[20px] border-l-[20px] border-blue-900/20"></div>
+            <div className="absolute bottom-0 right-0 w-32 h-32 border-b-[20px] border-r-[20px] border-blue-900/20"></div>
         </div>
     );
 }

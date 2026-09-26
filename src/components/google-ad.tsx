@@ -73,7 +73,7 @@ export function GoogleAd({
                 className={`${style.height} w-full rounded-xl border-2 border-dashed border-slate-300 bg-slate-100/50 flex flex-col items-center justify-center gap-1 select-none ${className}`}
             >
                 <span className="text-[11px] font-normal text-slate-400">📢 {style.label}</span>
-                <span className="text-[9px] text-slate-300 font-extralight">
+                <span className="text-[9px] text-slate-300 font-normal">
                     {ADSENSE_PUBLISHER_ID} / slot: {slot}
                 </span>
             </div>

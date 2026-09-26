@@ -57,7 +57,7 @@ export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrder
                             <div>
                                 <h4 className="font-semibold text-slate-900 line-clamp-1">{book.title}</h4>
                                 <p className="text-sm text-slate-500 mb-2">โดย {book.author}</p>
-                                <p className="text-lg font-bold text-sky-700">฿{book.price.toLocaleString()}</p>
+                                <p className="text-lg font-bold text-[#082a5a]">฿{book.price.toLocaleString()}</p>
                             </div>
                         </div>
 
@@ -125,7 +125,7 @@ export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrder
                     {step === 'payment' ? (
                         <>
                             <Button variant="outline" onClick={() => onOpenChange?.(false)}>ยกเลิก</Button>
-                            <Button onClick={() => setStep('confirm')} className="bg-sky-600 hover:bg-sky-700">
+                            <Button onClick={() => setStep('confirm')} className="bg-[#0B3979] hover:bg-[#082a5a]">
                                 แจ้งชำระเงิน
                             </Button>
                         </>

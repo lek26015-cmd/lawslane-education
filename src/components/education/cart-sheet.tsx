@@ -107,10 +107,10 @@ export function CartSheet() {
                 </div>
                 <div className="flex justify-between text-lg font-bold pt-2 border-t">
                     <span>ยอดรวมสุทธิ</span>
-                    <span className="text-sky-700">฿{totalPrice.toLocaleString()}</span>
+                    <span className="text-[#082a5a]">฿{totalPrice.toLocaleString()}</span>
                 </div>
             </div>
-            <Button className="w-full h-12 text-lg font-bold bg-sky-600 hover:bg-sky-700" onClick={() => {
+            <Button className="w-full h-12 text-lg font-bold bg-[#0B3979] hover:bg-[#082a5a]" onClick={() => {
                 setIsOpen(false);
                 router.push('/checkout');
             }}>
@@ -125,8 +125,8 @@ export function CartSheet() {
 
         return (
             <div className="fixed bottom-24 right-6 z-[90] w-[400px] animate-in slide-in-from-bottom-5 fade-in duration-300">
-                <Card className="shadow-2xl border-sky-100 overflow-hidden flex flex-col max-h-[600px]">
-                    <CardHeader className="bg-sky-600 text-white p-4 flex flex-row items-center justify-between shrink-0">
+                <Card className="shadow-2xl border-blue-100 overflow-hidden flex flex-col max-h-[600px]">
+                    <CardHeader className="bg-[#0B3979] text-white p-4 flex flex-row items-center justify-between shrink-0">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <ShoppingCart className="w-5 h-5" /> ตะกร้าสินค้า
                         </CardTitle>

@@ -172,7 +172,7 @@ export function AnimatedCourseGrid({ courses }: AnimatedCourseGridProps) {
                     <Button
                         variant="link"
                         onClick={() => { setSearchQuery(''); setLevel('all'); setCategory('all'); }}
-                        className="mt-2 text-sky-600"
+                        className="mt-2 text-[#0B3979]"
                     >
                         ล้างตัวกรอง
                     </Button>
