@@ -11,6 +11,7 @@ import {
   ExamCategoriesAnimated,
 } from '@/components/education/animated-sections';
 import { SampleExamsList } from '@/components/education/sample-exams-list';
+import { LatestArticlesSection } from '@/components/education/latest-articles';
 import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
 import type { Metadata } from 'next';
 
@@ -192,6 +193,10 @@ export default function EducationPage() {
         </section>
       </SectionFadeIn>
 
+      {/* บทความล่าสุด — ส่วนท้ายหน้าแรก */}
+      <SectionFadeIn delay={0.2}>
+        <LatestArticlesSection />
+      </SectionFadeIn>
 
 
       
