@@ -31,22 +31,22 @@ export function UpgradePaywall({ used, dailyLimit, context = 'exam' }: UpgradePa
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-lg"
             >
-                <div className="relative overflow-hidden rounded-2xl border border-sky-200/60 bg-white shadow-2xl">
+                <div className="relative overflow-hidden rounded-2xl border border-blue-200/60 bg-white shadow-2xl">
                     {/* Premium gradient top */}
-                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-sky-400 via-sky-500 to-sky-600" />
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-400 via-blue-500 to-[#0B3979]" />
 
                     {/* Decorative background */}
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-sky-50 to-blue-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-50 to-blue-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
 
                     <div className="relative p-8 sm:p-10">
                         {/* Crown icon */}
-                        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-blue-100 shadow-lg shadow-sky-100/50">
-                            <Crown className="h-10 w-10 text-sky-600" />
+                        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-100 shadow-lg shadow-blue-100/50">
+                            <Crown className="h-10 w-10 text-[#0B3979]" />
                         </div>
 
                         {/* Limit info */}
                         <div className="text-center mb-2">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-sky-50 border border-sky-200 rounded-full text-sm text-sky-700 font-medium mb-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-full text-sm text-[#082a5a] font-medium mb-4">
                                 <Clock className="w-4 h-4" />
                                 {contextMessages[context]} {used}/{dailyLimit} ครั้งวันนี้
                             </div>
@@ -57,17 +57,17 @@ export function UpgradePaywall({ used, dailyLimit, context = 'exam' }: UpgradePa
                         </h2>
                         <p className="text-center text-slate-500 mb-8 leading-relaxed">
                             ปลดล็อกข้อสอบไม่จำกัด พร้อม AI ตรวจอัตนัย<br />
-                            เริ่มต้นเพียง <span className="text-sky-600 font-bold">฿199/เดือน</span>
+                            เริ่มต้นเพียง <span className="text-[#0B3979] font-bold">฿199/เดือน</span>
                         </p>
 
                         {/* Benefits */}
                         <div className="space-y-3 mb-8">
                             {[
-                                { icon: Zap, text: 'ทำข้อสอบได้ไม่จำกัด ทุกวัน', color: 'text-sky-500', bg: 'bg-sky-50' },
-                                { icon: BookOpen, text: 'ดูเฉลยทุกข้อ ทุกชุด พร้อมคำอธิบาย', color: 'text-sky-600', bg: 'bg-sky-50' },
+                                { icon: Zap, text: 'ทำข้อสอบได้ไม่จำกัด ทุกวัน', color: 'text-blue-500', bg: 'bg-blue-50' },
+                                { icon: BookOpen, text: 'ดูเฉลยทุกข้อ ทุกชุด พร้อมคำอธิบาย', color: 'text-[#0B3979]', bg: 'bg-blue-50' },
                                 { icon: Brain, text: 'AI ตรวจอัตนัย ให้คะแนนและคำแนะนำ', color: 'text-blue-500', bg: 'bg-blue-50' },
-                                { icon: BarChart3, text: 'Dashboard สถิติการเรียนรู้', color: 'text-sky-700', bg: 'bg-sky-50/70' },
-                                { icon: Shield, text: 'ไม่มีโฆษณารบกวน', color: 'text-sky-800', bg: 'bg-slate-50' },
+                                { icon: BarChart3, text: 'Dashboard สถิติการเรียนรู้', color: 'text-[#082a5a]', bg: 'bg-blue-50/70' },
+                                { icon: Shield, text: 'ไม่มีโฆษณารบกวน', color: 'text-blue-800', bg: 'bg-slate-50' },
                             ].map((item, i) => (
                                 <motion.div
                                     key={i}
@@ -86,7 +86,7 @@ export function UpgradePaywall({ used, dailyLimit, context = 'exam' }: UpgradePa
                         <div className="space-y-3">
                             <Link href="/pricing" className="block">
                                 <Button
-                                    className="w-full h-13 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-bold text-base shadow-lg shadow-sky-200/50 transition-all hover:shadow-xl hover:shadow-sky-300/50 rounded-xl"
+                                    className="w-full h-13 bg-gradient-to-r from-blue-500 to-[#0B3979] hover:from-[#0B3979] hover:to-[#082a5a] text-white font-bold text-base shadow-lg shadow-blue-200/50 transition-all hover:shadow-xl hover:shadow-blue-300/50 rounded-xl"
                                 >
                                     <Crown className="mr-2 h-5 w-5" />
                                     ดูแพ็กเกจ Premium
@@ -105,7 +105,7 @@ export function UpgradePaywall({ used, dailyLimit, context = 'exam' }: UpgradePa
                     </div>
 
                     {/* Bottom note */}
-                    <div className="border-t border-sky-100 bg-sky-50/30 px-8 py-4">
+                    <div className="border-t border-blue-100 bg-blue-50/30 px-8 py-4">
                         <p className="text-center text-xs text-slate-400">
                             สิทธิ์ทำข้อสอบฟรีจะรีเซ็ตทุกวัน เที่ยงคืน • ยกเลิกได้ทุกเมื่อ
                         </p>
@@ -134,8 +134,8 @@ export function ExamLimitBanner({ used, dailyLimit, isPremium }: {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm ${isLow
-                    ? 'bg-sky-50 border border-sky-300 text-sky-800'
-                    : 'bg-sky-50 border border-sky-200 text-sky-700'
+                    ? 'bg-blue-50 border border-blue-300 text-blue-800'
+                    : 'bg-blue-50 border border-blue-200 text-[#082a5a]'
                 }`}
         >
             <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export function ExamLimitBanner({ used, dailyLimit, isPremium }: {
             </div>
             {isLow && (
                 <Link href="/pricing">
-                    <Button size="sm" variant="ghost" className="text-sky-600 hover:text-sky-700 hover:bg-sky-100 text-xs h-7 px-3">
+                    <Button size="sm" variant="ghost" className="text-[#0B3979] hover:text-[#082a5a] hover:bg-blue-100 text-xs h-7 px-3">
                         <Crown className="w-3 h-3 mr-1" />
                         อัพเกรด
                     </Button>

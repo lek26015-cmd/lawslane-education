@@ -248,7 +248,7 @@ function CheckoutContent() {
                         <Card className="shadow-md border-0 overflow-hidden">
                             <CardHeader className="bg-slate-100/50 border-b pb-4">
                                 <CardTitle className="flex items-center gap-2 text-xl text-slate-800">
-                                    <CreditCard className="w-5 h-5 text-sky-600" />
+                                    <CreditCard className="w-5 h-5 text-[#0B3979]" />
                                     สรุปรายการคำสั่งซื้อ
                                 </CardTitle>
                             </CardHeader>
@@ -274,7 +274,7 @@ function CheckoutContent() {
                                                         }
                                                     </p>
                                                 </div>
-                                                <p className="font-semibold text-sky-600 text-sm">
+                                                <p className="font-semibold text-[#0B3979] text-sm">
                                                     ฿{(item.price * item.quantity).toLocaleString()}
                                                 </p>
                                             </div>
@@ -296,7 +296,7 @@ function CheckoutContent() {
                                     </div>
                                     <div className="border-t pt-3 mt-3 flex justify-between items-center">
                                         <span className="font-bold text-lg text-slate-900">ยอดสุทธิ</span>
-                                        <span className="font-bold text-2xl text-sky-700">฿{totalPrice.toLocaleString()}</span>
+                                        <span className="font-bold text-2xl text-[#082a5a]">฿{totalPrice.toLocaleString()}</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -384,7 +384,7 @@ function CheckoutContent() {
                                                 <span className="font-mono text-2xl font-bold text-slate-800 tracking-wider">
                                                     012-3-45678-9
                                                 </span>
-                                                <Button variant="ghost" size="sm" className="h-8 hover:bg-slate-100 text-sky-600" onClick={() => handleCopy('012-3-45678-9')}>
+                                                <Button variant="ghost" size="sm" className="h-8 hover:bg-slate-100 text-[#0B3979]" onClick={() => handleCopy('012-3-45678-9')}>
                                                     <Copy className="w-4 h-4 mr-1" /> คัดลอก
                                                 </Button>
                                             </div>
@@ -400,7 +400,7 @@ function CheckoutContent() {
                                     <div className="space-y-4">
                                         <Label htmlFor="slip-upload" className="text-base font-semibold">หลักฐานการโอนเงิน</Label>
                                         <div
-                                            className={`flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${slipFile ? 'border-green-400 bg-green-50' : 'border-slate-300 hover:border-sky-400 hover:bg-slate-50'}`}
+                                            className={`flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${slipFile ? 'border-green-400 bg-green-50' : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'}`}
                                             onClick={() => fileInputRef.current?.click()}
                                         >
                                             {slipFile ? (
@@ -432,7 +432,7 @@ function CheckoutContent() {
                         <CardFooter className="bg-slate-50 border-t p-6 flex flex-col gap-3">
                             <Button
                                 onClick={handleSubmit}
-                                className="w-full h-14 text-lg font-bold bg-sky-600 hover:bg-sky-700 shadow-lg shadow-sky-200 transition-all hover:scale-[1.01]"
+                                className="w-full h-14 text-lg font-bold bg-[#0B3979] hover:bg-[#082a5a] shadow-lg shadow-blue-200 transition-all hover:scale-[1.01]"
                                 disabled={isLoading}
                             >
                                 {isLoading ? (
@@ -451,7 +451,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-sky-600" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#0B3979]" /></div>}>
             <CheckoutContent />
         </Suspense>
     );

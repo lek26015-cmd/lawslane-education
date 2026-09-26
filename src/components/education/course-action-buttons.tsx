@@ -83,7 +83,7 @@ export function CourseActionButtons({ course }: CourseActionButtonsProps) {
         <div className="space-y-3">
             <Button
                 onClick={handleBuyNow}
-                className="w-full h-12 text-lg font-bold bg-sky-600 hover:bg-sky-700 shadow-lg shadow-sky-200"
+                className="w-full h-12 text-lg font-bold bg-[#0B3979] hover:bg-[#082a5a] shadow-lg shadow-blue-200"
             >
                 สมัครเรียนเลย
             </Button>

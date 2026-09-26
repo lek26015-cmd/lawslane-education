@@ -151,7 +151,7 @@ function AnswerKeyPageContent({ params }: { params: Promise<{ id: string }> }) {
                         {showAllAnswers ? 'ซ่อนทั้งหมด' : 'แสดงทั้งหมด'}
                     </Button>
                     <Link href={`/exams/${id}/take`}>
-                        <Button size="sm" className="gap-1.5 bg-sky-600 hover:bg-sky-700">
+                        <Button size="sm" className="gap-1.5 bg-[#0B3979] hover:bg-[#082a5a]">
                             <FileText className="w-4 h-4" />
                             ทำข้อสอบ
                         </Button>
@@ -180,7 +180,7 @@ function AnswerKeyPageContent({ params }: { params: Promise<{ id: string }> }) {
                                     className="w-full text-left p-5 hover:bg-slate-50 transition-colors"
                                 >
                                     <div className="flex items-start gap-4">
-                                        <div className="w-9 h-9 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                        <div className="w-9 h-9 rounded-full bg-blue-100 text-[#082a5a] flex items-center justify-center font-bold text-sm flex-shrink-0">
                                             {q.order}
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -285,7 +285,7 @@ function AnswerKeyPageContent({ params }: { params: Promise<{ id: string }> }) {
                     <Button variant="outline">กลับไปคลังข้อสอบ</Button>
                 </Link>
                 <Link href={`/exams/${id}/take`}>
-                    <Button className="bg-sky-600 hover:bg-sky-700">ทำข้อสอบชุดนี้</Button>
+                    <Button className="bg-[#0B3979] hover:bg-[#082a5a]">ทำข้อสอบชุดนี้</Button>
                 </Link>
             </div>
         </div>

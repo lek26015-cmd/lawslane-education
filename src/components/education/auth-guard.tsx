@@ -27,7 +27,7 @@ export function AuthGuard({ children, message, returnTo }: AuthGuardProps) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+                    <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
                     <p className="text-sm text-slate-500">กำลังตรวจสอบสิทธิ์...</p>
                 </div>
             </div>
@@ -48,12 +48,12 @@ export function AuthGuard({ children, message, returnTo }: AuthGuardProps) {
                 >
                     <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xl">
                         {/* Top decorative gradient */}
-                        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-sky-500 via-sky-500 to-sky-400" />
+                        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-blue-500 to-blue-400" />
 
                         <div className="p-8 sm:p-10">
                             {/* Icon */}
-                            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-sky-100">
-                                <Lock className="h-8 w-8 text-sky-600" />
+                            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-100">
+                                <Lock className="h-8 w-8 text-[#0B3979]" />
                             </div>
 
                             {/* Title */}
@@ -69,7 +69,7 @@ export function AuthGuard({ children, message, returnTo }: AuthGuardProps) {
                                 {[
                                     { icon: BookOpen, text: 'เข้าถึงคลังข้อสอบทนายความ', color: 'text-blue-500' },
                                     { icon: ShieldCheck, text: 'ดูเฉลยพร้อมธงคำตอบ', color: 'text-emerald-500' },
-                                    { icon: Scale, text: 'ฝึกสอบจำลองเสมือนจริง', color: 'text-sky-500' },
+                                    { icon: Scale, text: 'ฝึกสอบจำลองเสมือนจริง', color: 'text-blue-500' },
                                 ].map((item, i) => (
                                     <motion.div
                                         key={i}
@@ -88,7 +88,7 @@ export function AuthGuard({ children, message, returnTo }: AuthGuardProps) {
                             <div className="space-y-3">
                                 <Link href={loginHref} className="block">
                                     <Button
-                                        className="w-full h-12 bg-gradient-to-r from-sky-600 to-sky-600 hover:from-sky-700 hover:to-sky-700 text-white font-semibold text-base shadow-lg shadow-sky-200/50 transition-all hover:shadow-xl hover:shadow-sky-300/50"
+                                        className="w-full h-12 bg-gradient-to-r from-[#0B3979] to-[#0B3979] hover:from-[#082a5a] hover:to-[#082a5a] text-white font-semibold text-base shadow-lg shadow-blue-200/50 transition-all hover:shadow-xl hover:shadow-blue-300/50"
                                     >
                                         <LogIn className="mr-2 h-5 w-5" />
                                         เข้าสู่ระบบ

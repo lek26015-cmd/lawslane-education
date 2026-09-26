@@ -67,7 +67,7 @@ export function CoursePlayer({ course, initialLessonId }: CoursePlayerProps) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-xs text-slate-400 hover:text-sky-600 hidden lg:flex"
+                        className="text-xs text-slate-400 hover:text-[#0B3979] hidden lg:flex"
                         onClick={() => setProgress(progress === 100 ? 10 : 100)}
                     >
                         [DEMO: Toggle 100%]
@@ -88,7 +88,7 @@ export function CoursePlayer({ course, initialLessonId }: CoursePlayerProps) {
                     <div className="hidden md:flex items-center text-xs text-slate-500 mr-4">
                         <div className="w-32 bg-slate-100 h-2 rounded-full overflow-hidden mr-2">
                             <div
-                                className={`h-full w-[${progress}%] transition-all duration-1000 ${progress === 100 ? 'bg-green-500' : 'bg-sky-500'}`}
+                                className={`h-full w-[${progress}%] transition-all duration-1000 ${progress === 100 ? 'bg-green-500' : 'bg-blue-500'}`}
                                 style={{ width: `${progress}%` }}
                             ></div>
                         </div>
@@ -154,7 +154,7 @@ export function CoursePlayer({ course, initialLessonId }: CoursePlayerProps) {
                         <Button
                             onClick={handleNext}
                             disabled={!hasNext}
-                            className="bg-sky-600 hover:bg-sky-700 gap-2"
+                            className="bg-[#0B3979] hover:bg-[#082a5a] gap-2"
                         >
                             บทต่อไป <ChevronRight className="w-4 h-4" />
                         </Button>
@@ -185,14 +185,14 @@ export function CoursePlayer({ course, initialLessonId }: CoursePlayerProps) {
                                 <div className="text-center py-12 text-slate-500">
                                     <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-20" />
                                     <p>ยังไม่มีคำถามในบทเรียนนี้</p>
-                                    <Button variant="link" className="text-sky-600">ตั้งคำถามเป็นคนแรก</Button>
+                                    <Button variant="link" className="text-[#0B3979]">ตั้งคำถามเป็นคนแรก</Button>
                                 </div>
                             </TabsContent>
                             <TabsContent value="resources" className="mt-6">
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between p-4 border rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
                                         <div className="flex items-center gap-3">
-                                            <div className="bg-sky-100 p-2 rounded-lg text-sky-600">
+                                            <div className="bg-blue-100 p-2 rounded-lg text-[#0B3979]">
                                                 <Download className="w-5 h-5" />
                                             </div>
                                             <div>
@@ -233,11 +233,11 @@ export function CoursePlayer({ course, initialLessonId }: CoursePlayerProps) {
                                                 <button
                                                     key={lesson.id}
                                                     onClick={() => setActiveLessonId(lesson.id)}
-                                                    className={`w-full text-left p-4 flex gap-3 transition-colors ${isActive ? 'bg-sky-50 border-l-4 border-sky-600' : 'hover:bg-slate-50 border-l-4 border-transparent'}`}
+                                                    className={`w-full text-left p-4 flex gap-3 transition-colors ${isActive ? 'bg-blue-50 border-l-4 border-[#0B3979]' : 'hover:bg-slate-50 border-l-4 border-transparent'}`}
                                                 >
                                                     <div className="mt-0.5">
                                                         {isActive ? (
-                                                            <PlayCircle className="w-4 h-4 text-sky-600" />
+                                                            <PlayCircle className="w-4 h-4 text-[#0B3979]" />
                                                         ) : displayCompleted ? (
                                                             <CheckCircle className="w-4 h-4 text-green-500" />
                                                         ) : lesson.isFreePreview ? (
@@ -247,7 +247,7 @@ export function CoursePlayer({ course, initialLessonId }: CoursePlayerProps) {
                                                         )}
                                                     </div>
                                                     <div className="flex-1">
-                                                        <p className={`text-sm ${isActive ? 'font-semibold text-sky-900' : 'text-slate-600'}`}>
+                                                        <p className={`text-sm ${isActive ? 'font-semibold text-blue-900' : 'text-slate-600'}`}>
                                                             {lesson.title}
                                                         </p>
                                                         <div className="flex items-center gap-2 mt-1">

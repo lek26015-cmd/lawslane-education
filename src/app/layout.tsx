@@ -1,14 +1,16 @@
-import { Kanit } from 'next/font/google';
+import { Prompt } from 'next/font/google';
 import { EducationToasterWrapper } from '@/components/education/education-toaster-wrapper';
 import "./globals.css";
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { GoogleAdSenseScript } from '@/components/google-ad';
 import { OrganizationJsonLd, WebsiteJsonLd } from '@/components/seo/json-ld';
 
-const kanit = Kanit({
-  subsets: ['latin', 'thai'],
-  weight: ['200', '300', '400', '500', '600'],
-  variable: '--font-kanit',
+// ฟอนต์เดียวกับเว็บหลัก lawslane.com
+const prompt = Prompt({
+  subsets: ['thai', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-prompt',
 });
 
 import type { Metadata } from 'next';
@@ -71,7 +73,7 @@ export const metadata: Metadata = {
     // google: 'YOUR_GOOGLE_VERIFICATION_CODE', // TODO: ใส่เมื่อ verify กับ Google Search Console
   },
   other: {
-    'theme-color': '#0284c7',
+    'theme-color': '#0B3979',
     'apple-mobile-web-app-title': 'Lawslane Wittaya',
   },
 };
@@ -86,7 +88,7 @@ export default function RootLayout({
       <head>
         <GoogleAdSenseScript />
       </head>
-      <body className={`min-h-screen bg-slate-50 ${kanit.className}`}>
+      <body className={`min-h-screen bg-slate-50 ${prompt.variable} ${prompt.className}`}>
         <OrganizationJsonLd />
         <WebsiteJsonLd />
         <FirebaseClientProvider>

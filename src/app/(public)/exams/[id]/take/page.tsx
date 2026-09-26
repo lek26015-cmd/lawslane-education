@@ -158,7 +158,7 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#0B3979]" />
             </div>
         );
     }
@@ -195,7 +195,7 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
                         <Button
                             onClick={handleSubmit}
                             disabled={isSubmitting}
-                            className="bg-sky-600 hover:bg-sky-700"
+                            className="bg-[#0B3979] hover:bg-[#082a5a]"
                         >
                             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
                             ส่งข้อสอบ
@@ -216,7 +216,7 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
                                 key={q.id}
                                 onClick={() => setCurrentQuestionIndex(idx)}
                                 className={`w-10 h-10 rounded-lg flex items-center justify-center font-medium text-sm transition-all ${isCurrent
-                                        ? 'bg-sky-600 text-white'
+                                        ? 'bg-[#0B3979] text-white'
                                         : isAnswered
                                             ? 'bg-green-100 text-green-700 border border-green-300'
                                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -235,7 +235,7 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
             {/* Current Question */}
             <div className="bg-white rounded-xl border p-6 shadow-sm">
                 <div className="flex items-start gap-4 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-normal flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 text-[#082a5a] flex items-center justify-center font-normal flex-shrink-0">
                         {currentQuestionIndex + 1}
                     </div>
                     <div className="flex-1">
@@ -255,12 +255,12 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
                                 key={idx}
                                 onClick={() => handleAnswerChange(currentQuestion.id, idx)}
                                 className={`w-full text-left p-4 rounded-lg border transition-all flex items-center gap-3 ${answers[currentQuestion.id] === idx
-                                        ? 'border-sky-500 bg-sky-50'
+                                        ? 'border-blue-500 bg-blue-50'
                                         : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                                     }`}
                             >
                                 {answers[currentQuestion.id] === idx
-                                    ? <CheckCircle className="w-5 h-5 text-sky-600" />
+                                    ? <CheckCircle className="w-5 h-5 text-[#0B3979]" />
                                     : <Circle className="w-5 h-5 text-slate-300" />
                                 }
                                 <span className="text-slate-700">{option}</span>

@@ -152,18 +152,18 @@ export default function ExamListingPage() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6 font-light">
+        <div className="max-w-6xl mx-auto space-y-6 font-normal">
             {/* ── Hero Section (Rich Gradient) ── */}
-            <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-600 via-sky-700 to-sky-900 p-6 sm:p-10 text-white">
+            <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0B3979] via-[#082a5a] to-blue-900 p-6 sm:p-10 text-white">
                 {/* Decorative blobs */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-sky-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4" />
-                <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-sky-300/10 rounded-full blur-2xl" />
+                <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-blue-300/10 rounded-full blur-2xl" />
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-4">
-                        <FatExam size={22} className="text-sky-200" />
-                        <span className="text-[10px] font-normal text-sky-200 uppercase tracking-wider">
+                        <FatExam size={22} className="text-blue-200" />
+                        <span className="text-[10px] font-normal text-blue-200 uppercase tracking-wider">
                             Law Examination Portal
                         </span>
                     </div>
@@ -171,7 +171,7 @@ export default function ExamListingPage() {
                     <h1 className="text-2xl sm:text-4xl font-medium tracking-tight">
                         คลังข้อสอบกฎหมาย
                     </h1>
-                    <p className="text-sky-100/80 font-extralight mt-3 text-sm max-w-2xl leading-relaxed">
+                    <p className="text-blue-100/80 font-normal mt-3 text-sm max-w-2xl leading-relaxed">
                         แหล่งรวมข้อสอบกฎหมายจริงย้อนหลังทุกชั้นปีและตั๋วทนายความ พร้อมระบบฝึกทำข้อสอบและ AI ช่วยตรวจแนวคำตอบอัตนัย
                     </p>
 
@@ -181,7 +181,7 @@ export default function ExamListingPage() {
                             href="/books"
                             className="rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white px-4 py-2.5 text-xs font-normal transition-all flex items-center gap-2"
                         >
-                            <FatBook size={14} className="text-sky-200" />
+                            <FatBook size={14} className="text-blue-200" />
                             ดูหนังสือเตรียมสอบ
                         </Link>
                         <button
@@ -190,9 +190,9 @@ export default function ExamListingPage() {
                                 setSelectedSubject('all');
                                 gridTopRef.current?.scrollIntoView({ behavior: 'smooth' });
                             }}
-                            className="rounded-lg bg-white hover:bg-sky-50 text-sky-700 px-4 py-2.5 text-xs font-normal transition-all flex items-center gap-2 shadow-lg shadow-sky-900/20"
+                            className="rounded-lg bg-white hover:bg-blue-50 text-[#082a5a] px-4 py-2.5 text-xs font-normal transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20"
                         >
-                            <FatExam size={14} className="text-sky-600" />
+                            <FatExam size={14} className="text-[#0B3979]" />
                             สำรวจข้อสอบทั้งหมด ({totalExams.toLocaleString()})
                         </button>
                     </div>
@@ -202,7 +202,7 @@ export default function ExamListingPage() {
             {/* ── Stats Cards ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                    { icon: <FatExam size={20} className="text-sky-600" />, label: 'ข้อสอบทั้งหมด', value: `${totalExams.toLocaleString()} ชุด`, bg: 'bg-sky-50 border-sky-100' },
+                    { icon: <FatExam size={20} className="text-[#0B3979]" />, label: 'ข้อสอบทั้งหมด', value: `${totalExams.toLocaleString()} ชุด`, bg: 'bg-blue-50 border-blue-100' },
                     { icon: <FatSparkle size={20} className="text-amber-500" />, label: 'AI ตรวจอัตนัย', value: 'พร้อมใช้งาน', bg: 'bg-amber-50 border-amber-100' },
                     { icon: <FatCheckCircle size={20} className="text-emerald-600" />, label: 'เนื้อหาตรวจสอบแล้ว', value: 'มาตรฐานวิชาการ', bg: 'bg-emerald-50 border-emerald-100' },
                 ].map((stat) => (
@@ -210,7 +210,7 @@ export default function ExamListingPage() {
                         <div className="flex-shrink-0">{stat.icon}</div>
                         <div>
                             <div className="text-sm font-normal text-slate-900">{stat.value}</div>
-                            <div className="text-[10px] text-slate-500 font-extralight">{stat.label}</div>
+                            <div className="text-[10px] text-slate-500 font-normal">{stat.label}</div>
                         </div>
                     </div>
                 ))}
@@ -239,12 +239,12 @@ export default function ExamListingPage() {
                             }}
                             className={`p-3 rounded-xl text-left transition-all border ${
                                 isSelected
-                                    ? 'bg-sky-600 text-white border-sky-600 shadow-md shadow-sky-500/20'
-                                    : 'bg-white text-slate-700 border-slate-200 hover:border-sky-300 hover:shadow-sm'
+                                    ? 'bg-[#0B3979] text-white border-[#0B3979] shadow-md shadow-blue-500/20'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:shadow-sm'
                             }`}
                         >
                             <div className="text-sm font-normal">{tab.title}</div>
-                            <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-sky-200' : 'text-slate-400'}`}>
+                            <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-blue-200' : 'text-slate-400'}`}>
                                 {tab.subtitle} • {count} ชุด
                             </div>
                         </button>
@@ -260,7 +260,7 @@ export default function ExamListingPage() {
                     <input
                         type="text"
                         placeholder="ค้นหาข้อสอบ เช่น กฎหมายแพ่ง, เอกเทศสัญญา, ตั๋วทนาย..."
-                        className="w-full pl-10 pr-4 h-11 text-sm font-extralight rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none transition-all placeholder:text-slate-400"
+                        className="w-full pl-10 pr-4 h-11 text-sm font-normal rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-400"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -284,7 +284,7 @@ export default function ExamListingPage() {
                             {selectedSubject !== 'all' && (
                                 <button
                                     onClick={() => setSelectedSubject('all')}
-                                    className="text-sky-600 hover:underline font-normal"
+                                    className="text-[#0B3979] hover:underline font-normal"
                                 >
                                     ดูทุกวิชา
                                 </button>
@@ -297,12 +297,12 @@ export default function ExamListingPage() {
                                 onClick={() => setSelectedSubject('all')}
                                 className={`px-3 py-1.5 rounded-lg text-[11px] font-normal whitespace-nowrap transition-all border ${
                                     selectedSubject === 'all'
-                                        ? 'bg-sky-600 text-white border-sky-600'
-                                        : 'bg-white text-slate-600 border-slate-200 hover:border-sky-300'
+                                        ? 'bg-[#0B3979] text-white border-[#0B3979]'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
                                 }`}
                             >
                                 ทั้งหมด
-                                <span className={`ml-1 text-[9px] ${selectedSubject === 'all' ? 'text-sky-200' : 'text-slate-400'}`}>
+                                <span className={`ml-1 text-[9px] ${selectedSubject === 'all' ? 'text-blue-200' : 'text-slate-400'}`}>
                                     ({totalExams})
                                 </span>
                             </button>
@@ -314,12 +314,12 @@ export default function ExamListingPage() {
                                     onClick={() => setSelectedSubject(name)}
                                     className={`px-3 py-1.5 rounded-lg text-[11px] font-normal whitespace-nowrap transition-all border ${
                                         selectedSubject === name
-                                            ? 'bg-sky-600 text-white border-sky-600'
-                                            : 'bg-white text-slate-600 border-slate-200 hover:border-sky-300'
+                                            ? 'bg-[#0B3979] text-white border-[#0B3979]'
+                                            : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
                                     }`}
                                 >
                                     {name}
-                                    <span className={`ml-1 text-[9px] ${selectedSubject === name ? 'text-sky-200' : 'text-slate-400'}`}>
+                                    <span className={`ml-1 text-[9px] ${selectedSubject === name ? 'text-blue-200' : 'text-slate-400'}`}>
                                         ({count})
                                     </span>
                                 </button>
@@ -337,7 +337,7 @@ export default function ExamListingPage() {
                 {!isLoading && (
                     <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 bg-white px-4 py-3 rounded-xl border border-slate-200">
                         <span className="font-normal text-slate-700 flex items-center gap-2">
-                            <FatFile size={14} className="text-sky-600" />
+                            <FatFile size={14} className="text-[#0B3979]" />
                             แสดง {exams.length} จากทั้งหมด {totalExams.toLocaleString()} ข้อสอบ
                         </span>
 
@@ -346,18 +346,18 @@ export default function ExamListingPage() {
                                 <button
                                     disabled={currentPage === 1 || isLoadingMore}
                                     onClick={() => goToPage(currentPage - 1)}
-                                    className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-sky-300 hover:text-sky-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1 bg-white"
+                                    className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-blue-300 hover:text-[#082a5a] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1 bg-white"
                                 >
                                     <ChevronLeft className="w-3 h-3" />
                                     ก่อนหน้า
                                 </button>
-                                <span className="font-normal text-sky-700 bg-sky-50 border border-sky-200 px-2.5 py-1 rounded-lg text-[10px]">
+                                <span className="font-normal text-[#082a5a] bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg text-[10px]">
                                     หน้า {currentPage} / {totalPages}
                                 </span>
                                 <button
                                     disabled={currentPage === totalPages || isLoadingMore}
                                     onClick={() => goToPage(currentPage + 1)}
-                                    className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-sky-300 hover:text-sky-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1 bg-white"
+                                    className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-blue-300 hover:text-[#082a5a] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1 bg-white"
                                 >
                                     ถัดไป
                                     <ChevronRight className="w-3 h-3" />
@@ -379,14 +379,14 @@ export default function ExamListingPage() {
                 <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8">
                     <FatExam size={48} className="text-slate-300 mx-auto mb-4" />
                     <p className="text-slate-800 text-base font-normal">ไม่พบข้อสอบที่ค้นหา</p>
-                    <p className="text-slate-400 text-xs font-extralight mt-1">ลองเปลี่ยนคำค้นหาหรือเลือกหมวดวิชาอื่น</p>
+                    <p className="text-slate-400 text-xs font-normal mt-1">ลองเปลี่ยนคำค้นหาหรือเลือกหมวดวิชาอื่น</p>
                     <button
                         onClick={() => {
                             setSearchQuery('');
                             setSelectedYear('all');
                             setSelectedSubject('all');
                         }}
-                        className="mt-4 rounded-lg border border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-700 px-4 py-2 text-xs font-normal transition-colors"
+                        className="mt-4 rounded-lg border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-[#082a5a] px-4 py-2 text-xs font-normal transition-colors"
                     >
                         รีเซ็ตตัวกรองทั้งหมด
                     </button>
@@ -403,12 +403,12 @@ export default function ExamListingPage() {
                                     </div>
                                 )}
                             <div
-                                className="rounded-2xl border border-slate-200 bg-white p-5 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/5 transition-all group"
+                                className="rounded-2xl border border-slate-200 bg-white p-5 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 transition-all group"
                             >
                                 {/* Top: Icon & Category */}
                                 <div className="flex items-start justify-between mb-3">
-                                    <div className="h-10 w-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center">
-                                        <FatExam size={20} className="text-sky-600" />
+                                    <div className="h-10 w-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                                        <FatExam size={20} className="text-[#0B3979]" />
                                     </div>
                                     <span className="rounded-md px-2 py-0.5 text-[10px] font-normal border bg-slate-50 text-slate-600 border-slate-200">
                                         {exam.subjectGroup || (exam.category === 'other' ? 'ตั๋วทนาย' : exam.category)}
@@ -416,7 +416,7 @@ export default function ExamListingPage() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-sm font-normal text-slate-900 group-hover:text-sky-600 transition-colors line-clamp-2 leading-relaxed">
+                                <h3 className="text-sm font-normal text-slate-900 group-hover:text-[#0B3979] transition-colors line-clamp-2 leading-relaxed">
                                     {exam.title}
                                 </h3>
 
@@ -424,17 +424,17 @@ export default function ExamListingPage() {
                                 <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-4">
                                     <div>
                                         <div className="text-xs font-normal text-slate-900">{exam.totalQuestions}</div>
-                                        <div className="text-[9px] text-slate-400 font-extralight">ข้อ</div>
+                                        <div className="text-[9px] text-slate-400 font-normal">ข้อ</div>
                                     </div>
                                     {exam.session && (
                                         <div>
                                             <div className="text-xs font-normal text-slate-900 truncate max-w-[120px]">{exam.session}</div>
-                                            <div className="text-[9px] text-slate-400 font-extralight">ปีการศึกษา</div>
+                                            <div className="text-[9px] text-slate-400 font-normal">ปีการศึกษา</div>
                                         </div>
                                     )}
                                     <div>
-                                        <div className="text-xs font-normal text-sky-700">ฟรี</div>
-                                        <div className="text-[9px] text-slate-400 font-extralight">ราคา</div>
+                                        <div className="text-xs font-normal text-[#082a5a]">ฟรี</div>
+                                        <div className="text-[9px] text-slate-400 font-normal">ราคา</div>
                                     </div>
                                 </div>
 
@@ -442,13 +442,13 @@ export default function ExamListingPage() {
                                 <div className="mt-3 flex items-center gap-2">
                                     <Link
                                         href={`/exams/${exam.id}/take`}
-                                        className="flex-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 text-[11px] font-normal transition-colors text-center"
+                                        className="flex-1 rounded-lg bg-[#0B3979] hover:bg-[#082a5a] text-white px-3 py-2 text-[11px] font-normal transition-colors text-center"
                                     >
                                         ทำข้อสอบ →
                                     </Link>
                                     <Link
                                         href={`/exams/${exam.id}/answers`}
-                                        className="flex-1 rounded-lg bg-white border border-slate-200 hover:border-sky-300 text-slate-600 hover:text-sky-700 px-3 py-2 text-[11px] font-normal transition-colors text-center"
+                                        className="flex-1 rounded-lg bg-white border border-slate-200 hover:border-blue-300 text-slate-600 hover:text-[#082a5a] px-3 py-2 text-[11px] font-normal transition-colors text-center"
                                     >
                                         ดูเฉลย
                                     </Link>
@@ -469,7 +469,7 @@ export default function ExamListingPage() {
                                 <button
                                     onClick={() => fetchExams(currentPage + 1)}
                                     disabled={isLoadingMore}
-                                    className="bg-sky-600 hover:bg-sky-700 disabled:opacity-60 text-white font-normal px-6 py-2.5 rounded-xl text-xs transition-all flex items-center gap-2"
+                                    className="bg-[#0B3979] hover:bg-[#082a5a] disabled:opacity-60 text-white font-normal px-6 py-2.5 rounded-xl text-xs transition-all flex items-center gap-2"
                                 >
                                     {isLoadingMore ? (
                                         <>
@@ -483,7 +483,7 @@ export default function ExamListingPage() {
                                         </>
                                     )}
                                 </button>
-                                <p className="text-[10px] text-slate-400 font-extralight">
+                                <p className="text-[10px] text-slate-400 font-normal">
                                     กดดูเพิ่มเพื่อโหลดข้อสอบหน้าถัดไป หรือเลือกเลขหน้าจากแถบด้านล่าง
                                 </p>
                             </div>
@@ -492,7 +492,7 @@ export default function ExamListingPage() {
                         {/* Page Numbers */}
                         {totalPages > 1 && (
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200">
-                                <div className="text-[11px] text-slate-500 font-extralight text-center sm:text-left">
+                                <div className="text-[11px] text-slate-500 font-normal text-center sm:text-left">
                                     หน้า <span className="font-normal text-slate-800">{currentPage}</span> จากทั้งหมด <span className="font-normal text-slate-800">{totalPages}</span> หน้า ({totalExams.toLocaleString()} ข้อสอบ)
                                 </div>
 
@@ -500,7 +500,7 @@ export default function ExamListingPage() {
                                     <button
                                         disabled={currentPage === 1 || isLoadingMore}
                                         onClick={() => goToPage(1)}
-                                        className="h-7 w-7 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-sky-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center justify-center"
+                                        className="h-7 w-7 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center justify-center"
                                         title="หน้าแรก"
                                     >
                                         &laquo;
@@ -509,7 +509,7 @@ export default function ExamListingPage() {
                                     <button
                                         disabled={currentPage === 1 || isLoadingMore}
                                         onClick={() => goToPage(currentPage - 1)}
-                                        className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-sky-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center gap-1"
+                                        className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center gap-1"
                                     >
                                         <ChevronLeft className="w-3 h-3" />
                                         ก่อนหน้า
@@ -527,8 +527,8 @@ export default function ExamListingPage() {
                                                 onClick={() => goToPage(Number(p))}
                                                 className={`h-7 min-w-[28px] px-2 rounded-lg text-[11px] font-normal transition-all border ${
                                                     currentPage === p
-                                                        ? 'bg-sky-600 text-white border-sky-600'
-                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-sky-300 hover:text-sky-700'
+                                                        ? 'bg-[#0B3979] text-white border-[#0B3979]'
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:text-[#082a5a]'
                                                 }`}
                                             >
                                                 {p}
@@ -539,7 +539,7 @@ export default function ExamListingPage() {
                                     <button
                                         disabled={currentPage === totalPages || isLoadingMore}
                                         onClick={() => goToPage(currentPage + 1)}
-                                        className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-sky-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center gap-1"
+                                        className="h-7 px-2.5 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center gap-1"
                                     >
                                         ถัดไป
                                         <ChevronRight className="w-3 h-3" />
@@ -548,7 +548,7 @@ export default function ExamListingPage() {
                                     <button
                                         disabled={currentPage === totalPages || isLoadingMore}
                                         onClick={() => goToPage(totalPages)}
-                                        className="h-7 w-7 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-sky-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center justify-center"
+                                        className="h-7 w-7 rounded-lg text-[11px] font-normal border border-slate-200 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors bg-white flex items-center justify-center"
                                         title="หน้าสุดท้าย"
                                     >
                                         &raquo;
@@ -558,7 +558,7 @@ export default function ExamListingPage() {
                         )}
 
                         {!hasMore && exams.length > 0 && (
-                            <div className="text-center py-4 text-[11px] text-slate-400 font-extralight">
+                            <div className="text-center py-4 text-[11px] text-slate-400 font-normal">
                                 แสดงข้อสอบครบ {totalExams.toLocaleString()} รายการแล้ว
                             </div>
                         )}

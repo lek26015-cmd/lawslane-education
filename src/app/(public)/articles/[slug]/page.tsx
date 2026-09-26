@@ -67,7 +67,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
                         <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600">
                             <Facebook className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-sky-500">
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-500">
                             <Twitter className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-700">
@@ -86,7 +86,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 pb-8 md:pb-12 max-w-4xl">
-                    <Badge className="bg-sky-500 mb-4 hover:bg-sky-600 border-none">
+                    <Badge className="bg-blue-500 mb-4 hover:bg-[#0B3979] border-none">
                         {article.category}
                     </Badge>
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 drop-shadow-sm">
@@ -111,7 +111,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
             <div className="container mx-auto px-4 max-w-3xl -mt-8 relative z-10">
                 <div className="bg-white rounded-t-3xl p-6 md:p-12 shadow-sm min-h-[500px]">
                     {/* Description (Lead) */}
-                    <div className="text-xl md:text-2xl text-slate-800 font-medium leading-relaxed mb-10 border-l-4 border-sky-500 pl-6 italic">
+                    <div className="text-xl md:text-2xl text-slate-800 font-medium leading-relaxed mb-10 border-l-4 border-blue-500 pl-6 italic">
                         {article.description}
                     </div>
 
@@ -119,7 +119,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
                         className="prose prose-lg prose-slate max-w-none 
                         prose-headings:font-bold prose-headings:text-slate-900 
                         prose-p:text-slate-600 prose-p:leading-8
-                        prose-a:text-sky-600 prose-a:no-underline hover:prose-a:underline
+                        prose-a:text-[#0B3979] prose-a:no-underline hover:prose-a:underline
                         prose-img:rounded-xl prose-img:shadow-md"
                         dangerouslySetInnerHTML={{ __html: article.content }}
                     />

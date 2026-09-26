@@ -25,7 +25,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
     return (
         <div className="max-w-5xl mx-auto space-y-8">
             {/* Breadcrumb / Back */}
-            <Link href="/books" className="inline-flex items-center text-sm text-slate-500 hover:text-sky-600 transition-colors">
+            <Link href="/books" className="inline-flex items-center text-sm text-slate-500 hover:text-[#0B3979] transition-colors">
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 ย้อนกลับไปร้านหนังสือ
             </Link>
@@ -117,10 +117,10 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                                     )}
                                 </div>
                                 <div className="mt-2 px-0.5">
-                                    <h3 className="font-medium text-sm leading-tight line-clamp-2 text-slate-800 group-hover:text-sky-600 transition-colors">
+                                    <h3 className="font-medium text-sm leading-tight line-clamp-2 text-slate-800 group-hover:text-[#0B3979] transition-colors">
                                         {relatedBook.title}
                                     </h3>
-                                    <p className="text-sm font-bold text-sky-600 mt-1">
+                                    <p className="text-sm font-bold text-[#0B3979] mt-1">
                                         ฿{relatedBook.price.toLocaleString()}
                                     </p>
                                 </div>

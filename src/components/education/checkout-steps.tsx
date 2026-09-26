@@ -26,9 +26,9 @@ export function CheckoutSteps({ current = 1 }: { current?: 0 | 1 | 2 }) {
                             className={[
                                 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
                                 done
-                                    ? 'bg-sky-600 text-white'
+                                    ? 'bg-[#0B3979] text-white'
                                     : active
-                                        ? 'bg-sky-600 text-white ring-4 ring-sky-100'
+                                        ? 'bg-[#0B3979] text-white ring-4 ring-blue-100'
                                         : 'bg-slate-100 text-slate-400',
                             ].join(' ')}
                         >
@@ -45,7 +45,7 @@ export function CheckoutSteps({ current = 1 }: { current?: 0 | 1 | 2 }) {
                         {i < STEPS.length - 1 && (
                             <span
                                 aria-hidden
-                                className={`ml-2 hidden h-px flex-1 sm:block ${done ? 'bg-sky-300' : 'bg-slate-200'}`}
+                                className={`ml-2 hidden h-px flex-1 sm:block ${done ? 'bg-blue-300' : 'bg-slate-200'}`}
                             />
                         )}
                     </li>

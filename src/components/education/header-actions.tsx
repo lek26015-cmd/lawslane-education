@@ -12,7 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, User, LayoutDashboard, Shield } from 'lucide-react';
+import { LogOut, User, LayoutDashboard, Home } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { useFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
@@ -39,18 +39,19 @@ export function EducationHeaderActions() {
 
     if (!user) {
         return (
-            <div className="hidden md:flex items-center gap-2">
-                <Link
-                    href="/login"
-                    className="text-xs text-white/85 hover:text-sky-200 font-light transition-colors"
-                >
-                    เข้าสู่ระบบ
-                </Link>
+            <div className="hidden lg:flex items-center gap-2">
                 <Link
                     href="/signup"
-                    className="rounded-lg bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 text-xs font-normal transition-colors"
+                    className="text-sm font-medium text-slate-700 hover:text-[#0B3979] px-3 transition-colors"
                 >
                     สมัครสมาชิก
+                </Link>
+                {/* ปุ่มเข้าสู่ระบบแบบเดียวกับ header เว็บหลัก */}
+                <Link
+                    href="/login"
+                    className="rounded-full px-8 h-10 inline-flex items-center font-bold text-white bg-[#0B3979] hover:bg-[#082a5a] shadow-lg transition-all hover:scale-105"
+                >
+                    เข้าสู่ระบบ
                 </Link>
             </div>
         );
@@ -59,10 +60,10 @@ export function EducationHeaderActions() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="relative h-8 w-8 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-400">
-                    <Avatar className="h-8 w-8 border border-sky-700">
+                <button className="relative h-9 w-9 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0B3979]/40">
+                    <Avatar className="h-9 w-9 border border-slate-200">
                         <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
-                        <AvatarFallback className="text-xs font-normal bg-sky-50 text-sky-700">
+                        <AvatarFallback className="text-xs font-normal bg-blue-50 text-[#0B3979]">
                             {user.displayName?.charAt(0) || 'U'}
                         </AvatarFallback>
                     </Avatar>
@@ -71,29 +72,28 @@ export function EducationHeaderActions() {
             <DropdownMenuContent className="w-52" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-normal leading-none">{user.displayName}</p>
-                        <p className="text-[11px] leading-none text-slate-500 font-extralight">
+                        <p className="text-sm font-semibold leading-none">{user.displayName}</p>
+                        <p className="text-xs leading-none text-slate-500">
                             {user.email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push('/my-learning')} className="text-xs font-light">
-                    <LayoutDashboard className="mr-2 h-3.5 w-3.5" />
+                <DropdownMenuItem onClick={() => router.push('/my-learning')} className="text-sm">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
                     การเรียนรู้ของฉัน
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/profile')} className="text-xs font-light">
-                    <User className="mr-2 h-3.5 w-3.5" />
+                <DropdownMenuItem onClick={() => router.push('/profile')} className="text-sm">
+                    <User className="mr-2 h-4 w-4" />
                     จัดการบัญชี
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push('/education-admin')} className="text-xs font-light">
-                    <Shield className="mr-2 h-3.5 w-3.5" />
-                    ระบบจัดการ (Admin)
+                <DropdownMenuItem onClick={() => { window.location.href = 'https://lawslane.com'; }} className="text-sm">
+                    <Home className="mr-2 h-4 w-4" />
+                    กลับเว็บหลัก Lawslane
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-xs font-light text-red-600 focus:text-red-600">
-                    <LogOut className="mr-2 h-3.5 w-3.5" />
+                <DropdownMenuItem onClick={handleLogout} className="text-sm text-red-600 focus:text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
                     ออกจากระบบ
                 </DropdownMenuItem>
             </DropdownMenuContent>

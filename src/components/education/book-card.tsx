@@ -67,7 +67,7 @@ export function BookCard({
                         </div>
                     )}
                     {isEbook && (
-                        <Badge className="absolute top-2 right-2 bg-sky-600 hover:bg-sky-700">E-Book</Badge>
+                        <Badge className="absolute top-2 right-2 bg-[#0B3979] hover:bg-[#082a5a]">E-Book</Badge>
                     )}
                     {discountPercent > 0 && (
                         <Badge className="absolute top-2 left-2 bg-rose-600 hover:bg-rose-600">
@@ -94,7 +94,7 @@ export function BookCard({
 
                 {/* Title */}
                 <Link href={href} className="w-full">
-                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3.5rem] text-slate-900 group-hover:text-sky-600 transition-colors">
+                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3.5rem] text-slate-900 group-hover:text-[#0B3979] transition-colors">
                         {title}
                     </h3>
                 </Link>
@@ -126,7 +126,7 @@ export function BookCard({
               <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col items-start pt-4">
                     <div className="flex items-baseline gap-2">
-                        <span className="text-lg font-bold text-sky-700">฿{price.toLocaleString()}</span>
+                        <span className="text-lg font-bold text-[#082a5a]">฿{price.toLocaleString()}</span>
                         {discountPercent > 0 && originalPrice && (
                             <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
                         )}
@@ -137,7 +137,7 @@ export function BookCard({
                 </div>
                 <Link href={href} className="pt-4">
                     <Button
-                        variant="outline" size="sm" className="border-sky-200 text-sky-700 hover:bg-sky-50"
+                        variant="outline" size="sm" className="border-blue-200 text-[#082a5a] hover:bg-blue-50"
                     >
                         ดูรายละเอียด
                     </Button>

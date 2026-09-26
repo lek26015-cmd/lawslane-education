@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600&family=Inter:wght@200;300;400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -8,7 +7,8 @@
   --color-card-foreground: hsl(222 47% 11%);
   --color-popover: hsl(0 0% 100%);
   --color-popover-foreground: hsl(222 47% 11%);
-  --color-primary: hsl(199 89% 48%);
+  /* สีเดียวกับเว็บหลัก lawslane.com (#0B3979) */
+  --color-primary: #0B3979;
   --color-primary-foreground: hsl(0 0% 100%);
   --color-secondary: hsl(210 40% 96.1%);
   --color-secondary-foreground: hsl(222 47% 11%);
@@ -20,7 +20,11 @@
   --color-destructive-foreground: hsl(210 40% 98%);
   --color-border: hsl(214.3 31.8% 91.4%);
   --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(199 89% 48%);
+  --color-ring: #0B3979;
+  --color-deep-blue: #0B3979;
+  --color-deep-blue-dark: #082a5a;
+  --color-gold: #C5A47E;
+  --font-sans: var(--font-prompt), system-ui, sans-serif;
   --radius: 0.5rem;
 }
 
@@ -46,14 +50,13 @@ body {
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-weight: 300;
-  letter-spacing: 0.01em;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* ── Focus Styles ──────────────────────── */
 :focus-visible {
-  outline: 2px solid hsl(199 89% 48%);
+  outline: 2px solid #0B3979;
   outline-offset: 2px;
 }

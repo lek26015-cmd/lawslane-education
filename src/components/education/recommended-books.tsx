@@ -22,7 +22,7 @@ export async function RecommendedBooksSection() {
             <div className="container mx-auto px-4">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div className="max-w-2xl">
-                        <span className="text-sky-400 font-bold text-sm tracking-wider uppercase mb-2 block">ร้านหนังสือออนไลน์</span>
+                        <span className="text-blue-400 font-bold text-sm tracking-wider uppercase mb-2 block">ร้านหนังสือออนไลน์</span>
                         <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
                             หนังสือเรียนแนะนำ
                         </h2>
@@ -31,7 +31,7 @@ export async function RecommendedBooksSection() {
                         </p>
                     </div>
                     <Link href="/books" className="shrink-0">
-                        <Button className="bg-amber-400 hover:bg-amber-300 text-sky-900 rounded-full px-8 py-3 text-lg font-bold shadow-lg shadow-amber-900/10 hover:shadow-xl transition-all group">
+                        <Button className="bg-amber-400 hover:bg-amber-300 text-blue-900 rounded-full px-8 py-3 text-lg font-bold shadow-lg shadow-amber-900/10 hover:shadow-xl transition-all group">
                             ดูหนังสือทั้งหมด
                             <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Button>

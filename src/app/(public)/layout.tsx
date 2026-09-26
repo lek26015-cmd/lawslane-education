@@ -15,11 +15,11 @@ export default function PublicLayout({
 }) {
     return (
         <CartProvider>
-            {/* Header — Lawslane Navy */}
-            <header className="sticky top-0 z-50 w-full border-b border-sky-800/40 bg-[#0c4a6e]/95 backdrop-blur-md">
-                <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center hover:opacity-90 transition-opacity">
-                        <BrandLogo variant="dark" showSubtitle={false} />
+            {/* Header — หน้าตาเดียวกับเว็บหลัก lawslane.com (พื้นขาว, h-20, ลิงก์ slate → กรมท่า) */}
+            <header className="sticky top-0 z-50 w-full bg-white/95 text-slate-900 border-b border-slate-200 shadow-sm backdrop-blur-md">
+                <div className="mx-auto max-w-6xl px-4 md:px-6 h-20 flex items-center justify-between gap-4">
+                    <Link href="/" className="flex items-center shrink-0">
+                        <BrandLogo variant="light" showSubtitle={false} />
                     </Link>
                     <div className="flex items-center gap-4">
                         <EducationNavigation />
@@ -28,7 +28,7 @@ export default function PublicLayout({
                 </div>
             </header>
 
-            <main className="min-h-screen bg-slate-50/60 relative">
+            <main className="min-h-screen bg-slate-50 relative">
                 {/* Crystal side decorations */}
                 <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
                     {/* Left side */}
@@ -45,7 +45,7 @@ export default function PublicLayout({
                     />
                 </div>
 
-                <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 py-8">
+                <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 py-8">
                     <PageAnimationWrapper>
                         {children}
                     </PageAnimationWrapper>
@@ -57,44 +57,52 @@ export default function PublicLayout({
                 <GoogleAd variant="banner" />
             </div>
 
-            {/* Footer — Wittaya Style */}
-            <footer className="bg-slate-900 text-slate-400 mt-16 font-extralight">
-                <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Brand */}
-                        <div>
-                            <div className="mb-3">
-                                <BrandLogo variant="dark" showSubtitle={false} />
-                            </div>
-                            <p className="text-xs text-slate-500 font-extralight leading-relaxed">
-                                เตรียมสอบทนายความอย่างมั่นใจ<br />
-                                ด้วยหนังสือและระบบฝึกฝนข้อสอบจาก Lawslane
+            {/* Footer — แบบเดียวกับเว็บหลัก (gray-900, 4 คอลัมน์, ไอคอนโซเชียล) */}
+            <footer className="bg-gray-900 text-gray-300 mt-16">
+                <div className="container mx-auto px-4 md:px-6 py-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+                        <div className="space-y-4">
+                            <BrandLogo variant="dark" showSubtitle={false} />
+                            <p className="text-sm text-gray-400 leading-relaxed">
+                                เตรียมสอบทนายความอย่างมั่นใจ ด้วยหนังสือและระบบฝึกข้อสอบจาก Lawslane
                             </p>
+                            <div className="flex gap-2">
+                                <a href="https://www.facebook.com/lawslane" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-9 h-9 rounded-full bg-gray-800 hover:bg-[#0B3979] flex items-center justify-center text-white text-sm font-bold transition-colors">f</a>
+                                <a href="https://lin.ee/CZzSmHr" target="_blank" rel="noopener noreferrer" aria-label="LINE" className="w-9 h-9 rounded-full bg-gray-800 hover:bg-[#06C755] flex items-center justify-center text-white text-[10px] font-bold transition-colors">LINE</a>
+                            </div>
                         </div>
 
-                        {/* Quick Links */}
                         <div>
-                            <h3 className="font-normal text-slate-300 text-sm mb-3">ลิงก์ด่วน</h3>
-                            <ul className="space-y-1.5 text-xs">
+                            <h3 className="font-semibold text-white mb-4">เตรียมสอบ</h3>
+                            <ul className="space-y-2 text-sm">
                                 <li><Link href="/exams" className="hover:text-white transition-colors">คลังข้อสอบ</Link></li>
                                 <li><Link href="/books" className="hover:text-white transition-colors">หนังสือเตรียมสอบ</Link></li>
+                                <li><Link href="/articles" className="hover:text-white transition-colors">บทความ</Link></li>
                                 <li><Link href="/my-learning" className="hover:text-white transition-colors">การเรียนรู้ของฉัน</Link></li>
                             </ul>
                         </div>
 
-                        {/* Contact */}
                         <div>
-                            <h3 className="font-normal text-slate-300 text-sm mb-3">ติดต่อเรา</h3>
-                            <ul className="space-y-1.5 text-xs">
-                                <li><a href="https://lawslane.com" target="_blank" rel="noopener" className="hover:text-white transition-colors">เว็บไซต์ Lawslane หลัก</a></li>
-                                <li><a href="https://www.facebook.com/lawslane" target="_blank" rel="noopener" className="hover:text-white transition-colors">Facebook</a></li>
-                                <li><a href="https://lin.ee/CZzSmHr" target="_blank" rel="noopener" className="hover:text-white transition-colors">LINE Official</a></li>
+                            <h3 className="font-semibold text-white mb-4">Lawslane</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><a href="https://lawslane.com" className="hover:text-white transition-colors">เว็บไซต์หลัก Lawslane</a></li>
+                                <li><a href="https://lawslane.com/th/lawyers" className="hover:text-white transition-colors">ค้นหาทนาย</a></li>
+                                <li><a href="https://lawslane.com/th/law-search" className="hover:text-white transition-colors">ค้นหากฎหมาย</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-white mb-4">กฎหมาย</h3>
+                            <ul className="space-y-2 text-sm">
+                                <li><a href="https://lawslane.com/th/privacy" className="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a></li>
+                                <li><a href="https://lawslane.com/th/terms" className="hover:text-white transition-colors">ข้อกำหนดการใช้งาน</a></li>
+                                <li><a href="https://lawslane.com/th/help" className="hover:text-white transition-colors">ศูนย์ช่วยเหลือ</a></li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="border-t border-slate-800 mt-8 pt-5 text-center text-[11px] text-slate-600">
-                        <p>© {new Date().getFullYear()} Lawslane Wittaya. All rights reserved.</p>
+                    <div className="border-t border-gray-800 mt-10 pt-6 text-center text-[10px] uppercase tracking-widest text-gray-500">
+                        <p>© {new Date().getFullYear()} Lawslane. All rights reserved.</p>
                     </div>
                 </div>
             </footer>
