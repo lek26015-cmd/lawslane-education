@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import interpreterHero from "@/pic/lawslane-interpreter.webp";
 
 import { Button } from "@/components/ui/button";
 import { GoogleAd } from '@/components/google-ad';
@@ -147,6 +148,30 @@ export default function EducationPage() {
       {/* Recommended Books Section */}
       <SectionFadeIn delay={0.2}>
         <RecommendedBooksSection />
+      </SectionFadeIn>
+
+      {/* แบนเนอร์ล่ามกฎหมาย — บริการในเครือบนเว็บหลัก (slate-900 แบบ hero lawslane.com) */}
+      <SectionFadeIn delay={0.2}>
+        <section className="relative overflow-hidden rounded-3xl bg-slate-900 text-white md:flex md:items-end md:justify-between md:gap-8">
+          <div className="md:hidden relative h-60">
+            <Image src={interpreterHero} alt="" fill sizes="100vw" className="object-contain object-top opacity-80" />
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-900 to-transparent" />
+          </div>
+          <div className="relative px-6 pb-10 -mt-6 text-center md:mt-0 md:py-14 md:pl-12 md:text-left">
+            <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">Lawslane</p>
+            <h2 className="mt-2 text-2xl md:text-4xl font-bold">ล่ามและนักแปลกฎหมาย</h2>
+            <p className="mt-3 text-gray-300 max-w-xl mx-auto md:mx-0">
+              ล่ามสำหรับงานศาล สถานีตำรวจ คุยกับทนาย และแปลเอกสารกฎหมาย ดูราคาชัดเจนก่อนจอง
+            </p>
+            <a
+              href="https://lawslane.com/th/interpreters"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-6 h-11 font-bold text-slate-900 hover:bg-slate-100 transition-colors"
+            >
+              ค้นหาล่าม <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+          <Image src={interpreterHero} alt="" sizes="260px" className="hidden md:block w-56 lg:w-64 h-auto mr-8" />
+        </section>
       </SectionFadeIn>
 
       {/* รับสมัครทนายและล่าม — ลิงก์ไปหน้าสมัครบนเว็บหลัก */}
