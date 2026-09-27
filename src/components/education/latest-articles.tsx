@@ -52,7 +52,7 @@ export async function LatestArticlesSection() {
             <div className="flex justify-between items-center px-4 md:px-0">
                 <div className="flex items-center gap-2">
                     <Newspaper className="w-6 h-6 text-[#0B3979]" />
-                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900">บทความล่าสุด</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-[#0B3979]">บทความล่าสุด</h2>
                 </div>
                 <Link href="/articles">
                     <Button variant="link" className="text-slate-600 hover:text-primary text-sm font-medium">

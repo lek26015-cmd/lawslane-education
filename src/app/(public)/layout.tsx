@@ -28,7 +28,7 @@ export default function PublicLayout({
                 </div>
             </header>
 
-            <main className="min-h-screen bg-slate-50 relative">
+            <main className="min-h-screen bg-slate-50 relative overflow-x-clip">
                 {/* Crystal side decorations */}
                 <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
                     {/* Left side */}

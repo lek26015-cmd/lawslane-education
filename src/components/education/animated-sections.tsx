@@ -121,7 +121,7 @@ export function TestimonialsAnimated() {
     return (
         <section className="py-8">
             <motion.h2
-                className="text-2xl font-bold text-center mb-8 text-slate-900"
+                className="text-2xl md:text-3xl font-bold text-center mb-8 text-[#0B3979]"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
