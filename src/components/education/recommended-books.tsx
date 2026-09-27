@@ -23,7 +23,7 @@ export async function RecommendedBooksSection() {
                 <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div className="max-w-2xl">
                         <span className="text-blue-400 font-bold text-sm tracking-wider uppercase mb-2 block">ร้านหนังสือออนไลน์</span>
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
+                        <h2 className="text-3xl md:text-4xl font-bold text-[#0B3979] leading-tight">
                             หนังสือเรียนแนะนำ
                         </h2>
                         <p className="text-slate-600 text-lg mt-4 leading-relaxed">
