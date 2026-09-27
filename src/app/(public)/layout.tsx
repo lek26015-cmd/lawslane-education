@@ -83,20 +83,24 @@ export default function PublicLayout({
                         </div>
 
                         <div>
-                            <h3 className="font-semibold text-white mb-4">Lawslane</h3>
+                            {/* ระบบในเครือ — ชุดเดียวกับ footer เว็บหลัก (Lawslane src/components/layout/footer.tsx) */}
+                            <h3 className="font-semibold text-white mb-4">ระบบในเครือ Lawslane</h3>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="https://lawslane.com" className="hover:text-white transition-colors">เว็บไซต์หลัก Lawslane</a></li>
-                                <li><a href="https://lawslane.com/th/lawyers" className="hover:text-white transition-colors">ค้นหาทนาย</a></li>
-                                <li><a href="https://lawslane.com/th/law-search" className="hover:text-white transition-colors">ค้นหากฎหมาย</a></li>
+                                <li><a href="https://www.lawslane.com/th" className="hover:text-white transition-colors">เว็บไซต์หลัก Lawslane</a></li>
+                                <li><a href="https://www.lawslane.com/th/lawyers" className="hover:text-white transition-colors">ค้นหาทนาย</a></li>
+                                <li><a href="https://www.lawslane.com/th/interpreters" className="hover:text-white transition-colors">ค้นหาล่ามและนักแปล</a></li>
+                                <li><a href="https://www.lawslane.com/th/law-search" className="hover:text-white transition-colors">ค้นหากฎหมาย</a></li>
+                                <li><a href="https://capdeal.lawslane.com" className="hover:text-white transition-colors">Cap &amp; Deal — สัญญาและดีล</a></li>
+                                <li><a href="https://business.lawslane.com" className="hover:text-white transition-colors">Lawslane for Business</a></li>
                             </ul>
                         </div>
 
                         <div>
                             <h3 className="font-semibold text-white mb-4">กฎหมาย</h3>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="https://lawslane.com/th/privacy" className="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a></li>
-                                <li><a href="https://lawslane.com/th/terms" className="hover:text-white transition-colors">ข้อกำหนดการใช้งาน</a></li>
-                                <li><a href="https://lawslane.com/th/help" className="hover:text-white transition-colors">ศูนย์ช่วยเหลือ</a></li>
+                                <li><a href="https://www.lawslane.com/th/privacy" className="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a></li>
+                                <li><a href="https://www.lawslane.com/th/terms" className="hover:text-white transition-colors">ข้อกำหนดการใช้งาน</a></li>
+                                <li><a href="https://www.lawslane.com/th/help" className="hover:text-white transition-colors">ศูนย์ช่วยเหลือ</a></li>
                             </ul>
                         </div>
                     </div>
