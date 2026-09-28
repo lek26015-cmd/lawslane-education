@@ -13,7 +13,7 @@ import { SARA_AA } from './shaper';
 export interface AssetBundle {
     regular: Uint8Array;
     bold: Uint8Array;
-    /** PDF หน้าเดียวของตราครุฑแบบ vector — ไม่มีก็ได้ถ้าเอกสารไม่ใช้ */
+    /** PDF หน้าเดียวของตราครุฑ (ดู src/assets/emblems/README.md) — ไม่มีก็ได้ถ้าเอกสารไม่ใช้ */
     garudaPdf?: Uint8Array;
     /** ชื่อฟอนต์ที่ใช้จริง บันทึกลง metadata เพื่อให้ตรวจย้อนได้ */
     fontLabel: string;

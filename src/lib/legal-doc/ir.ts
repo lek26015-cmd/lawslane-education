@@ -17,11 +17,27 @@ export type Align = z.infer<typeof Align>;
 const Box = z.object({ x: z.number(), y: z.number(), w: z.number(), h: z.number() });
 export type Box = z.infer<typeof Box>;
 
+/**
+ * ช่องเว้นให้เติมกลางบรรทัด — หัวใจของแบบฟอร์มเปล่า
+ *
+ * แบบพิมพ์ราชการมีช่องเติมคั่นกลางข้อความตลอด ("ข้าพเจ้า ..... อายุ ..... ปี")
+ * ถ้ารองรับแค่ท้ายบรรทัดจะถอดแบบฟอร์มจริงไม่ได้เลย
+ */
+const Fill = z.object({
+    widthPt: z.number().positive(),
+    style: z.enum(['dot', 'rule', 'space']).default('dot'),
+});
+export type Fill = z.infer<typeof Fill>;
+
 const Run = z.object({
-    text: z.string(),
+    /** ไม่มี text = เป็นช่องเติม ต้องมี fill */
+    text: z.string().default(''),
+    fill: Fill.optional(),
     bold: z.boolean().optional(),
     underline: z.boolean().optional(),
     sizePt: z.number().positive().optional(),
+}).refine((r) => r.text.length > 0 || r.fill, {
+    message: 'run ต้องมี text หรือ fill อย่างน้อยหนึ่งอย่าง',
 });
 export type Run = z.infer<typeof Run>;
 
@@ -64,6 +80,14 @@ const Block = z.object({
     spaceBeforePt: z.number().default(0),
     sizePt: z.number().positive().optional(),
     lineHeightPt: z.number().positive().optional(),
+    /**
+     * ย่อขนาดตัวอักษรของบล็อกลงจนบรรทัดที่กว้างที่สุดพอดีคอลัมน์
+     *
+     * จำเป็นเมื่อถอดเอกสารที่พิมพ์ด้วยฟอนต์ตระกูล Angsana/Cordia ซึ่งแคบกว่า
+     * Sarabun มาก ข้อความชุดเดิมจึงไม่ลงคอลัมน์เดิมถ้าใช้ขนาดเท่ากัน
+     * การย่อรักษา **การขึ้นบรรทัดของต้นฉบับ** ไว้ได้ ซึ่งสำคัญกว่าขนาดตัวอักษร
+     */
+    fitToWidth: z.boolean().default(false),
     lines: z.array(Line).default([]),
 
     emblem: z.object({ heightPt: z.number().positive() }).optional(),

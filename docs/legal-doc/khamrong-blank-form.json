@@ -1,0 +1,579 @@
+{
+  "schema": "wittaya.legal-doc/1",
+  "kind": "blank-form",
+  "title": "แบบพิมพ์คำร้อง (เปล่า) สำหรับฝึกร่าง",
+  "docType": "คำร้อง",
+  "source": {},
+  "defaults": {
+    "sizePt": 15,
+    "lineHeightPt": 24
+  },
+  "notice": {
+    "enabled": true,
+    "text": "แบบฝึกหัดของ Lawslane Wittaya — ไม่ใช่แบบพิมพ์ของทางราชการ ห้ามใช้ยื่นต่อศาล"
+  },
+  "pages": [
+    {
+      "widthPt": 595.28,
+      "heightPt": 841.89,
+      "margins": {
+        "top": 48,
+        "right": 56,
+        "bottom": 62,
+        "left": 78
+      },
+      "blocks": [
+        {
+          "id": "b01",
+          "role": "emblem",
+          "align": "center",
+          "emblem": {
+            "heightPt": 46
+          }
+        },
+        {
+          "id": "b02",
+          "role": "meta",
+          "align": "left",
+          "indentLeftPt": 246,
+          "spaceBeforePt": 10,
+          "lineHeightPt": 22,
+          "sizePt": 13,
+          "lines": [
+            {
+              "id": "b02.l1",
+              "runs": [
+                {
+                  "text": "คดีหมายเลขดำที่ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 64,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " /"
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 42,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b02.l2",
+              "runs": [
+                {
+                  "text": "คดีหมายเลขแดงที่ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 58,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " /"
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 42,
+                    "style": "dot"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b03",
+          "role": "heading",
+          "align": "center",
+          "spaceBeforePt": 14,
+          "sizePt": 18,
+          "lineHeightPt": 28,
+          "lines": [
+            {
+              "id": "b03.l1",
+              "runs": [
+                {
+                  "text": "ศาล"
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 220,
+                    "style": "rule"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b04",
+          "role": "meta",
+          "align": "center",
+          "sizePt": 14,
+          "lineHeightPt": 24,
+          "lines": [
+            {
+              "id": "b04.l1",
+              "runs": [
+                {
+                  "text": "วันที่ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 40,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " เดือน "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 90,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " พุทธศักราช "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 56,
+                    "style": "dot"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b05",
+          "role": "party",
+          "align": "left",
+          "spaceBeforePt": 14,
+          "lineHeightPt": 24,
+          "lines": [
+            {
+              "id": "b05.l1",
+              "runs": [
+                {
+                  "text": "ความ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 180,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b05.l2",
+              "runs": [
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 250,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": "  โจทก์"
+                }
+              ],
+              "indentPt": 120
+            },
+            {
+              "id": "b05.l3",
+              "runs": [
+                {
+                  "text": "ระหว่าง"
+                }
+              ],
+              "indentPt": 60
+            },
+            {
+              "id": "b05.l4",
+              "runs": [
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 250,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": "  จำเลย"
+                }
+              ],
+              "indentPt": 120
+            }
+          ]
+        },
+        {
+          "id": "b06",
+          "role": "body",
+          "align": "left",
+          "spaceBeforePt": 12,
+          "lineHeightPt": 25,
+          "lines": [
+            {
+              "id": "b06.l1",
+              "runs": [
+                {
+                  "text": "เรื่อง  "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 340,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b06.l2",
+              "runs": [
+                {
+                  "text": "ข้าพเจ้า "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 200,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " อายุ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 40,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " ปี"
+                }
+              ]
+            },
+            {
+              "id": "b06.l3",
+              "runs": [
+                {
+                  "text": "เชื้อชาติ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 80,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " สัญชาติ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 80,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " อาชีพ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 120,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b06.l4",
+              "runs": [
+                {
+                  "text": "อยู่บ้านเลขที่ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 60,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " หมู่ที่ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 40,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " ถนน "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 130,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b06.l5",
+              "runs": [
+                {
+                  "text": "ตำบล/แขวง "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 110,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " อำเภอ/เขต "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 120,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b06.l6",
+              "runs": [
+                {
+                  "text": "จังหวัด "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 120,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " โทรศัพท์ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 130,
+                    "style": "dot"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b07",
+          "role": "body",
+          "align": "left",
+          "spaceBeforePt": 12,
+          "indentFirstPt": 48,
+          "lineHeightPt": 25,
+          "lines": [
+            {
+              "id": "b07.l1",
+              "runs": [
+                {
+                  "text": "ขอยื่นคำร้องมีข้อความตามที่จะกล่าวต่อไปนี้"
+                }
+              ]
+            },
+            {
+              "id": "b07.l2",
+              "runs": [
+                {
+                  "text": "ข้อ ๑. "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 330,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b07.l3",
+              "runs": [
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 400,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b07.l4",
+              "runs": [
+                {
+                  "text": "ข้อ ๒. "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 330,
+                    "style": "dot"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "b07.l5",
+              "runs": [
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 400,
+                    "style": "dot"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b08",
+          "role": "body",
+          "align": "left",
+          "spaceBeforePt": 8,
+          "indentFirstPt": 48,
+          "lineHeightPt": 24,
+          "lines": [
+            {
+              "id": "b08.l1",
+              "runs": [
+                {
+                  "text": "ควรมิควรแล้วแต่จะโปรด"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "b09",
+          "role": "signature",
+          "align": "left",
+          "indentLeftPt": 230,
+          "spaceBeforePt": 16,
+          "lineHeightPt": 26,
+          "lines": [
+            {
+              "id": "b09.l1",
+              "runs": [
+                {
+                  "text": "ลงชื่อ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 130,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " ผู้ร้อง"
+                }
+              ]
+            },
+            {
+              "id": "b09.l2",
+              "runs": [
+                {
+                  "text": "("
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 150,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": ")"
+                }
+              ],
+              "indentPt": 26
+            }
+          ]
+        },
+        {
+          "id": "b10",
+          "role": "attestation",
+          "align": "left",
+          "spaceBeforePt": 10,
+          "sizePt": 13,
+          "lineHeightPt": 22,
+          "indentFirstPt": 48,
+          "lines": [
+            {
+              "id": "b10.l1",
+              "runs": [
+                {
+                  "text": "ข้าพเจ้าขอรับรองว่า คำร้องฉบับนี้ข้าพเจ้าเป็นผู้เรียงและพิมพ์เอง"
+                }
+              ]
+            },
+            {
+              "id": "b10.l2",
+              "runs": [
+                {
+                  "text": "ลงชื่อ "
+                },
+                {
+                  "text": "",
+                  "fill": {
+                    "widthPt": 120,
+                    "style": "dot"
+                  }
+                },
+                {
+                  "text": " ผู้เรียงและพิมพ์"
+                }
+              ],
+              "indentPt": 150
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -15,10 +15,18 @@ export interface RenderResult {
     tailGlyphs: number;
 }
 
+/**
+ * เพดานช่องไฟระหว่างคำตอนจัดชิดสองข้าง หน่วยเป็นสัดส่วนของขนาดตัวอักษร
+ * เกินกว่านี้จะกลายเป็นช่องว่างโหว่ที่อ่านยากกว่าขอบขวาไม่เสมอ
+ */
+const MAX_JUSTIFY_GAP_EM = 0.35;
+
 /** คำหนึ่งคำพร้อมสไตล์ที่มันสังกัด — หน่วยเล็กสุดที่การตัดบรรทัดมองเห็น */
 interface Atom {
     text: string;
     run: Run;
+    /** ถ้ามีค่า = อะตอมนี้เป็นช่องเติม ไม่ใช่ข้อความ กว้างคงที่เท่านี้ */
+    fillPt?: number;
 }
 
 function runSize(run: Run, blockSize: number): number {
@@ -30,6 +38,7 @@ function runFont(run: Run, fonts: EmbeddedFonts): ShapingFont {
 }
 
 function atomWidth(a: Atom, fonts: EmbeddedFonts, blockSize: number): number {
+    if (a.fillPt !== undefined) return a.fillPt;
     return measureText(a.text, runFont(a.run, fonts), runSize(a.run, blockSize));
 }
 
@@ -40,6 +49,8 @@ function toAtoms(runs: Run[]): Atom[] {
         for (const w of words(run.text)) {
             if (w.text) out.push({ text: w.text, run });
         }
+        // ช่องเติมเป็นอะตอมเดี่ยวที่ตัดบรรทัดตรงกลางไม่ได้ และกว้างคงที่
+        if (run.fill) out.push({ text: '', run, fillPt: run.fill.widthPt });
     }
     return out;
 }
@@ -65,10 +76,33 @@ function wrapAtoms(atoms: Atom[], availPt: number, fonts: EmbeddedFonts, blockSi
     return lines.length > 0 ? lines : [[]];
 }
 
+/**
+ * อัตราส่วนที่ต้องย่อ เพื่อให้บรรทัดที่กว้างที่สุดในบล็อกลงคอลัมน์พอดี
+ *
+ * คืน 1 ถ้าทุกบรรทัดลงอยู่แล้ว ไม่ขยายให้ใหญ่ขึ้น เพราะขนาดที่ผู้เขียนระบุ
+ * คือเพดาน ไม่ใช่เป้า
+ */
+function fitScale(block: Block, fonts: EmbeddedFonts, blockSize: number, availPt: number): number {
+    let widest = 0;
+    for (const [idx, line] of block.lines.entries()) {
+        if (!line.runs) continue;
+        const indent = (idx === 0 ? block.indentFirstPt : 0) + (line.indentPt ?? 0);
+        const w = line.runs.reduce(
+            (sum, run) => sum
+                + measureText(run.text, runFont(run, fonts), runSize(run, blockSize))
+                + (run.fill?.widthPt ?? 0),
+            indent,
+        );
+        widest = Math.max(widest, w);
+    }
+    return widest > availPt && widest > 0 ? availPt / widest : 1;
+}
+
 /** ความกว้างของบรรทัด โดยไม่นับช่องว่างท้ายบรรทัด */
 function visualWidth(line: Atom[], fonts: EmbeddedFonts, blockSize: number): number {
     let w = 0;
     for (let i = 0; i < line.length; i++) {
+        if (line[i].fillPt !== undefined) { w += line[i].fillPt!; continue; }
         const text = i === line.length - 1 ? line[i].text.replace(/\s+$/, '') : line[i].text;
         w += measureText(text, runFont(line[i].run, fonts), runSize(line[i].run, blockSize));
     }
@@ -109,6 +143,24 @@ export async function renderLegalDoc(doc: LegalDoc, assets: AssetBundle): Promis
         const contentLeft = irPage.margins.left;
         const contentRight = irPage.widthPt - irPage.margins.right;
         let cursorY = irPage.margins.top;
+
+        // อัตราย่อคิดครั้งเดียวทั้งหน้า ไม่ใช่ทีละบล็อก — ต้นฉบับใช้ขนาดตัวอักษร
+        // เดียวทั้งหน้า ถ้าย่อแยกบล็อกจะได้เอกสารที่ตัวหนังสือโตไม่เท่ากันเป็นหย่อมๆ
+        const pageFit = Math.min(1, ...irPage.blocks
+            .filter((b) => b.fitToWidth && b.lines.length > 0)
+            .map((b) => fitScale(
+                b,
+                fonts,
+                b.sizePt ?? doc.defaults.sizePt,
+                contentRight - b.indentRightPt - (b.bbox?.x ?? contentLeft) - b.indentLeftPt
+                    - 2 * (b.box?.paddingPt ?? 0),
+            )));
+        if (pageFit < 1) {
+            warnings.push(
+                `หน้า ${pageIdx + 1}: ย่อขนาดตัวอักษร ×${pageFit.toFixed(3)} ทั้งหน้า ` +
+                `เพื่อให้บรรทัดกว้างสุดลงคอลัมน์โดยคงการขึ้นบรรทัดของต้นฉบับ`,
+            );
+        }
 
         for (const block of irPage.blocks) {
             cursorY += block.spaceBeforePt;
@@ -151,8 +203,16 @@ export async function renderLegalDoc(doc: LegalDoc, assets: AssetBundle): Promis
                     break;
                 }
                 default: {
+                    // ปัดลงเสมอ ปัดขึ้นแม้ 0.05pt ก็ทำให้บรรทัดกว้างสุดล้นแล้วถูกตัดใหม่
+                    const size = block.fitToWidth
+                        ? Math.floor(blockSize * pageFit * 10) / 10
+                        : blockSize;
+                    const leading = block.fitToWidth
+                        ? Math.floor(lineHeight * pageFit * 10) / 10
+                        : lineHeight;
                     cursorY = drawLines(ctx, block, {
-                        fonts, doc, innerLeft, innerRight, blockSize, lineHeight,
+                        fonts, doc, innerLeft, innerRight,
+                        blockSize: size, lineHeight: leading,
                         startY: cursorY, warnings, pageIdx,
                     });
                 }
@@ -162,6 +222,14 @@ export async function renderLegalDoc(doc: LegalDoc, assets: AssetBundle): Promis
                 cursorY += pad;
                 drawBox(ctx, blockLeft, blockTop, blockRight - blockLeft, cursorY - blockTop, block.box.borderPt);
             }
+        }
+
+        const contentBottom = irPage.heightPt - irPage.margins.bottom;
+        if (cursorY > contentBottom) {
+            warnings.push(
+                `หน้า ${pageIdx + 1}: เนื้อหาล้นขอบล่าง ${Math.round(cursorY - contentBottom)}pt ` +
+                `— ส่วนที่ล้นถูกวาดนอกกระดาษ มองไม่เห็นและคัดลอกไม่ได้`,
+            );
         }
 
         if (doc.notice.enabled) {
@@ -225,12 +293,23 @@ function drawLines(ctx: DrawCtx, block: Block, lc: LineCtx): number {
         }
 
         const visual = wrapAtoms(toAtoms(line.runs), avail, fonts, blockSize);
-        if (visual.length > 1) {
+
+        // เตือนเฉพาะเอกสารที่ *ถอดการขึ้นบรรทัดมาจากต้นฉบับ* ซึ่งดูออกจากการที่
+        // ผู้เขียนสั่ง justify มากับตัวบรรทัด หรือเปิด fitToWidth ไว้
+        // ถ้าเป็นเนื้อหาที่แต่งเอง การตัดบรรทัดคือการเรียงพิมพ์ปกติ ไม่ใช่ความผิดพลาด
+        const isTranscription = line.align === 'justify' || block.fitToWidth;
+        if (visual.length > 1 && isTranscription) {
             lc.warnings.push(
                 `หน้า ${lc.pageIdx + 1} บรรทัด ${line.id}: กว้างเกินคอลัมน์ ต้องตัดเป็น ${visual.length} บรรทัด ` +
                 `— การขึ้นบรรทัดจะไม่ตรงต้นฉบับ`,
             );
         }
+
+        // `align: 'justify'` ที่ระบุมากับตัวบรรทัดเอง = ผู้เขียนสั่งให้จัดชิดสองข้าง
+        // บรรทัดนั้นเสมอ ซึ่งจำเป็นเมื่อถอดการขึ้นบรรทัดจากต้นฉบับมาทีละบรรทัด
+        // (ทุกบรรทัดจะเป็น "บรรทัดสุดท้าย" ของตัวเอง กฎปกติจึงไม่เคยทำงาน)
+        // ส่วน justify ที่รับช่วงมาจาก block ใช้กฎปกติ: ไม่จัดบรรทัดสุดท้ายของย่อหน้า
+        const forceJustify = line.align === 'justify';
 
         for (const [vIdx, atoms] of visual.entries()) {
             y += lineHeight;
@@ -241,15 +320,36 @@ function drawLines(ctx: DrawCtx, block: Block, lc: LineCtx): number {
             let gap = 0;
             if (align === 'center') x = x0 + (avail - w) / 2;
             else if (align === 'right') x = innerRight - w;
-            else if (align === 'justify' && !isLastVisual && atoms.length > 1) {
-                gap = (avail - w) / (atoms.length - 1);
+            // บรรทัดที่ถูกตัดใหม่ไม่ใช้ forceJustify — บรรทัดท้ายของมันคือท้ายย่อหน้าจริง
+            else if (align === 'justify'
+                && ((forceJustify && visual.length === 1) || !isLastVisual)
+                && atoms.length > 1) {
+                const needed = (avail - w) / (atoms.length - 1);
+                // เพดานช่องไฟ: บรรทัดที่สั้นกว่าคอลัมน์มากจะได้ช่องว่างระหว่างคำ
+                // กว้างจนอ่านยาก ปล่อยให้ขอบขวาไม่เสมอดีกว่ายืดจนเป็นคนละเอกสาร
+                gap = needed <= MAX_JUSTIFY_GAP_EM * blockSize ? needed : 0;
+                if (gap === 0) {
+                    lc.warnings.push(
+                        `หน้า ${lc.pageIdx + 1} บรรทัด ${line.id}: ไม่จัดชิดสองข้าง ` +
+                        `เพราะต้องยืดช่องไฟถึง ${(needed / blockSize).toFixed(2)} em`,
+                    );
+                }
             }
 
             for (const [aIdx, a] of atoms.entries()) {
-                const text = aIdx === atoms.length - 1 ? a.text.replace(/\s+$/, '') : a.text;
-                if (!text) continue;
                 const font = runFont(a.run, fonts);
                 const size = runSize(a.run, blockSize);
+
+                if (a.fillPt !== undefined) {
+                    const style = a.run.fill?.style ?? 'dot';
+                    if (style === 'dot') drawDotLeader(ctx, fonts.regular, size, x, x + a.fillPt, y);
+                    else if (style === 'rule') drawRule(ctx, x, x + a.fillPt, y + 2, 0.6);
+                    x += a.fillPt + gap;
+                    continue;
+                }
+
+                const text = aIdx === atoms.length - 1 ? a.text.replace(/\s+$/, '') : a.text;
+                if (!text) continue;
                 const drawn = drawText(ctx, text, font, size, x, y, { bold: a.run.bold });
                 if (a.run.underline) drawUnderline(ctx, font, size, x, x + drawn, y);
                 x += drawn + gap;
