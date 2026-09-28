@@ -4,7 +4,7 @@ import interpreterHero from "@/pic/lawslane-interpreter.webp";
 
 import { Button } from "@/components/ui/button";
 import { GoogleAd } from '@/components/google-ad';
-import { Target, ChevronRight, Briefcase, Languages, ArrowRight, Check } from "lucide-react";
+import { Target, ChevronRight, Briefcase, ArrowRight, Check } from "lucide-react";
 import { RecommendedBooksSection } from '@/components/education/recommended-books';
 import {
   FeatureCardsAnimated,
@@ -152,20 +152,20 @@ export default function EducationPage() {
             <p className="text-sm font-semibold uppercase tracking-wider text-gray-400">Lawslane</p>
             <h2 className="mt-2 text-2xl md:text-4xl font-bold">ล่ามและนักแปลกฎหมาย</h2>
             <p className="mt-3 text-gray-300 max-w-xl mx-auto lg:mx-0">
-              ล่ามสำหรับงานศาล สถานีตำรวจ คุยกับทนาย และแปลเอกสารกฎหมาย ดูราคาชัดเจนก่อนจอง
+              ล่ามสำหรับงานศาล สถานีตำรวจ คุยกับทนาย และแปลเอกสารกฎหมาย — บอกงานของคุณ ทีมงานจัดหาล่ามและเสนอราคาให้
             </p>
             <a
               href="https://lawslane.com/th/interpreters"
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-6 h-11 font-bold text-slate-900 hover:bg-slate-100 transition-colors"
             >
-              ค้นหาล่าม <ArrowRight className="w-4 h-4" />
+              ขอใช้บริการล่าม <ArrowRight className="w-4 h-4" />
             </a>
           </div>
           <Image src={interpreterHero} alt="" sizes="260px" className="hidden md:block w-56 lg:w-64 h-auto mr-8" />
         </section>
       </SectionFadeIn>
 
-      {/* รับสมัครทนายและล่าม — ลิงก์ไปหน้าสมัครบนเว็บหลัก */}
+      {/* รับสมัครทนาย — ลิงก์ไปหน้าสมัครบนเว็บหลัก (เลิกรับสมัครล่ามบนเว็บแล้ว) */}
       <SectionFadeIn delay={0.2}>
         <section className="rounded-3xl text-white p-6 md:p-12 bg-[linear-gradient(135deg,#082a5a,#0B3979,#0B3979)]">
           <div className="text-center mb-8 md:mb-10">
@@ -174,7 +174,7 @@ export default function EducationPage() {
               สอบผ่านแล้วหรือเป็นทนายความอยู่แล้ว? ใช้ความรู้กฎหมายหารายได้บนแพลตฟอร์มของเรา
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+          <div className="grid gap-4 md:gap-6 max-w-2xl mx-auto">
             {[
               {
                 icon: Briefcase,
@@ -182,13 +182,6 @@ export default function EducationPage() {
                 description: 'สร้างโปรไฟล์ทนาย รับเคสและลูกความใหม่ผ่าน Lawslane พร้อมระบบนัดหมายและแชทปรึกษาออนไลน์',
                 href: 'https://lawslane.com/th/for-lawyers',
                 cta: 'สมัครเป็นทนาย',
-              },
-              {
-                icon: Languages,
-                title: 'สมัครเป็นล่ามกฎหมาย',
-                description: 'ใช้ภาษาต่างประเทศรับงานล่ามศาล สถานีตำรวจ และแปลเอกสารกฎหมาย ตั้งเรทราคาเอง รับงานได้ทั้งในพื้นที่และออนไลน์',
-                href: 'https://lawslane.com/th/for-interpreters',
-                cta: 'สมัครเป็นล่าม',
               },
             ].map(({ icon: Icon, title, description, href, cta }) => (
               <div key={href} className="rounded-2xl bg-white/10 border border-white/15 p-6 md:p-8 flex flex-col">
