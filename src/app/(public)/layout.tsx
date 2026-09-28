@@ -88,7 +88,7 @@ export default function PublicLayout({
                             <ul className="space-y-2 text-sm">
                                 <li><a href="https://www.lawslane.com/th" className="hover:text-white transition-colors">เว็บไซต์หลัก Lawslane</a></li>
                                 <li><a href="https://www.lawslane.com/th/lawyers" className="hover:text-white transition-colors">ค้นหาทนาย</a></li>
-                                <li><a href="https://www.lawslane.com/th/interpreters" className="hover:text-white transition-colors">ค้นหาล่ามและนักแปล</a></li>
+                                <li><a href="https://www.lawslane.com/th/interpreters" className="hover:text-white transition-colors">บริการล่ามและนักแปล</a></li>
                                 <li><a href="https://www.lawslane.com/th/law-search" className="hover:text-white transition-colors">ค้นหากฎหมาย</a></li>
                                 <li><a href="https://capdeal.lawslane.com" className="hover:text-white transition-colors">Cap &amp; Deal — สัญญาและดีล</a></li>
                                 <li><a href="https://business.lawslane.com" className="hover:text-white transition-colors">Lawslane for Business</a></li>
