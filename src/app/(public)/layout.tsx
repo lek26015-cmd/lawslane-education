@@ -91,7 +91,7 @@ export default function PublicLayout({
                                 <li><a href="https://www.lawslane.com/th/interpreters" className="hover:text-white transition-colors">บริการล่ามและนักแปล</a></li>
                                 <li><a href="https://www.lawslane.com/th/law-search" className="hover:text-white transition-colors">ค้นหากฎหมาย</a></li>
                                 <li><a href="https://capdeal.lawslane.com" className="hover:text-white transition-colors">Cap &amp; Deal — สัญญาและดีล</a></li>
-                                <li><a href="https://business.lawslane.com" className="hover:text-white transition-colors">Lawslane for Business</a></li>
+                                {/* Lawslane for Business ซ่อนไว้ก่อน — ยังเป็นร่างแยก ไม่รวมกับระบบในเครือจนกว่าจะพร้อม */}
                             </ul>
                         </div>
 
