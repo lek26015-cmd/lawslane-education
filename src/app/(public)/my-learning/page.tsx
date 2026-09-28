@@ -15,6 +15,8 @@ import { ExamResult } from "@/lib/education-types"; // Added ExamResult type
 import { PageHeader } from '@/components/education/page-header';
 import { getAllArticles } from '@/lib/data';
 import type { Article } from '@/lib/types';
+import { PlanStatusCard } from '@/components/education/plan-status-card';
+import { CoverImage, BrandCover } from '@/components/education/brand-cover';
 
 interface SubjectPerformance {
     subject: string;
@@ -234,6 +236,9 @@ export default function MyLearningPage() {
             </div>
             {/**/}
 
+            {/* สถานะแพ็กเกจ — แยกหน้าตาตามแพ็กเกจ Free / Premium / Pro */}
+            <PlanStatusCard />
+
             <Tabs defaultValue="exams" className="w-full space-y-6">
                 <div className="border-b border-slate-200">
                     <TabsList className="bg-transparent h-auto p-0 flex flex-wrap gap-2">
@@ -274,17 +279,12 @@ export default function MyLearningPage() {
                             ebooks.filter(item => item.type !== 'COURSE' && !item.title?.toLowerCase().includes('course') && !item.title?.includes('คอร์ส')).map((book) => (
                                 <div key={book.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all group">
                                     <div className="aspect-[3/4] relative bg-slate-100 overflow-hidden">
-                                        {book.coverUrl ? (
-                                            <img
-                                                src={book.coverUrl}
-                                                alt={book.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                                <BookOpen className="w-12 h-12" />
-                                            </div>
-                                        )}
+                                        <CoverImage
+                                            src={book.coverUrl}
+                                            alt={book.title}
+                                            label="E-Book"
+                                            className="group-hover:scale-105 transition-transform duration-500"
+                                        />
                                         <div className="absolute top-3 right-3">
                                             <span className="bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
                                                 {book.type === 'COURSE' ? 'Coming Soon' : 'E-BOOK'}
@@ -299,8 +299,11 @@ export default function MyLearningPage() {
                                             <span className="text-xs text-slate-500">
                                                 ซื้อเมื่อ: {new Date(book.purchasedAt).toLocaleDateString('th-TH')}
                                             </span>
-                                            <Button size="sm" className="bg-[#0B3979] hover:bg-[#082a5a] text-white rounded-full px-5">
-                                                {book.type === 'COURSE' ? 'เข้าเรียน' : 'อ่านเลย'}
+                                            {/* เดิมเป็นปุ่มเปล่าที่กดแล้วไม่ไปไหน */}
+                                            <Button asChild size="sm" className="bg-[#0B3979] hover:bg-[#082a5a] text-white rounded-full px-5">
+                                                <Link href={book.type === 'COURSE' ? `/courses/${book.id}` : `/books/${book.id}`}>
+                                                    {book.type === 'COURSE' ? 'เข้าเรียน' : 'อ่านเลย'}
+                                                </Link>
                                             </Button>
                                         </div>
                                     </div>
@@ -329,17 +332,12 @@ export default function MyLearningPage() {
                             ebooks.filter(item => item.type === 'COURSE' || item.title?.toLowerCase().includes('course') || item.title?.includes('คอร์ส')).map((course) => (
                                 <div key={course.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all group">
                                     <div className="aspect-video relative bg-slate-100 overflow-hidden">
-                                        {course.coverUrl ? (
-                                            <img
-                                                src={course.coverUrl}
-                                                alt={course.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-900">
-                                                <PlayCircle className="w-12 h-12 text-white/50" />
-                                            </div>
-                                        )}
+                                        <CoverImage
+                                            src={course.coverUrl}
+                                            alt={course.title}
+                                            label="Course"
+                                            className="group-hover:scale-105 transition-transform duration-500"
+                                        />
                                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 backdrop-blur-[2px]">
                                             <div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/50 text-white transform scale-90 group-hover:scale-100 transition-all duration-300">
                                                 <PlayCircle className="w-8 h-8 fill-white text-transparent" />
@@ -403,48 +401,54 @@ export default function MyLearningPage() {
                         </div>
                     ) : examHistory.length > 0 ? (
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {examHistory.map((exam) => (
-                                <Card key={exam.id} className="hover:shadow-md transition-shadow overflow-hidden group">
-                                    <div className="h-32 w-full relative bg-slate-200">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600"
-                                            alt="Exam Cover"
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                        <div className="absolute top-2 right-2">
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${exam.status === 'PASS' ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-700'
-                                                }`}>
-                                                {exam.status === 'PASS' ? 'PASSED' : 'COMPLETED'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <CardHeader className="pb-3 pt-4">
-                                        <div className="flex justify-between items-start">
-                                            <div className="bg-blue-50 text-[#082a5a] px-2 py-0.5 rounded text-[10px] font-bold mb-2 inline-block">
-                                                {(exam as any).examId || 'EXAM'}
+                            {examHistory.map((exam) => {
+                                const title = exam.examTitle || 'แบบทดสอบกฎหมาย';
+                                const score = exam.result?.totalScore ?? exam.score ?? 0;
+                                // examAttempts บันทึก maxScore (100) · examResults ของระบบเก่าคิดเต็ม 10
+                                const maxScore = exam.maxScore ?? (exam.source === 'examAttempts' ? 100 : 10);
+                                const resultHref = exam.source === 'examAttempts' && exam.examId
+                                    ? `/exams/${exam.examId}/result?attemptId=${exam.id}`
+                                    : null;
+                                return (
+                                    <Card key={exam.id} className="hover:shadow-md transition-shadow overflow-hidden group">
+                                        <div className="h-32 w-full relative">
+                                            <BrandCover title={title} label="Exam" className="!gap-2 !p-4" />
+                                            <div className="absolute top-2 right-2">
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${exam.status === 'PASS' || exam.passed ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-700'
+                                                    }`}>
+                                                    {exam.status === 'PASS' || exam.passed ? 'PASSED' : 'COMPLETED'}
+                                                </span>
                                             </div>
-                                            <span className="text-xs text-slate-400">
-                                                {(exam as any).createdAt?.seconds ? new Date((exam as any).createdAt.seconds * 1000).toLocaleDateString('th-TH') : 'เมื่อสักครู่'}
-                                            </span>
                                         </div>
-                                        <CardTitle className="text-base line-clamp-1">
-                                            {(exam as any).questions?.[0]?.text ? `ฝึกทำข้อสอบ: ${(exam as any).questions[0].text.substring(0, 30)}...` : (exam.examTitle || 'แบบทดสอบกฎหมาย')}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex items-center justify-between text-sm text-slate-600 mb-4">
-                                            <span>คะแนนที่ได้:</span>
-                                            <span className="font-bold text-lg text-[#0B3979]">
-                                                {(exam as any).result?.totalScore !== undefined ? (exam as any).result.totalScore : ((exam as any).score || 0)}
-                                                /10
-                                            </span>
-                                        </div>
-                                        <Button variant="outline" className="w-full text-[#0B3979] border-blue-200 hover:bg-blue-50" disabled>
-                                            ดูผลการวิเคราะห์
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                                        <CardHeader className="pb-3 pt-4">
+                                            <div className="flex justify-between items-start">
+                                                <div className="bg-blue-50 text-[#082a5a] px-2 py-0.5 rounded text-[10px] font-bold mb-2 inline-block">
+                                                    EXAM
+                                                </div>
+                                                <span className="text-xs text-slate-400">
+                                                    {exam.createdAt?.seconds ? new Date(exam.createdAt.seconds * 1000).toLocaleDateString('th-TH') : 'เมื่อสักครู่'}
+                                                </span>
+                                            </div>
+                                            <CardTitle className="text-base line-clamp-2">{title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="flex items-center justify-between text-sm text-slate-600 mb-4">
+                                                <span>คะแนนที่ได้:</span>
+                                                <span className="font-bold text-lg text-[#0B3979]">
+                                                    {score}/{maxScore}
+                                                </span>
+                                            </div>
+                                            {resultHref ? (
+                                                <Button asChild variant="outline" className="w-full text-[#0B3979] border-blue-200 hover:bg-blue-50">
+                                                    <Link href={resultHref}>ดูผลการวิเคราะห์</Link>
+                                                </Button>
+                                            ) : (
+                                                <p className="text-center text-xs text-slate-400 py-2">ผลสอบจากระบบเดิม — ไม่มีรายละเอียดรายข้อ</p>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
                         </div>
                     ) : (
                         <Card className="border-dashed border-2 bg-slate-50/50">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import { requireUser } from '@/lib/user-auth';
+import { isPlaceholderCover } from '@/lib/cover';
 
 export async function GET(request: Request) {
     const userId = await requireUser(request);
@@ -52,10 +53,38 @@ export async function GET(request: Request) {
             }
         });
 
-        // Sort by purchase date desc
-        items.sort((a, b) => new Date(b.purchasedAt).getTime() - new Date(a.purchasedAt).getTime());
+        // ปกล่าสุดจากตัวสินค้า — item ในออเดอร์เป็นสำเนา ณ ตอนสั่งซื้อ ออเดอร์เก่ามีปก placehold.co
+        // (ข้อความ "Lawyer License" บนพื้นเทา) หรือว่างอยู่ แม้แอดมินจะอัปโหลดปกจริงไปแล้ว
+        const db = admin.firestore();
+        const refs = items
+            .filter((item) => typeof item.id === 'string' && item.id)
+            .map((item) => db.collection(item.type === 'COURSE' ? 'courses' : 'books').doc(item.id));
+        const docs = refs.length > 0 ? await db.getAll(...refs).catch(() => null) : [];
+        const currentCover = new Map<string, string>();
+        const existing = new Set<string>();
+        docs?.forEach((doc) => {
+            if (!doc.exists) return;
+            const key = `${doc.ref.parent.id}/${doc.id}`;
+            existing.add(key);
+            const data = doc.data();
+            const cover = data?.imageUrl || data?.coverUrl || '';
+            if (cover) currentCover.set(key, cover);
+        });
+        const keyOf = (item: any) => `${item.type === 'COURSE' ? 'courses' : 'books'}/${item.id}`;
+        items.forEach((item) => {
+            const snapshotCover = typeof item.coverUrl === 'string' && !isPlaceholderCover(item.coverUrl) ? item.coverUrl : '';
+            item.coverUrl = currentCover.get(keyOf(item)) || snapshotCover;
+        });
 
-        return NextResponse.json(items);
+        // คลังของฉันแสดงเฉพาะสินค้าที่ยังมีอยู่ — ออเดอร์ตัวอย่างสมัยเริ่มระบบอ้างคอร์ส/หนังสือที่ไม่มีแล้ว
+        // (คอลเลกชัน courses ว่าง) ขึ้นเป็นการ์ดภาพสต็อกที่กด "เข้าเรียน" แล้ว 404
+        // ประวัติการซื้อทั้งหมดยังดูได้ที่ /profile/orders · อ่านสินค้าไม่สำเร็จ (docs = null) ไม่กรองทิ้ง
+        const library = docs ? items.filter((item) => existing.has(keyOf(item))) : items;
+
+        // Sort by purchase date desc
+        library.sort((a, b) => new Date(b.purchasedAt).getTime() - new Date(a.purchasedAt).getTime());
+
+        return NextResponse.json(library);
 
     } catch (error) {
         console.error('Error fetching ebooks:', error);

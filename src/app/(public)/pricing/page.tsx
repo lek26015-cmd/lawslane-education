@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { usePlan } from '@/context/plan-context';
+import { useUser } from '@/firebase/provider';
 
 const tiers = [
     {
@@ -84,6 +86,10 @@ const tiers = [
 
 export default function PricingPage() {
     const [isYearly, setIsYearly] = useState(false);
+    const { user } = useUser();
+    const { planId, loading: planLoading } = usePlan();
+    // กรอบ "แพ็กเกจปัจจุบัน" เฉพาะคนที่ล็อกอินแล้วและโหลดแพ็กเกจเสร็จ
+    const currentPlanName = user && !planLoading ? planId : null;
 
     return (
         <div className="max-w-6xl mx-auto space-y-10">
@@ -139,14 +145,22 @@ export default function PricingPage() {
 
             {/* Pricing Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-                {tiers.map((tier, index) => (
+                {tiers.map((tier, index) => {
+                    const isCurrent = currentPlanName === tier.name.toLowerCase();
+                    return (
                     <motion.div
                         key={tier.name}
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * index }}
-                        className={`relative rounded-2xl border-2 bg-gradient-to-b ${tier.gradient} ${tier.borderColor} overflow-hidden ${tier.badge ? 'md:-mt-4 md:mb-4 shadow-xl' : 'shadow-lg'}`}
+                        className={`relative rounded-2xl border-2 bg-gradient-to-b ${tier.gradient} ${isCurrent ? 'border-emerald-500 ring-4 ring-emerald-500/20' : tier.borderColor} overflow-hidden ${tier.badge ? 'md:-mt-4 md:mb-4 shadow-xl' : 'shadow-lg'}`}
                     >
+                        {isCurrent && (
+                            <div className={`absolute ${tier.badge ? 'top-9' : 'top-3'} right-3 z-10 rounded-full bg-emerald-500 px-2.5 py-1 text-[10px] font-bold text-white shadow`}>
+                                <Check className="w-3 h-3 inline mr-0.5" />
+                                แพ็กเกจปัจจุบัน
+                            </div>
+                        )}
                         {/* Recommended badge */}
                         {tier.badge && (
                             <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-[#0B3979] text-white text-center py-1.5 text-xs font-bold tracking-wider">
@@ -194,8 +208,11 @@ export default function PricingPage() {
                             </div>
 
                             {/* CTA */}
-                            <Button className={`w-full h-11 font-semibold rounded-xl mb-6 ${tier.buttonStyle}`}>
-                                {tier.price === 0 ? 'เริ่มใช้งานฟรี' : 'เลือกแพ็กเกจนี้'}
+                            <Button
+                                disabled={isCurrent}
+                                className={`w-full h-11 font-semibold rounded-xl mb-6 ${isCurrent ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 disabled:opacity-100' : tier.buttonStyle}`}
+                            >
+                                {isCurrent ? 'ใช้งานอยู่' : tier.price === 0 ? 'เริ่มใช้งานฟรี' : 'เลือกแพ็กเกจนี้'}
                             </Button>
 
                             {/* Features */}
@@ -218,7 +235,8 @@ export default function PricingPage() {
                             </div>
                         </div>
                     </motion.div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* FAQ / Trust */}

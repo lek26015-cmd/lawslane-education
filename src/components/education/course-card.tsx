@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Clock, BookOpen, Star, PlayCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { BrandCover } from "@/components/education/brand-cover";
+import { isPlaceholderCover } from "@/lib/cover";
 
 interface CourseCardProps {
     course: Course;
@@ -18,17 +20,16 @@ export function CourseCard({ course, href }: CourseCardProps) {
             <div className="flex flex-col h-full bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 {/* Cover Image */}
                 <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
-                    {course.coverUrl ? (
+                    {!isPlaceholderCover(course.coverUrl) ? (
                         <Image
                             src={course.coverUrl}
                             alt={course.title}
                             fill
+                            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
-                            <PlayCircle className="w-12 h-12 text-slate-400" />
-                        </div>
+                        <BrandCover title={course.title} label="Online Course" />
                     )}
                     {/* Badge Overlay */}
                     <div className="absolute top-3 left-3">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useUser } from '@/firebase/provider';
+import { usePlan, type PlanId } from '@/context/plan-context';
 
 const PREMIUM_DAILY_LIMIT = 5;
 const STORAGE_KEY = 'lw_ebook_downloads';
@@ -40,7 +40,7 @@ function saveUsage(usage: DownloadUsage) {
     }
 }
 
-export type UserTier = 'free' | 'premium' | 'pro';
+export type UserTier = PlanId;
 
 /**
  * Hook สำหรับจัดการดาวน์โหลด E-Book
@@ -48,24 +48,14 @@ export type UserTier = 'free' | 'premium' | 'pro';
  * - Premium/Pro: ดาวน์โหลดได้ 5 ชุด/วัน
  */
 export function useEbookDownload() {
-    const { user } = useUser();
     const [usage, setUsage] = useState<DownloadUsage>({ date: getTodayKey(), count: 0, bookIds: [] });
-    const [tier, setTier] = useState<UserTier>('free');
+    // แพ็กเกจจริงจาก PlanProvider — เดิมตั้งเป็น 'free' ตายตัว (TODO) ทำให้ Premium/Pro โหลดไม่ได้
+    const { planId: tier } = usePlan();
 
     // Load usage on mount
     useEffect(() => {
         setUsage(getUsage());
     }, []);
-
-    // TODO: Load tier from Firestore user profile
-    useEffect(() => {
-        if (user) {
-            // ในอนาคตจะดึง tier จาก Firestore
-            setTier('free');
-        } else {
-            setTier('free');
-        }
-    }, [user]);
 
     const isPremium = tier === 'premium' || tier === 'pro';
     const canDownload = isPremium;
