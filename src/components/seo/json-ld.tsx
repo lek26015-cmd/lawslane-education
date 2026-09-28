@@ -3,7 +3,7 @@
  * ช่วยให้ Google เข้าใจโครงสร้างเว็บไซต์
  */
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://education.lawslane.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://wittaya.lawslane.com';
 
 export function OrganizationJsonLd() {
     const jsonLd = {

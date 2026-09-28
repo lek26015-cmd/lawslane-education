@@ -15,7 +15,7 @@ const prompt = Prompt({
 
 import type { Metadata } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://education.lawslane.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://wittaya.lawslane.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
