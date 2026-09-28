@@ -101,6 +101,7 @@ export default function PublicLayout({
                                 <li><a href="https://www.lawslane.com/th/privacy" className="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a></li>
                                 <li><a href="https://www.lawslane.com/th/terms" className="hover:text-white transition-colors">ข้อกำหนดการใช้งาน</a></li>
                                 <li><a href="https://www.lawslane.com/th/help" className="hover:text-white transition-colors">ศูนย์ช่วยเหลือ</a></li>
+                                <li><a href="https://docs.lawslane.com/th/wittaya" className="hover:text-white transition-colors">คู่มือการใช้งาน</a></li>
                             </ul>
                         </div>
                     </div>
