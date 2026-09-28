@@ -51,6 +51,30 @@ export async function GET(request: Request) {
             };
         });
 
+        // ผลสอบที่ submit-exam บันทึก (examAttempts) — examResults เป็นของระบบเก่า ไม่มีใครเขียนแล้ว
+        // map ให้เป็นรูปเดียวกับที่หน้า my-learning อ่าน (examTitle, result.totalScore, createdAt)
+        const attemptsSnap = await admin.firestore()
+            .collection('examAttempts')
+            .where('userId', '==', userId)
+            .limit(200)
+            .get();
+        for (const doc of attemptsSnap.docs) {
+            const data = doc.data();
+            const created = data.completedAt?.toDate?.() ?? data.createdAt?.toDate?.() ?? null;
+            history.push({
+                id: doc.id,
+                examId: data.examId || '',
+                examTitle: data.examTitle || '',
+                score: data.totalScore ?? data.score ?? 0,
+                passed: data.passed ?? false,
+                result: { totalScore: data.totalScore ?? data.score ?? 0 },
+                source: 'examAttempts',
+                createdAt: created ? created.toISOString() : null,
+                submittedAt: created ? created.toISOString() : null,
+                timestamp: created ? created.getTime() : 0,
+            } as any);
+        }
+
         // Sort in memory to avoid needing composite index immediately
         history.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 

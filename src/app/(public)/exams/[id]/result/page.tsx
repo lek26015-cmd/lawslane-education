@@ -7,6 +7,7 @@ import { ArrowLeft, CheckCircle, XCircle, Trophy, Target, Sparkles, ChevronDown,
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUser } from '@/firebase/provider';
 
 interface AnswerResult {
     questionId: string;
@@ -15,7 +16,9 @@ interface AnswerResult {
     studentAnswer: string | number;
     correctAnswer?: string | number;
     isCorrect?: boolean;
-    aiScore?: number;
+    aiScore?: number | null;
+    /** แพ็กเกจไม่รวม AI ตรวจข้อเขียน — ไม่มีคะแนน ไม่นับในคะแนนรวม */
+    ungraded?: boolean;
     aiFeedback?: string;
     aiStrengths?: string[];
     aiWeaknesses?: string[];
@@ -38,6 +41,7 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
     const { id } = use(params);
     const searchParams = useSearchParams();
     const attemptId = searchParams.get('attemptId');
+    const { user, isUserLoading } = useUser();
 
     const [attempt, setAttempt] = useState<ExamAttempt | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -45,10 +49,20 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
 
     useEffect(() => {
         const fetchResult = async () => {
-            if (!attemptId) return;
+            if (isUserLoading) return;
+            // ไม่มี attemptId หรือยังไม่ล็อกอิน — เดิม return เฉยๆ ทำให้หมุนโหลดค้างตลอดไป
+            if (!attemptId || !user) {
+                setIsLoading(false);
+                return;
+            }
 
             try {
-                const response = await fetch(`/api/education/attempts/${attemptId}`);
+                // route นี้ให้ดูได้เฉพาะเจ้าของผลสอบ — เดิมไม่ส่ง token จึงโดน 403 ทุกครั้ง
+                const token = await user.getIdToken();
+                const response = await fetch(`/api/education/attempts/${attemptId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store',
+                });
                 if (response.ok) {
                     const data = await response.json();
                     setAttempt(data);
@@ -64,7 +78,7 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
             }
         };
         fetchResult();
-    }, [attemptId]);
+    }, [attemptId, user, isUserLoading]);
 
     const toggleQuestion = (questionId: string) => {
         setExpandedQuestions(prev => {
@@ -168,7 +182,10 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
                 >
                     <Sparkles className="w-6 h-6 text-amber-500 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-slate-900">
-                        {Math.round(attempt.answers.reduce((sum, a) => sum + (a.aiScore || 0), 0) / attempt.answers.length)}
+                        {(() => {
+                            const graded = attempt.answers.filter(a => !a.ungraded);
+                            return graded.length ? Math.round(graded.reduce((sum, a) => sum + (a.aiScore || 0), 0) / graded.length) : '-';
+                        })()}
                     </p>
                     <p className="text-xs text-slate-500">คะแนนเฉลี่ย</p>
                 </motion.div>
@@ -207,7 +224,7 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <Badge className={isPass ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
-                                        {answer.aiScore !== undefined ? `${answer.aiScore} คะแนน` : (answer.isCorrect ? 'ถูก' : 'ผิด')}
+                                        {answer.ungraded ? 'ยังไม่ได้ตรวจ' : typeof answer.aiScore === 'number' ? `${answer.aiScore} คะแนน` : (answer.isCorrect ? 'ถูก' : 'ผิด')}
                                     </Badge>
                                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                 </div>

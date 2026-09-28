@@ -115,7 +115,8 @@ export async function POST(request: NextRequest) {
                     studentAnswer: '',
                     isCorrect: false,
                     aiScore: 0,
-                    aiFeedback: 'ไม่ได้ตอบคำถามนี้'
+                    aiFeedback: 'ไม่ได้ตอบคำถามนี้',
+                    subject: question.subject,
                 };
                 return;
             }
@@ -138,7 +139,8 @@ export async function POST(request: NextRequest) {
                     aiScore: questionScore,
                     aiFeedback: result.isCorrect
                         ? 'ถูกต้อง! ' + (question.explanation || '')
-                        : 'ไม่ถูกต้อง คำตอบที่ถูกคือ: ' + (question.options?.[question.correctOptionIndex || 0] || '') + '. ' + (question.explanation || '')
+                        : 'ไม่ถูกต้อง คำตอบที่ถูกคือ: ' + (question.options?.[question.correctOptionIndex || 0] || '') + '. ' + (question.explanation || ''),
+                    subject: question.subject,
                 };
             } else {
                 essayJobs.push({ index, question, submittedAnswer });
@@ -157,6 +159,7 @@ export async function POST(request: NextRequest) {
                     correctAnswer: question.correctAnswerText,
                     aiScore: null,
                     ungraded: true,
+                    subject: question.subject,
                     aiFeedback: 'แพ็กเกจของคุณยังไม่รวม AI ตรวจข้อเขียน — เทียบคำตอบกับแนวคำตอบได้จากหน้าเฉลย',
                 };
             }
@@ -183,7 +186,8 @@ export async function POST(request: NextRequest) {
                         aiFeedback: aiResult.feedback,
                         aiStrengths: aiResult.strengths,
                         aiWeaknesses: aiResult.weaknesses,
-                        aiSuggestions: aiResult.suggestions
+                        aiSuggestions: aiResult.suggestions,
+                        subject: question.subject,
                     };
                 } catch (aiError) {
                     console.error('AI grading error:', aiError);
@@ -197,6 +201,7 @@ export async function POST(request: NextRequest) {
                         correctAnswer: question.correctAnswerText,
                         aiScore: hasAnswer ? 50 : 0,
                         aiFeedback: 'ไม่สามารถตรวจด้วย AI ได้ในขณะนี้ ให้คะแนนเบื้องต้น',
+                        subject: question.subject,
                     };
                 }
             }));
@@ -208,9 +213,35 @@ export async function POST(request: NextRequest) {
         const passingScore = 50;
         const passed = finalScore >= passingScore;
 
+        // บันทึกผลลง examAttempts — เดิมคืน attemptId ที่สร้างขึ้นลอยๆ (`attempt_${Date.now()}`)
+        // โดยไม่บันทึกอะไรเลย หน้าผลสอบจึงหาไม่เจอทุกครั้ง และ AI วิเคราะห์จุดอ่อนไม่มีข้อมูลให้ใช้
+        const startedDate = startedAt ? new Date(startedAt) : null;
+        const validStart = startedDate && !Number.isNaN(startedDate.getTime()) && startedDate.getTime() <= Date.now()
+            ? startedDate : null;
+        const correctAnswers = gradedAnswers.filter(a => a?.isCorrect || (typeof a?.aiScore === 'number' && a.aiScore >= 60)).length;
+        const attemptRef = await db.collection('examAttempts').add({
+            userId: uid,
+            examId,
+            examTitle: examData.title || '',
+            status: 'COMPLETED',
+            score: finalScore,
+            totalScore: finalScore,
+            maxScore: 100,
+            passingScore,
+            passed,
+            totalQuestions: questions.length,
+            correctAnswers,
+            timeSpentMinutes: validStart ? Math.round((Date.now() - validStart.getTime()) / 60000) : 0,
+            // Firestore ไม่รับ undefined — ตัดฟิลด์ที่ไม่มีค่าทิ้ง
+            answers: JSON.parse(JSON.stringify(gradedAnswers)),
+            startedAt: validStart,
+            completedAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
         return NextResponse.json({
             success: true,
-            attemptId: `attempt_${Date.now()}`,
+            attemptId: attemptRef.id,
             totalScore: finalScore,
             maxScore: 100,
             passingScore,

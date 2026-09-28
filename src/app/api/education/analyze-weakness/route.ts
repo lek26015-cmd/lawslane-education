@@ -26,12 +26,16 @@ export async function GET(request: NextRequest) {
                 { status: 403 },
             );
         }
+        // ไม่ใช้ orderBy('completedAt') — ต้องมี composite index (userId + completedAt) ที่ยังไม่ได้
+        // deploy ถ้าใส่ Firestore จะปฏิเสธ query ทั้งก้อน → เรียงในหน่วยความจำแทน (แบบเดียวกับ student-history)
         const query: admin.firestore.Query = db.collection('examAttempts')
             .where('userId', '==', userId)
-            .orderBy('completedAt', 'desc')
-            .limit(50);
+            .limit(200);
 
         const snap = await query.get();
+        const recentDocs = [...snap.docs]
+            .sort((a, b) => (b.data().completedAt?.toMillis?.() ?? 0) - (a.data().completedAt?.toMillis?.() ?? 0))
+            .slice(0, 50);
 
         if (snap.empty) {
             return NextResponse.json({
@@ -48,12 +52,16 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        const attempts = snap.docs.map(doc => {
+        const attempts = recentDocs.map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
                 examId: data.examId || '',
                 userId: data.userId || '',
+                // ai-weakness-analyzer อ่าน examTitle / totalScore / passed — เดิมไม่ได้ส่งไป
+                examTitle: data.examTitle || '',
+                totalScore: data.totalScore ?? data.score ?? 0,
+                passed: data.passed ?? false,
                 score: data.score || 0,
                 totalQuestions: data.totalQuestions || 0,
                 answers: data.answers || [],
