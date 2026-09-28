@@ -4,6 +4,7 @@ import * as admin from 'firebase-admin';
 import { gradeEssayAnswer, gradeMultipleChoice } from '@/lib/ai-grading';
 import { stripAnswerFromQuestion, formatExamText } from '@/lib/exam-utils';
 import { requireUser } from '@/lib/user-auth';
+import { consumeExamAttempt, EntitlementError, getEntitlement } from '@/lib/plan-entitlement';
 
 interface SubmitAnswerInput {
     questionId: string;
@@ -40,6 +41,19 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
         }
         const examData = examDoc.data()!;
+
+        // สิทธิ์ตามแพ็กเกจ (แอดมินตั้งที่หลังบ้าน) — ชุดที่เริ่มทำไปแล้ววันนี้ไม่นับซ้ำ
+        // ด่านนี้กันการยิง API ตรงข้ามหน้าเริ่มทำข้อสอบ
+        const entitlement = await getEntitlement(db, uid);
+        try {
+            await consumeExamAttempt(db, uid, examId, entitlement.entitlements.examsPerDay);
+        } catch (e) {
+            if (e instanceof EntitlementError) {
+                return NextResponse.json({ error: e.message, code: e.code }, { status: e.status });
+            }
+            throw e;
+        }
+        const aiGrading = entitlement.entitlements.aiGrading;
 
         // Get questions from subcollection
         const qSnap = await examDoc.ref.collection('questions')
@@ -131,6 +145,24 @@ export async function POST(request: NextRequest) {
             }
         });
 
+        // แพ็กเกจไม่รวม AI ตรวจข้อเขียน: ไม่เรียก AI และไม่เอาข้อเขียนไปคิดคะแนน
+        // (ให้ 0 จะไม่ยุติธรรม ให้ 50 แบบ fallback ก็เท่ากับเดา)
+        if (!aiGrading) {
+            for (const { index, question, submittedAnswer } of essayJobs) {
+                gradedAnswers[index] = {
+                    questionId: question.id,
+                    questionText: question.text,
+                    questionType: 'ESSAY',
+                    studentAnswer: submittedAnswer.answer,
+                    correctAnswer: question.correctAnswerText,
+                    aiScore: null,
+                    ungraded: true,
+                    aiFeedback: 'แพ็กเกจของคุณยังไม่รวม AI ตรวจข้อเขียน — เทียบคำตอบกับแนวคำตอบได้จากหน้าเฉลย',
+                };
+            }
+            essayJobs.length = 0;
+        }
+
         for (let i = 0; i < essayJobs.length; i += ESSAY_CONCURRENCY) {
             const group = essayJobs.slice(i, i + ESSAY_CONCURRENCY);
             await Promise.all(group.map(async ({ index, question, submittedAnswer }) => {
@@ -170,8 +202,9 @@ export async function POST(request: NextRequest) {
             }));
         }
 
-        const totalScore = gradedAnswers.reduce((sum, a) => sum + (a?.aiScore || 0), 0);
-        const finalScore = questions.length > 0 ? Math.round(totalScore / questions.length) : 0;
+        const scored = gradedAnswers.filter(a => !a?.ungraded);
+        const totalScore = scored.reduce((sum, a) => sum + (a?.aiScore || 0), 0);
+        const finalScore = scored.length > 0 ? Math.round(totalScore / scored.length) : 0;
         const passingScore = 50;
         const passed = finalScore >= passingScore;
 

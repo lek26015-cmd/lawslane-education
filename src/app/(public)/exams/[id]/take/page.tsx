@@ -12,6 +12,7 @@ import { AuthGuard } from '@/components/education/auth-guard';
 import { GoogleAd } from '@/components/google-ad';
 import { CopyProtection } from '@/components/education/copy-protection';
 import { useExamLimit } from '@/hooks/use-exam-limit';
+import { useUser } from '@/firebase/provider';
 import { UpgradePaywall, ExamLimitBanner } from '@/components/education/upgrade-paywall';
 
 interface Question {
@@ -58,7 +59,8 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
     const [timeLeft, setTimeLeft] = useState(0);
     const [startedAt] = useState(new Date().toISOString());
 
-    const { used, dailyLimit, isLimitReached, isPremium, recordExamAttempt } = useExamLimit();
+    const { user } = useUser();
+    const { used, dailyLimit, isLimitReached, recordExamAttempt } = useExamLimit();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -82,13 +84,11 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
         fetchData();
     }, [id, router, toast]);
 
-    // Check daily limit (after exam loads)
+    // ใช้สิทธิ์ทำข้อสอบ (หลังโหลดข้อสอบ) — server เป็นคนตัดสินตามแพ็กเกจ
+    // ชุดเดิมในวันเดียวกันไม่นับซ้ำ จึงเรียกซ้ำได้ปลอดภัย
     useEffect(() => {
-        if (exam && !isPremium) {
-            const allowed = recordExamAttempt(id);
-            if (!allowed) return; // limit reached
-        }
-    }, [exam, id, isPremium, recordExamAttempt]);
+        if (exam) recordExamAttempt(id);
+    }, [exam, id, recordExamAttempt]);
 
 
     // Timer
@@ -110,7 +110,7 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
     }, [timeLeft, exam]);
 
     // Show paywall if limit reached (after all hooks)
-    if (!isLoading && isLimitReached && !isPremium) {
+    if (!isLoading && isLimitReached) {
         return <UpgradePaywall used={used} dailyLimit={dailyLimit} context="exam" />;
     }
 
@@ -133,9 +133,14 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
                 answer: answers[q.id] ?? ''
             }));
 
+            // route นี้ต้องล็อกอิน (requireUser) — เดิมไม่ได้ส่ง token จึงโดน 401 ทุกครั้ง
+            const token = await user?.getIdToken();
             const response = await fetch('/api/education/submit-exam', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify({
                     examId: id,
                     answers: formattedAnswers,
@@ -146,6 +151,10 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
             if (response.ok) {
                 const result = await response.json();
                 router.push(`/exams/${id}/result?attemptId=${result.attemptId}`);
+            } else if (response.status === 403) {
+                const body = await response.json().catch(() => ({}));
+                toast({ title: body.error || 'ใช้สิทธิ์ทำข้อสอบครบแล้ววันนี้', variant: "destructive" });
+                setIsSubmitting(false);
             } else {
                 throw new Error('Submit failed');
             }

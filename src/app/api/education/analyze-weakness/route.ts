@@ -3,6 +3,7 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { analyzeWeaknesses } from '@/lib/ai-weakness-analyzer';
 import { requireUser } from '@/lib/user-auth';
+import { getEntitlement } from '@/lib/plan-entitlement';
 
 // GET /api/education/analyze-weakness - Analyze the logged-in user's weaknesses from exam attempts
 export async function GET(request: NextRequest) {
@@ -16,6 +17,15 @@ export async function GET(request: NextRequest) {
         if (!app) return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
 
         const db = admin.firestore();
+
+        // AI วิเคราะห์จุดอ่อนเรียก AI ทุกครั้ง — เปิดตามแพ็กเกจที่แอดมินตั้งไว้
+        const entitlement = await getEntitlement(db, userId);
+        if (!entitlement.entitlements.weaknessAnalysis) {
+            return NextResponse.json(
+                { error: `แพ็กเกจ ${entitlement.planName} ยังไม่รวม AI วิเคราะห์จุดอ่อน`, code: 'plan_feature' },
+                { status: 403 },
+            );
+        }
         const query: admin.firestore.Query = db.collection('examAttempts')
             .where('userId', '==', userId)
             .orderBy('completedAt', 'desc')

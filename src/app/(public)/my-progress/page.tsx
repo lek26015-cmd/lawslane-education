@@ -27,6 +27,8 @@ export default function MyProgressPage() {
     const router = useRouter();
     const [analysis, setAnalysis] = useState<WeaknessAnalysis | null>(null);
     const [totalAttempts, setTotalAttempts] = useState(0);
+    // แพ็กเกจไม่รวม AI วิเคราะห์ (แอดมินปิดไว้) — server ตอบ 403 พร้อมข้อความ
+    const [lockedMessage, setLockedMessage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -50,6 +52,10 @@ export default function MyProgressPage() {
                 const data = await response.json();
                 setAnalysis(data.analysis);
                 setTotalAttempts(data.totalAttempts || 0);
+                setLockedMessage(null);
+            } else if (response.status === 403) {
+                const data = await response.json().catch(() => ({}));
+                setLockedMessage(data.error || 'แพ็กเกจของคุณยังไม่รวม AI วิเคราะห์จุดอ่อน');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -97,7 +103,20 @@ export default function MyProgressPage() {
                 </Button>
             </motion.div>
 
-            {!analysis || totalAttempts === 0 ? (
+            {lockedMessage ? (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-white rounded-2xl border p-8 text-center"
+                >
+                    <Sparkles className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                    <h2 className="text-xl font-bold text-slate-900 mb-2">{lockedMessage}</h2>
+                    <p className="text-slate-500 mb-6">อัปเกรดแพ็กเกจเพื่อให้ AI วิเคราะห์จุดแข็ง/จุดอ่อนจากผลสอบของคุณ</p>
+                    <Link href="/pricing">
+                        <Button className="bg-[#0B3979] hover:bg-[#082a5a]">ดูแพ็กเกจ</Button>
+                    </Link>
+                </motion.div>
+            ) : !analysis || totalAttempts === 0 ? (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
