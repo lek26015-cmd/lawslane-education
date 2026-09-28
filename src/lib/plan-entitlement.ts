@@ -1,0 +1,151 @@
+import 'server-only';
+import * as admin from 'firebase-admin';
+
+/**
+ * สิทธิ์ตามแพ็กเกจของ Wittaya — ตัดสินฝั่ง server เท่านั้น
+ *
+ * แอดมินตั้งค่าที่หลังบ้าน (lawslane-admin → Education → แพ็กเกจและสิทธิ์) เก็บ 2 ที่:
+ *  - `planEntitlements/wittaya` → แต่ละแพ็กเกจได้สิทธิ์อะไร (ไม่มีเอกสาร = ใช้ DEFAULT_PLANS)
+ *  - `users/{uid}.planGrants.wittaya` → แพ็กเกจที่แอดมินมอบให้ลูกค้ารายคน (+ วันหมดอายุ)
+ *    ยังไม่มีระบบจ่ายเงินของ Wittaya จึงเป็นทางเดียวที่ลูกค้าจะได้แพ็กเกจที่สูงกว่า free
+ *
+ * ทั้งสองที่ client เขียนเองไม่ได้ (firestore.rules ของ users เป็น allowlist ที่ไม่มี
+ * planGrants และ planEntitlements ไม่มีกฎ = deny) — โครงข้อมูลต้องตรงกับ
+ * lawslane-admin/src/lib/plan-entitlements.ts
+ *
+ * โควตาทำข้อสอบนับใน `examUsage/{uid}_{YYYY-MM-DD}` (วันตามเวลาไทย) แทน localStorage เดิม
+ * ที่ลบทิ้งได้ และ "นับ" แค่ในเบราว์เซอร์
+ */
+
+export const WITTAYA_PLAN_IDS = ['free', 'premium', 'pro'] as const;
+export type WittayaPlanId = (typeof WITTAYA_PLAN_IDS)[number];
+
+export type WittayaEntitlements = {
+    /** จำนวนชุดข้อสอบต่อวัน — null = ไม่จำกัด */
+    examsPerDay: number | null;
+    /** ให้ AI ตรวจข้อเขียน (อัตนัย) ตอนส่งข้อสอบ */
+    aiGrading: boolean;
+    /** AI วิเคราะห์จุดแข็ง/จุดอ่อน (หน้า my-progress) */
+    weaknessAnalysis: boolean;
+};
+
+// ค่าเริ่มต้น = พฤติกรรมเดิมก่อนมีระบบนี้ (free ทำข้อสอบได้ 3 ชุด/วัน ที่เหลือเปิดหมด)
+// จะได้ไม่มีฟีเจอร์ไหนหายไปจากผู้ใช้ทันทีที่ deploy — แอดมินค่อยปรับเองที่หลังบ้าน
+export const DEFAULT_PLANS: Record<WittayaPlanId, WittayaEntitlements> = {
+    free: { examsPerDay: 3, aiGrading: true, weaknessAnalysis: true },
+    premium: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true },
+    pro: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true },
+};
+
+const PLAN_NAMES: Record<WittayaPlanId, string> = { free: 'Free', premium: 'Premium', pro: 'Pro' };
+
+export class EntitlementError extends Error {
+    status: number;
+    code: string;
+    constructor(code: string, message: string, status = 403) {
+        super(message);
+        this.code = code;
+        this.status = status;
+    }
+}
+
+function isPlanId(v: unknown): v is WittayaPlanId {
+    return typeof v === 'string' && (WITTAYA_PLAN_IDS as readonly string[]).includes(v);
+}
+
+/** อ่านค่าจากเอกสาร — ฟิลด์ที่หายหรือชนิดผิดตกไปใช้ค่าเริ่มต้นของแพ็กเกจนั้น */
+function normalize(raw: any, fallback: WittayaEntitlements): WittayaEntitlements {
+    const perDay = raw?.examsPerDay;
+    return {
+        examsPerDay: perDay === null ? null
+            : typeof perDay === 'number' && Number.isFinite(perDay) && perDay >= 0 ? Math.floor(perDay)
+            : fallback.examsPerDay,
+        aiGrading: typeof raw?.aiGrading === 'boolean' ? raw.aiGrading : fallback.aiGrading,
+        weaknessAnalysis: typeof raw?.weaknessAnalysis === 'boolean' ? raw.weaknessAnalysis : fallback.weaknessAnalysis,
+    };
+}
+
+async function loadPlans(db: admin.firestore.Firestore): Promise<Record<WittayaPlanId, WittayaEntitlements>> {
+    const snap = await db.collection('planEntitlements').doc('wittaya').get().catch(() => null);
+    const plans = snap?.data()?.plans ?? {};
+    return {
+        free: normalize(plans.free, DEFAULT_PLANS.free),
+        premium: normalize(plans.premium, DEFAULT_PLANS.premium),
+        pro: normalize(plans.pro, DEFAULT_PLANS.pro),
+    };
+}
+
+/** แพ็กเกจที่แอดมินมอบให้ — หมดอายุแล้วหรือค่าไม่ถูกต้องถือว่า free */
+export function planFromGrant(grant: any, now = Date.now()): { planId: WittayaPlanId; expiresAt: Date | null } {
+    if (!grant || !isPlanId(grant.planId)) return { planId: 'free', expiresAt: null };
+    const expiresAt: Date | null = grant.expiresAt?.toDate?.() ?? null;
+    if (expiresAt && expiresAt.getTime() <= now) return { planId: 'free', expiresAt: null };
+    return { planId: grant.planId, expiresAt };
+}
+
+export type WittayaEntitlement = {
+    planId: WittayaPlanId;
+    planName: string;
+    expiresAt: string | null;
+    entitlements: WittayaEntitlements;
+};
+
+export async function getEntitlement(db: admin.firestore.Firestore, uid: string): Promise<WittayaEntitlement> {
+    const [userSnap, plans] = await Promise.all([db.collection('users').doc(uid).get(), loadPlans(db)]);
+    const { planId, expiresAt } = planFromGrant(userSnap.data()?.planGrants?.wittaya);
+    return {
+        planId,
+        planName: PLAN_NAMES[planId],
+        expiresAt: expiresAt?.toISOString() ?? null,
+        entitlements: plans[planId],
+    };
+}
+
+/** วันปัจจุบันตามเวลาไทย เช่น "2026-09-28" — รีเซ็ตโควตาเที่ยงคืนไทย ตรงกับข้อความบนหน้า paywall */
+export function currentUsageDay(now = new Date()): string {
+    return new Date(now.getTime() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+export type ExamUsage = {
+    day: string;
+    used: number;
+    limit: number | null;
+    examIds: string[];
+};
+
+export async function getExamUsage(db: admin.firestore.Firestore, uid: string, limit: number | null): Promise<ExamUsage> {
+    const day = currentUsageDay();
+    const snap = await db.collection('examUsage').doc(`${uid}_${day}`).get();
+    const examIds: string[] = snap.data()?.examIds ?? [];
+    return { day, used: examIds.length, limit, examIds };
+}
+
+/**
+ * ใช้สิทธิ์ทำข้อสอบ 1 ชุด — ข้อสอบเดิมในวันเดียวกันไม่นับซ้ำ (เข้าใหม่/ส่งคำตอบไม่เสียสิทธิ์เพิ่ม)
+ * เกินลิมิต throw EntitlementError('exam_quota')
+ */
+export async function consumeExamAttempt(
+    db: admin.firestore.Firestore,
+    uid: string,
+    examId: string,
+    limit: number | null,
+): Promise<ExamUsage> {
+    const day = currentUsageDay();
+    const ref = db.collection('examUsage').doc(`${uid}_${day}`);
+    return db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        const examIds: string[] = snap.data()?.examIds ?? [];
+        if (examIds.includes(examId)) return { day, used: examIds.length, limit, examIds };
+        if (limit !== null && examIds.length >= limit) {
+            throw new EntitlementError('exam_quota', `ใช้สิทธิ์ทำข้อสอบครบ ${limit} ชุดของวันนี้แล้ว`);
+        }
+        const next = [...examIds, examId];
+        tx.set(ref, {
+            uid,
+            day,
+            examIds: next,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+        return { day, used: next.length, limit, examIds: next };
+    });
+}

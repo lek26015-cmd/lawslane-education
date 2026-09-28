@@ -4,6 +4,7 @@ import * as admin from 'firebase-admin';
 import { gradeEssayAnswer, gradeMultipleChoice } from '@/lib/ai-grading';
 import { stripAnswerFromQuestion, formatExamText } from '@/lib/exam-utils';
 import { requireUser } from '@/lib/user-auth';
+import { consumeExamAttempt, EntitlementError, getEntitlement } from '@/lib/plan-entitlement';
 
 interface SubmitAnswerInput {
     questionId: string;
@@ -40,6 +41,19 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
         }
         const examData = examDoc.data()!;
+
+        // สิทธิ์ตามแพ็กเกจ (แอดมินตั้งที่หลังบ้าน) — ชุดที่เริ่มทำไปแล้ววันนี้ไม่นับซ้ำ
+        // ด่านนี้กันการยิง API ตรงข้ามหน้าเริ่มทำข้อสอบ
+        const entitlement = await getEntitlement(db, uid);
+        try {
+            await consumeExamAttempt(db, uid, examId, entitlement.entitlements.examsPerDay);
+        } catch (e) {
+            if (e instanceof EntitlementError) {
+                return NextResponse.json({ error: e.message, code: e.code }, { status: e.status });
+            }
+            throw e;
+        }
+        const aiGrading = entitlement.entitlements.aiGrading;
 
         // Get questions from subcollection
         const qSnap = await examDoc.ref.collection('questions')
@@ -101,7 +115,8 @@ export async function POST(request: NextRequest) {
                     studentAnswer: '',
                     isCorrect: false,
                     aiScore: 0,
-                    aiFeedback: 'ไม่ได้ตอบคำถามนี้'
+                    aiFeedback: 'ไม่ได้ตอบคำถามนี้',
+                    subject: question.subject,
                 };
                 return;
             }
@@ -124,12 +139,32 @@ export async function POST(request: NextRequest) {
                     aiScore: questionScore,
                     aiFeedback: result.isCorrect
                         ? 'ถูกต้อง! ' + (question.explanation || '')
-                        : 'ไม่ถูกต้อง คำตอบที่ถูกคือ: ' + (question.options?.[question.correctOptionIndex || 0] || '') + '. ' + (question.explanation || '')
+                        : 'ไม่ถูกต้อง คำตอบที่ถูกคือ: ' + (question.options?.[question.correctOptionIndex || 0] || '') + '. ' + (question.explanation || ''),
+                    subject: question.subject,
                 };
             } else {
                 essayJobs.push({ index, question, submittedAnswer });
             }
         });
+
+        // แพ็กเกจไม่รวม AI ตรวจข้อเขียน: ไม่เรียก AI และไม่เอาข้อเขียนไปคิดคะแนน
+        // (ให้ 0 จะไม่ยุติธรรม ให้ 50 แบบ fallback ก็เท่ากับเดา)
+        if (!aiGrading) {
+            for (const { index, question, submittedAnswer } of essayJobs) {
+                gradedAnswers[index] = {
+                    questionId: question.id,
+                    questionText: question.text,
+                    questionType: 'ESSAY',
+                    studentAnswer: submittedAnswer.answer,
+                    correctAnswer: question.correctAnswerText,
+                    aiScore: null,
+                    ungraded: true,
+                    subject: question.subject,
+                    aiFeedback: 'แพ็กเกจของคุณยังไม่รวม AI ตรวจข้อเขียน — เทียบคำตอบกับแนวคำตอบได้จากหน้าเฉลย',
+                };
+            }
+            essayJobs.length = 0;
+        }
 
         for (let i = 0; i < essayJobs.length; i += ESSAY_CONCURRENCY) {
             const group = essayJobs.slice(i, i + ESSAY_CONCURRENCY);
@@ -151,7 +186,8 @@ export async function POST(request: NextRequest) {
                         aiFeedback: aiResult.feedback,
                         aiStrengths: aiResult.strengths,
                         aiWeaknesses: aiResult.weaknesses,
-                        aiSuggestions: aiResult.suggestions
+                        aiSuggestions: aiResult.suggestions,
+                        subject: question.subject,
                     };
                 } catch (aiError) {
                     console.error('AI grading error:', aiError);
@@ -165,19 +201,47 @@ export async function POST(request: NextRequest) {
                         correctAnswer: question.correctAnswerText,
                         aiScore: hasAnswer ? 50 : 0,
                         aiFeedback: 'ไม่สามารถตรวจด้วย AI ได้ในขณะนี้ ให้คะแนนเบื้องต้น',
+                        subject: question.subject,
                     };
                 }
             }));
         }
 
-        const totalScore = gradedAnswers.reduce((sum, a) => sum + (a?.aiScore || 0), 0);
-        const finalScore = questions.length > 0 ? Math.round(totalScore / questions.length) : 0;
+        const scored = gradedAnswers.filter(a => !a?.ungraded);
+        const totalScore = scored.reduce((sum, a) => sum + (a?.aiScore || 0), 0);
+        const finalScore = scored.length > 0 ? Math.round(totalScore / scored.length) : 0;
         const passingScore = 50;
         const passed = finalScore >= passingScore;
 
+        // บันทึกผลลง examAttempts — เดิมคืน attemptId ที่สร้างขึ้นลอยๆ (`attempt_${Date.now()}`)
+        // โดยไม่บันทึกอะไรเลย หน้าผลสอบจึงหาไม่เจอทุกครั้ง และ AI วิเคราะห์จุดอ่อนไม่มีข้อมูลให้ใช้
+        const startedDate = startedAt ? new Date(startedAt) : null;
+        const validStart = startedDate && !Number.isNaN(startedDate.getTime()) && startedDate.getTime() <= Date.now()
+            ? startedDate : null;
+        const correctAnswers = gradedAnswers.filter(a => a?.isCorrect || (typeof a?.aiScore === 'number' && a.aiScore >= 60)).length;
+        const attemptRef = await db.collection('examAttempts').add({
+            userId: uid,
+            examId,
+            examTitle: examData.title || '',
+            status: 'COMPLETED',
+            score: finalScore,
+            totalScore: finalScore,
+            maxScore: 100,
+            passingScore,
+            passed,
+            totalQuestions: questions.length,
+            correctAnswers,
+            timeSpentMinutes: validStart ? Math.round((Date.now() - validStart.getTime()) / 60000) : 0,
+            // Firestore ไม่รับ undefined — ตัดฟิลด์ที่ไม่มีค่าทิ้ง
+            answers: JSON.parse(JSON.stringify(gradedAnswers)),
+            startedAt: validStart,
+            completedAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
         return NextResponse.json({
             success: true,
-            attemptId: `attempt_${Date.now()}`,
+            attemptId: attemptRef.id,
             totalScore: finalScore,
             maxScore: 100,
             passingScore,

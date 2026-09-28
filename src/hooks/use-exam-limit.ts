@@ -3,104 +3,85 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@/firebase/provider';
 
-const FREE_DAILY_LIMIT = 3;
-const STORAGE_KEY = 'lw_exam_usage';
-
-interface ExamUsage {
-    date: string; // YYYY-MM-DD
-    count: number;
-    examIds: string[];
-}
-
-function getTodayKey(): string {
-    return new Date().toISOString().split('T')[0];
-}
-
-function getUsage(): ExamUsage {
-    if (typeof window === 'undefined') return { date: getTodayKey(), count: 0, examIds: [] };
-
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return { date: getTodayKey(), count: 0, examIds: [] };
-        const data: ExamUsage = JSON.parse(raw);
-
-        // Reset if it's a new day
-        if (data.date !== getTodayKey()) {
-            return { date: getTodayKey(), count: 0, examIds: [] };
-        }
-        return data;
-    } catch {
-        return { date: getTodayKey(), count: 0, examIds: [] };
-    }
-}
-
-function saveUsage(usage: ExamUsage) {
-    if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(usage));
-    }
-}
-
 export type UserTier = 'free' | 'premium' | 'pro';
 
+type EntitlementResponse = {
+    planId: UserTier;
+    planName: string;
+    expiresAt: string | null;
+    entitlements: { examsPerDay: number | null; aiGrading: boolean; weaknessAnalysis: boolean };
+    usage: { day: string; used: number; limit: number | null; examIds: string[] };
+    allowed?: boolean;
+};
+
 /**
- * Hook สำหรับตรวจสอบ usage limit ของข้อสอบ
- * - Free: 3 ชุด/วัน
- * - Premium/Pro: ไม่จำกัด
+ * แพ็กเกจ + โควตาข้อสอบวันนี้ — ตัวเลขมาจาก /api/education/entitlement
+ * (แอดมินตั้งค่าได้ที่หลังบ้าน) เดิมนับใน localStorage ซึ่งลบทิ้งแล้วทำต่อได้ไม่จำกัด
+ * ค่าในนี้ใช้แสดงผลเท่านั้น ด่านจริงอยู่ที่ server (entitlement POST + submit-exam)
  */
 export function useExamLimit() {
     const { user } = useUser();
-    const [usage, setUsage] = useState<ExamUsage>({ date: getTodayKey(), count: 0, examIds: [] });
-    const [tier, setTier] = useState<UserTier>('free');
+    const [data, setData] = useState<EntitlementResponse | null>(null);
+    const [blocked, setBlocked] = useState(false);
 
-    // Load usage on mount
     useEffect(() => {
-        setUsage(getUsage());
-    }, []);
+        let cancelled = false;
+        if (!user) {
+            setData(null);
+            return;
+        }
+        (async () => {
+            try {
+                const token = await user.getIdToken();
+                const res = await fetch('/api/education/entitlement', {
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store',
+                });
+                if (res.ok && !cancelled) setData(await res.json());
+            } catch (error) {
+                console.error('Error loading entitlement:', error);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [user]);
 
-    // TODO: Load tier from Firestore user profile
-    // For now, all logged-in users are 'free'
-    useEffect(() => {
-        if (user) {
-            // ในอนาคตจะดึง tier จาก Firestore
-            // const userDoc = await getDoc(doc(db, 'users', user.uid));
-            // setTier(userDoc.data()?.tier || 'free');
-            setTier('free');
-        } else {
-            setTier('free');
+    /** เรียกตอนเริ่มทำข้อสอบ — คืน false ถ้าใช้สิทธิ์ของวันนี้ครบแล้ว */
+    const recordExamAttempt = useCallback(async (examId: string): Promise<boolean> => {
+        if (!user) return false;
+        try {
+            const token = await user.getIdToken();
+            const res = await fetch('/api/education/entitlement', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ examId }),
+            });
+            const body: EntitlementResponse | null = await res.json().catch(() => null);
+            if (body?.usage) setData(body);
+            const allowed = res.ok && body?.allowed !== false;
+            setBlocked(!allowed && res.status === 403);
+            return allowed;
+        } catch (error) {
+            // เน็ตหลุด — ให้ทำต่อได้ ตอนส่งคำตอบ server จะเช็คซ้ำอีกรอบ
+            console.error('Error recording exam attempt:', error);
+            return true;
         }
     }, [user]);
 
-    const isPremium = tier === 'premium' || tier === 'pro';
-    const remaining = isPremium ? Infinity : Math.max(0, FREE_DAILY_LIMIT - usage.count);
-    const isLimitReached = !isPremium && usage.count >= FREE_DAILY_LIMIT;
-
-    const recordExamAttempt = useCallback((examId: string) => {
-        if (isPremium) return true; // Premium ไม่ต้อง track
-
-        const current = getUsage();
-
-        // ถ้าเคยทำข้อสอบนี้วันนี้แล้ว ไม่นับซ้ำ
-        if (current.examIds.includes(examId)) return true;
-
-        if (current.count >= FREE_DAILY_LIMIT) return false;
-
-        const updated: ExamUsage = {
-            date: getTodayKey(),
-            count: current.count + 1,
-            examIds: [...current.examIds, examId],
-        };
-        saveUsage(updated);
-        setUsage(updated);
-        return true;
-    }, [isPremium]);
+    const tier: UserTier = data?.planId ?? 'free';
+    const limit = data ? data.entitlements.examsPerDay : 3;
+    const used = data?.usage.used ?? 0;
+    const isPremium = limit === null;
 
     return {
         tier,
+        planName: data?.planName ?? 'Free',
         isPremium,
-        dailyLimit: FREE_DAILY_LIMIT,
-        used: usage.count,
-        remaining,
-        isLimitReached,
+        dailyLimit: limit ?? Infinity,
+        used,
+        remaining: limit === null ? Infinity : Math.max(0, limit - used),
+        // ครบลิมิตเฉพาะเมื่อ server ปฏิเสธข้อสอบชุดนี้ — เดิมเช็ค used >= limit ทำให้ชุดที่ 3
+        // (ชุดสุดท้ายที่ยังมีสิทธิ์) โดน paywall ทับทันทีที่เปิด
+        isLimitReached: blocked,
         recordExamAttempt,
     };
 }
