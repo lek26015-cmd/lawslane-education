@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { CoverImage } from '@/components/education/brand-cover';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -86,10 +87,11 @@ export function EducationArticles() {
                         <Card className="border shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white rounded-2xl overflow-hidden h-full">
                             <CardContent className="p-0">
                                 <div className="relative aspect-[16/10] overflow-hidden">
-                                    <img
+                                    <CoverImage
                                         src={article.coverImage}
                                         alt={article.title}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        label="บทความ"
+                                        className="transition-transform duration-500 group-hover:scale-110"
                                     />
                                     <div className="absolute top-3 left-3">
                                         <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm text-xs font-medium">

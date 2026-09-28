@@ -25,7 +25,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
                     id: docSnap.id, slug: data.slug || docSnap.id,
                     title: data.title || '', description: data.description || '',
                     content: data.content || '', category: data.category || 'ทั่วไป',
-                    coverImage: data.coverImage || '', author: data.author || 'Admin',
+                    coverImage: data.coverImage || data.imageUrl || '', author: data.author || 'Admin',
                     publishedAt: data.publishedAt?.toDate?.()?.toISOString() || '',
                     views: data.views || 0,
                 };
@@ -39,7 +39,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
                         id: doc.id, slug: data.slug || doc.id,
                         title: data.title || '', description: data.description || '',
                         content: data.content || '', category: data.category || 'ทั่วไป',
-                        coverImage: data.coverImage || '', author: data.author || 'Admin',
+                        coverImage: data.coverImage || data.imageUrl || '', author: data.author || 'Admin',
                         publishedAt: data.publishedAt?.toDate?.()?.toISOString() || '',
                         views: data.views || 0,
                     };
@@ -79,11 +79,13 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
 
             {/* Hero Image */}
             <div className="w-full h-[40vh] md:h-[50vh] relative bg-slate-900">
-                <img
-                    src={article.coverImage}
-                    alt={article.title}
-                    className="w-full h-full object-cover opacity-80"
-                />
+                {article.coverImage && (
+                    <img
+                        src={article.coverImage}
+                        alt={article.title}
+                        className="w-full h-full object-cover opacity-80"
+                    />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 pb-8 md:pb-12 max-w-4xl">
                     <Badge className="bg-blue-500 mb-4 hover:bg-[#0B3979] border-none">

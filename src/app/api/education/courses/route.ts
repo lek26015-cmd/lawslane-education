@@ -17,9 +17,9 @@ export async function GET(request: NextRequest) {
         }
 
         const db = admin.firestore();
-        let query: admin.firestore.Query = db.collection('courses')
-            .orderBy('createdAt', 'desc')
-            .limit(200);
+        // where(status) + orderBy(createdAt) ต้องใช้ composite index ที่ยังไม่มีใน production
+        // (คืน FAILED_PRECONDITION → หน้า /courses ว่างทั้งหน้า) จึงเรียงในหน่วยความจำแทน
+        let query: admin.firestore.Query = db.collection('courses').limit(200);
 
         if (!includeAll) {
             query = query.where('status', '==', 'published');
@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
                 updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
             };
         });
+        courses.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
         return NextResponse.json(courses);
     } catch (error) {

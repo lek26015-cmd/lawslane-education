@@ -45,7 +45,7 @@ export async function GET(
             description: data.description || '',
             content: data.content || '',
             category: data.category || 'ทั่วไป',
-            coverImage: data.coverImage || '',
+            coverImage: data.coverImage || data.imageUrl || '',
             author: data.author || 'Admin',
             publishedAt: data.publishedAt?.toDate?.()?.toISOString() || data.publishedAt || '',
             createdAt: data.createdAt?.toDate?.()?.toISOString() || '',

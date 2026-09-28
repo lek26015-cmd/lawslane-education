@@ -29,7 +29,7 @@ async function getLatestArticles(count: number): Promise<ArticleCard[]> {
                     title: data.title || '',
                     description: data.description || data.excerpt || '',
                     category: data.category || data.tags?.[0] || 'ทั่วไป',
-                    coverImage: data.coverImage || data.image || data.thumbnail || '',
+                    coverImage: data.coverImage || data.imageUrl || data.image || data.thumbnail || '',
                     publishedAt: data.publishedAt?.toDate?.()?.toISOString() || data.createdAt?.toDate?.()?.toISOString() || '',
                     status: data.status || 'published',
                 };

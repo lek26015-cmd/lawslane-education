@@ -1,49 +1,20 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useUser } from '@/firebase/provider';
+import { usePlan, type EntitlementResponse, type PlanId } from '@/context/plan-context';
 
-export type UserTier = 'free' | 'premium' | 'pro';
-
-type EntitlementResponse = {
-    planId: UserTier;
-    planName: string;
-    expiresAt: string | null;
-    entitlements: { examsPerDay: number | null; aiGrading: boolean; weaknessAnalysis: boolean };
-    usage: { day: string; used: number; limit: number | null; examIds: string[] };
-    allowed?: boolean;
-};
+export type UserTier = PlanId;
 
 /**
- * แพ็กเกจ + โควตาข้อสอบวันนี้ — ตัวเลขมาจาก /api/education/entitlement
+ * แพ็กเกจ + โควตาข้อสอบวันนี้ — ตัวเลขมาจาก /api/education/entitlement ผ่าน PlanProvider
  * (แอดมินตั้งค่าได้ที่หลังบ้าน) เดิมนับใน localStorage ซึ่งลบทิ้งแล้วทำต่อได้ไม่จำกัด
  * ค่าในนี้ใช้แสดงผลเท่านั้น ด่านจริงอยู่ที่ server (entitlement POST + submit-exam)
  */
 export function useExamLimit() {
     const { user } = useUser();
-    const [data, setData] = useState<EntitlementResponse | null>(null);
+    const { data, setData } = usePlan();
     const [blocked, setBlocked] = useState(false);
-
-    useEffect(() => {
-        let cancelled = false;
-        if (!user) {
-            setData(null);
-            return;
-        }
-        (async () => {
-            try {
-                const token = await user.getIdToken();
-                const res = await fetch('/api/education/entitlement', {
-                    headers: { Authorization: `Bearer ${token}` },
-                    cache: 'no-store',
-                });
-                if (res.ok && !cancelled) setData(await res.json());
-            } catch (error) {
-                console.error('Error loading entitlement:', error);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, [user]);
 
     /** เรียกตอนเริ่มทำข้อสอบ — คืน false ถ้าใช้สิทธิ์ของวันนี้ครบแล้ว */
     const recordExamAttempt = useCallback(async (examId: string): Promise<boolean> => {
@@ -65,7 +36,7 @@ export function useExamLimit() {
             console.error('Error recording exam attempt:', error);
             return true;
         }
-    }, [user]);
+    }, [user, setData]);
 
     const tier: UserTier = data?.planId ?? 'free';
     const limit = data ? data.entitlements.examsPerDay : 3;

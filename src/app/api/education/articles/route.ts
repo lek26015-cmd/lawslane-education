@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
                 description: data.description || data.excerpt || '',
                 content: data.content || data.body || '',
                 category: data.category || data.tags?.[0] || 'ทั่วไป',
-                coverImage: data.coverImage || data.image || data.thumbnail || '',
+                coverImage: data.coverImage || data.imageUrl || data.image || data.thumbnail || '',
                 author: data.author || data.authorName || 'Lawslane',
                 publishedAt: data.publishedAt?.toDate?.()?.toISOString() || data.publishedAt || data.createdAt?.toDate?.()?.toISOString() || '',
                 createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),

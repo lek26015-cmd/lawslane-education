@@ -1,6 +1,7 @@
 import { PageHeader } from '@/components/education/page-header';
 import { GoogleAd } from '@/components/google-ad';
 import Link from 'next/link';
+import { CoverImage } from '@/components/education/brand-cover';
 import { Calendar, ChevronRight, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +36,7 @@ export default async function ArticlesPage() {
                     title: data.title || '',
                     description: data.description || data.excerpt || '',
                     category: data.category || data.tags?.[0] || 'ทั่วไป',
-                    coverImage: data.coverImage || data.image || data.thumbnail || '',
+                    coverImage: data.coverImage || data.imageUrl || data.image || data.thumbnail || '',
                     author: data.author || data.authorName || 'Lawslane',
                     publishedAt: data.publishedAt?.toDate?.()?.toISOString() || data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
                     views: data.views || data.viewCount || 0,
@@ -63,11 +64,13 @@ export default async function ArticlesPage() {
             {/* Featured Section (First Article) */}
             {articles.length > 0 && (
                 <div className="relative rounded-3xl overflow-hidden bg-slate-900 aspect-[21/9] md:aspect-[3/1] group shadow-xl">
-                    <img
-                        src={articles[0].coverImage}
-                        alt={articles[0].title}
-                        className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                    />
+                    {articles[0].coverImage && (
+                        <img
+                            src={articles[0].coverImage}
+                            alt={articles[0].title}
+                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                        />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent p-6 md:p-12 flex flex-col justify-end items-start text-white">
                         <Badge className="bg-blue-500 hover:bg-[#0B3979] border-none mb-4">
                             {articles[0].category}
@@ -96,10 +99,11 @@ export default async function ArticlesPage() {
                     <Link href={`/articles/${article.slug}`} key={article.id} className="group">
                         <Card className="h-full border-none shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden bg-white">
                             <div className="aspect-[16/10] overflow-hidden relative">
-                                <img
+                                <CoverImage
                                     src={article.coverImage}
                                     alt={article.title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    label="บทความ"
+                                    className="group-hover:scale-105 transition-transform duration-500"
                                 />
                                 <div className="absolute top-3 right-3">
                                     <Badge variant="secondary" className="backdrop-blur-md bg-white/90 text-slate-800 shadow-sm border-0">

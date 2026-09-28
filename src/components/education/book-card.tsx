@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import Image, { StaticImageData } from 'next/image';
+import { BrandCover } from '@/components/education/brand-cover';
+import { isPlaceholderCover } from '@/lib/cover';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,17 +56,18 @@ export function BookCard({
             {/* Image Section */}
             <Link href={href}>
                 <div className="relative aspect-[2/3] w-full bg-slate-100 overflow-hidden">
-                    {coverUrl ? (
+                    {coverUrl && !(typeof coverUrl === 'string' && isPlaceholderCover(coverUrl)) ? (
                         <Image
                             src={coverUrl}
                             alt={title}
                             fill
+                            // เดิมไม่มี sizes = 100vw → เบราว์เซอร์ขอภาพกว้าง 2048–3840px ต่อการ์ด (ปกจริงกว้าง 400px)
+                            // ภาพจึงขึ้นช้าจนการ์ดเป็นกล่องเทาว่าง
+                            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : (
-                        <div className="flex items-center justify-center w-full h-full bg-slate-200 text-slate-400 text-sm">
-                            ไม่มีรูปปก
-                        </div>
+                        <BrandCover title={title} label={isEbook ? 'E-Book' : 'Book'} />
                     )}
                     {isEbook && (
                         <Badge className="absolute top-2 right-2 bg-[#0B3979] hover:bg-[#082a5a]">E-Book</Badge>

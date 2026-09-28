@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CartProvider } from '@/context/cart-context';
+import { PlanProvider } from '@/context/plan-context';
 import { CartSheet } from '@/components/education/cart-sheet';
 import { FloatingCartButton } from '@/components/education/floating-cart-button';
 import { EducationHeaderActions } from '@/components/education/header-actions';
@@ -14,6 +15,7 @@ export default function PublicLayout({
     children: React.ReactNode;
 }) {
     return (
+        <PlanProvider>
         <CartProvider>
             {/* Header — หน้าตาเดียวกับเว็บหลัก lawslane.com (พื้นขาว, h-20, ลิงก์ slate → กรมท่า) */}
             <header className="sticky top-0 z-50 w-full bg-white/95 text-slate-900 border-b border-slate-200 shadow-sm backdrop-blur-md">
@@ -114,5 +116,6 @@ export default function PublicLayout({
             <CartSheet />
             <FloatingCartButton />
         </CartProvider>
+        </PlanProvider>
     );
 }

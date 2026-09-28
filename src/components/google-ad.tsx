@@ -1,13 +1,17 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { usePlan } from '@/context/plan-context';
 
 // ─────────────────────────────────────────────────
 // Google AdSense Configuration
-// เปลี่ยน PUBLISHER_ID เมื่อได้ ca-pub-XXXXXXXXXX จาก Google AdSense
+// ตั้ง NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-XXXXXXXXXX เมื่อได้ Publisher ID จาก Google AdSense
+// ยังไม่ตั้ง = ไม่โหลดสคริปต์และไม่เว้นที่ว่างให้โฆษณาบน production
+// (เดิมใส่ 'ca-pub-XXXX…' ตายตัว สคริปต์โหลดด้วย ID ปลอมและเหลือกล่องว่างบนหน้า)
 // ─────────────────────────────────────────────────
-const ADSENSE_PUBLISHER_ID = 'ca-pub-XXXXXXXXXXXXXXXX'; // TODO: ใส่ Publisher ID จริง
+const ADSENSE_PUBLISHER_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || '';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const ADS_ENABLED = IS_PRODUCTION && ADSENSE_PUBLISHER_ID.startsWith('ca-pub-');
 
 interface GoogleAdProps {
     /** Ad slot ID from AdSense */
@@ -30,6 +34,7 @@ interface GoogleAdProps {
  * Google AdSense Ad Unit Component
  * 
  * แสดง placeholder ตอน dev, แสดง ad จริงตอน production
+ * ไม่แสดงเลยถ้าแพ็กเกจของผู้ใช้มีสิทธิ์ adFree (แอดมินตั้งที่หลังบ้าน — ค่าเริ่มต้น Premium/Pro)
  * 
  * Usage:
  *   <GoogleAd variant="banner" />           // Top/Bottom banner
@@ -46,9 +51,11 @@ export function GoogleAd({
     variant = 'banner',
 }: GoogleAdProps) {
     const adRef = useRef<HTMLDivElement>(null);
+    const { adFree } = usePlan();
+    const showAd = !adFree && ADS_ENABLED;
 
     useEffect(() => {
-        if (IS_PRODUCTION && typeof window !== 'undefined') {
+        if (showAd && typeof window !== 'undefined') {
             try {
                 // @ts-ignore
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -56,7 +63,9 @@ export function GoogleAd({
                 console.error('AdSense push error:', e);
             }
         }
-    }, []);
+    }, [showAd]);
+
+    if (adFree) return null;
 
     // ── Placeholder for development ──
     if (!IS_PRODUCTION) {
@@ -74,11 +83,13 @@ export function GoogleAd({
             >
                 <span className="text-[11px] font-normal text-slate-400">📢 {style.label}</span>
                 <span className="text-[9px] text-slate-300 font-normal">
-                    {ADSENSE_PUBLISHER_ID} / slot: {slot}
+                    {ADSENSE_PUBLISHER_ID || 'NEXT_PUBLIC_ADSENSE_CLIENT ยังไม่ตั้ง'} / slot: {slot}
                 </span>
             </div>
         );
     }
+
+    if (!ADS_ENABLED) return null;
 
     // ── Production: real AdSense unit ──
     return (
@@ -101,7 +112,7 @@ export function GoogleAd({
  * AdSense Script Loader — ใส่ใน root layout เพียงครั้งเดียว
  */
 export function GoogleAdSenseScript() {
-    if (!IS_PRODUCTION) return null;
+    if (!ADS_ENABLED) return null;
 
     return (
         <script
