@@ -4,7 +4,7 @@ import interpreterHero from "@/pic/lawslane-interpreter.webp";
 
 import { Button } from "@/components/ui/button";
 import { GoogleAd } from '@/components/google-ad';
-import { Target, ChevronRight, Briefcase, ArrowRight, Check } from "lucide-react";
+import { Target, ChevronRight, Briefcase, ArrowRight, Check, Sparkles } from "lucide-react";
 import { RecommendedBooksSection } from '@/components/education/recommended-books';
 import {
   FeatureCardsAnimated,
@@ -14,6 +14,7 @@ import {
 import { SampleExamsList } from '@/components/education/sample-exams-list';
 import { LatestArticlesSection } from '@/components/education/latest-articles';
 import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
+import { SilkBackground } from '@/components/silk-background';
 import type { Metadata } from 'next';
 
 export const revalidate = 300;
@@ -27,13 +28,15 @@ export const metadata: Metadata = {
 export default function EducationPage() {
   return (
     <div className="flex flex-col gap-12">
-      {/* Hero — แบบเว็บหลัก lawslane.com: slate-900 เต็มความกว้างจอ ขอบล่างโค้ง ชิดใต้ header
+      {/* Hero — แบบเว็บหลัก lawslane.com: slate-900 เต็มความกว้างจอ ขอบล่างโค้ง มุดขึ้นไปใต้ header โปร่งใส
+          (-mt = py-8 ของ main + h-20 และขอบล่าง 1px ของ header · pt เพิ่ม 5rem ชดเชยให้เนื้อหาพ้น header)
           (ยืดออกนอกกล่อง max-w-6xl ของ layout ด้วย w-screen + translate · main ใน layout ตัดส่วนเกินแนวนอน) */}
       <HeroFadeIn>
-        <section className="relative left-1/2 w-screen -translate-x-1/2 -mt-8 bg-slate-900 text-white rounded-b-[40px] md:rounded-b-[80px] overflow-hidden">
-          <div className="relative mx-auto max-w-6xl px-4 md:px-6 pt-8 md:pt-12 lg:pt-20 lg:flex lg:items-end lg:justify-between lg:gap-8">
-            {/* มือถือ/ไอแพด: รูปอยู่บนข้อความ ขอบล่างจางเข้าพื้น (แบบ hero มือถือของเว็บหลัก) */}
-            <div className="lg:hidden relative mx-auto w-[260px] h-[260px] sm:w-[340px] sm:h-[340px] pointer-events-none">
+        <section className="relative left-1/2 w-screen -translate-x-1/2 -mt-[calc(7rem+1px)] bg-slate-900 text-white rounded-b-[40px] md:rounded-b-[80px] overflow-hidden">
+          <SilkBackground />
+          <div className="relative mx-auto max-w-6xl px-4 md:px-6 pt-24 md:pt-24 lg:pt-20 lg:pb-8 lg:flex lg:items-center lg:justify-between lg:gap-8">
+            {/* มือถือ/ไอแพด: รูปอยู่บนข้อความ ขอบล่างจางหาย (mask ให้เห็นคลื่นพื้นหลังต่อได้) · หัวข้อตัวใหญ่ขยับขึ้นมาทับส่วนล่างของรูป */}
+            <div className="lg:hidden relative mx-auto w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] pointer-events-none [mask-image:linear-gradient(to_bottom,black_70%,transparent)]">
               <Image
                 src="/images/lawslane-education-catoon.png"
                 alt="Lawslane Wittaya"
@@ -43,11 +46,10 @@ export default function EducationPage() {
                 quality={100}
                 unoptimized
               />
-              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-900 to-transparent" />
             </div>
 
-            <div className="relative z-10 max-w-2xl mx-auto lg:mx-0 space-y-6 text-center lg:text-left -mt-6 lg:mt-0 pb-14 md:pb-20 lg:pb-24">
-              <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tighter leading-tight">
+            <div className="relative z-10 max-w-2xl mx-auto lg:mx-0 lg:flex-1 lg:min-w-0 space-y-6 text-center lg:text-left -mt-24 sm:-mt-28 lg:mt-0 pb-14 md:pb-20 lg:pb-0">
+              <h1 className="text-[clamp(2rem,10vw,3.75rem)] lg:text-5xl xl:text-[3.25rem] font-bold tracking-tighter leading-[1.1] lg:leading-tight drop-shadow-[0_4px_16px_rgba(15,23,42,0.8)] lg:drop-shadow-none">
                 ฝึกทำข้อสอบกฎหมาย<br />
                 <span className="text-blue-200">จนกว่าจะมั่นใจ</span>
               </h1>
@@ -72,16 +74,32 @@ export default function EducationPage() {
               </div>
             </div>
 
-            <div className="hidden lg:block relative shrink-0 w-[440px] h-[460px] pointer-events-none">
-              <Image
-                src="/images/lawslane-education-catoon.png"
-                alt="Lawslane Wittaya"
-                fill
-                className="object-contain object-bottom opacity-90"
-                priority
-                quality={100}
-                unoptimized
-              />
+            {/* จอใหญ่: รูปอยู่กลางแนวตั้ง ขอบล่างจางหายแทนการชนขอบ hero · แสงเรืองด้านหลัง + การ์ดกระจกลอยรอบรูปให้ฝั่งขวาไม่โล่ง */}
+            <div className="hidden lg:block relative shrink-0 w-[500px] h-[520px] xl:w-[540px] xl:h-[560px] pointer-events-none">
+              <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 w-[440px] h-[440px] rounded-full bg-sky-400/20 blur-3xl" />
+              <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,black_75%,transparent)]">
+                <Image
+                  src="/images/lawslane-education-catoon.png"
+                  alt="Lawslane Wittaya"
+                  fill
+                  className="object-contain object-bottom opacity-95"
+                  priority
+                  quality={100}
+                  unoptimized
+                />
+              </div>
+              <div className="absolute -left-4 top-[58%] flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 shadow-xl backdrop-blur-md">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-400/20 text-emerald-300">
+                  <Check className="h-5 w-5" />
+                </span>
+                <span className="text-sm font-semibold leading-tight">ธงคำตอบละเอียด<br /><span className="font-normal text-white/60">แพ่ง วิแพ่ง อาญา วิอาญา</span></span>
+              </div>
+              <div className="absolute right-0 top-[16%] flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 shadow-xl backdrop-blur-md">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-400/20 text-amber-300">
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <span className="text-sm font-semibold leading-tight">AI ตรวจอัตนัย<br /><span className="font-normal text-white/60">ให้คะแนนและคำแนะนำ</span></span>
+              </div>
             </div>
           </div>
         </section>

@@ -18,7 +18,7 @@ import { useFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
-export function EducationHeaderActions() {
+export function EducationHeaderActions({ transparent = false }: { transparent?: boolean }) {
     const { user, isUserLoading } = useAuthUser();
     const { auth } = useFirebase();
     const router = useRouter();
@@ -42,14 +42,14 @@ export function EducationHeaderActions() {
             <div className="hidden lg:flex items-center gap-2">
                 <Link
                     href="/signup"
-                    className="text-sm font-medium text-slate-700 hover:text-[#0B3979] px-3 transition-colors"
+                    className={`text-sm font-medium px-3 transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-slate-700 hover:text-[#0B3979]'}`}
                 >
                     สมัครสมาชิก
                 </Link>
                 {/* ปุ่มเข้าสู่ระบบแบบเดียวกับ header เว็บหลัก */}
                 <Link
                     href="/login"
-                    className="rounded-full px-8 h-10 inline-flex items-center font-bold text-white bg-[#0B3979] hover:bg-[#082a5a] shadow-lg transition-all hover:scale-105"
+                    className={`rounded-full px-8 h-10 inline-flex items-center font-bold text-white bg-[#0B3979] hover:bg-[#082a5a] shadow-lg transition-all hover:scale-105 ${transparent ? 'border-2 border-white/20' : ''}`}
                 >
                     เข้าสู่ระบบ
                 </Link>
@@ -61,7 +61,7 @@ export function EducationHeaderActions() {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button className="relative h-9 w-9 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0B3979]/40">
-                    <Avatar className="h-9 w-9 border border-slate-200">
+                    <Avatar className={`h-9 w-9 border ${transparent ? 'border-white/30' : 'border-slate-200'}`}>
                         <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
                         <AvatarFallback className="text-xs font-normal bg-blue-50 text-[#0B3979]">
                             {user.displayName?.charAt(0) || 'U'}
