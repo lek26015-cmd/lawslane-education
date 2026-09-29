@@ -13,14 +13,17 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 
-export default function EducationNavigation() {
+export default function EducationNavigation({ transparent = false }: { transparent?: boolean }) {
     const { user } = useUser();
     const [isMounted, setIsMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
-    // สไตล์ลิงก์เดียวกับ header เว็บหลัก: slate-600 → hover/active สีกรมท่า
-    const linkClass = (href: string) =>
-        pathname?.startsWith(href) ? 'font-bold text-[#0B3979]' : 'text-slate-600 hover:text-[#0B3979] transition-colors';
+    // สไตล์ลิงก์เดียวกับ header เว็บหลัก: slate-600 → hover/active สีกรมท่า (ตอนโปร่งใสทับ hero เป็นสีขาว)
+    const linkClass = (href: string) => {
+        const active = pathname?.startsWith(href);
+        if (transparent) return active ? 'font-bold text-white' : 'text-white/70 hover:text-white transition-colors';
+        return active ? 'font-bold text-[#0B3979]' : 'text-slate-600 hover:text-[#0B3979] transition-colors';
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -59,8 +62,8 @@ export default function EducationNavigation() {
                 {isMounted && (
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                     <SheetTrigger asChild>
-                        <button className="h-9 w-9 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
-                            <Menu className="h-5 w-5 text-slate-700" />
+                        <button className={`h-9 w-9 flex items-center justify-center rounded-lg transition-colors ${transparent ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>
+                            <Menu className={`h-5 w-5 ${transparent ? 'text-white' : 'text-slate-700'}`} />
                             <span className="sr-only">เปิดเมนู</span>
                         </button>
                     </SheetTrigger>

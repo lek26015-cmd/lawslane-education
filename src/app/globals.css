@@ -30,7 +30,8 @@
 
 html,
 body {
-  overflow-x: hidden;
+  /* clip แทน hidden: hidden ทั้ง html และ body ทำให้ body กลายเป็นกล่องเลื่อน → header แบบ sticky ไม่ติดด้านบน */
+  overflow-x: clip;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -44,7 +45,14 @@ body {
 * {
   scrollbar-width: none;
   -ms-overflow-style: none;
-  border-color: var(--color-border);
+}
+
+/* อยู่ใน @layer base เพื่อให้คลาสสีขอบ (border-transparent, border-white/20 ฯลฯ) ชนะได้
+   — ถ้าไม่อยู่ใน layer กฎนี้จะทับสีขอบทุกคลาสของ Tailwind */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
 }
 
 body {

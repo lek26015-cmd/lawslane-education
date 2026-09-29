@@ -3,11 +3,11 @@ import { CartProvider } from '@/context/cart-context';
 import { PlanProvider } from '@/context/plan-context';
 import { CartSheet } from '@/components/education/cart-sheet';
 import { FloatingCartButton } from '@/components/education/floating-cart-button';
-import { EducationHeaderActions } from '@/components/education/header-actions';
-import EducationNavigation from '@/components/education/education-nav';
-import { PageAnimationWrapper } from '@/components/education/page-animation';
+import { EducationHeader } from '@/components/education/education-header';
 import { BrandLogo } from '@/components/brand-logo';
+import { PageAnimationWrapper } from '@/components/education/page-animation';
 import { GoogleAd } from '@/components/google-ad';
+import { SilkBackground } from '@/components/silk-background';
 
 export default function PublicLayout({
     children,
@@ -17,22 +17,14 @@ export default function PublicLayout({
     return (
         <PlanProvider>
         <CartProvider>
-            {/* Header — หน้าตาเดียวกับเว็บหลัก lawslane.com (พื้นขาว, h-20, ลิงก์ slate → กรมท่า) */}
-            <header className="sticky top-0 z-50 w-full bg-white/95 text-slate-900 border-b border-slate-200 shadow-sm backdrop-blur-md">
-                <div className="mx-auto max-w-6xl px-4 md:px-6 h-20 flex items-center justify-between gap-4">
-                    <Link href="/" className="flex items-center shrink-0">
-                        <BrandLogo variant="light" showSubtitle={false} />
-                    </Link>
-                    <div className="flex items-center gap-4">
-                        <EducationNavigation />
-                        <EducationHeaderActions />
-                    </div>
-                </div>
-            </header>
+            {/* Header — หน้าตาเดียวกับเว็บหลัก lawslane.com (พื้นขาว, h-20 · หน้าแรกโปร่งใสทับ hero จนกว่าจะเลื่อนลง) */}
+            <EducationHeader />
 
             <main className="min-h-screen bg-slate-50 relative overflow-x-clip">
                 {/* Crystal side decorations */}
                 <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+                    {/* คลื่นผ้าไหมโทนอ่อน — อยู่นิ่งตอนเลื่อนหน้า */}
+                    <SilkBackground variant="light" />
                     {/* Left side */}
                     <img
                         src="/images/elements/lawslane-element-01.png"
@@ -55,12 +47,12 @@ export default function PublicLayout({
             </main>
 
             {/* Ad Banner — shows on all public pages */}
-            <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4">
+            <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 py-4">
                 <GoogleAd variant="banner" />
             </div>
 
-            {/* Footer — แบบเดียวกับเว็บหลัก (gray-900, 4 คอลัมน์, ไอคอนโซเชียล) */}
-            <footer className="bg-gray-900 text-gray-300 mt-16">
+            {/* Footer — แบบเดียวกับเว็บหลัก (gray-900, 4 คอลัมน์, ไอคอนโซเชียล) · relative z-10 ให้อยู่เหนือชั้นคลื่นพื้นหลังแบบ fixed */}
+            <footer className="relative z-10 bg-gray-900 text-gray-300 mt-16">
                 <div className="container mx-auto px-4 md:px-6 py-12">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                         <div className="space-y-4">
