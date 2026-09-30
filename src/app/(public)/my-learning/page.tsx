@@ -16,6 +16,8 @@ import { PageHeader } from '@/components/education/page-header';
 import { getAllArticles } from '@/lib/data';
 import type { Article } from '@/lib/types';
 import { PlanStatusCard } from '@/components/education/plan-status-card';
+import { PlanAvatar } from '@/components/plan-avatar';
+import { usePlan } from '@/context/plan-context';
 import { CoverImage, BrandCover } from '@/components/education/brand-cover';
 
 interface SubjectPerformance {
@@ -27,6 +29,7 @@ interface SubjectPerformance {
 
 export default function MyLearningPage() {
     const { user, isUserLoading } = useUser();
+    const { planTone, planName } = usePlan();
     const router = useRouter();
     const { auth, firestore } = useFirebase();
     const [isLoading, setIsLoading] = useState(true);
@@ -183,15 +186,14 @@ export default function MyLearningPage() {
                         </Link>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center text-center pt-4 pb-6">
-                        <div className="w-24 h-24 rounded-full bg-slate-100 mb-4 overflow-hidden border-4 border-white shadow-md relative group cursor-pointer">
-                            {user?.photoURL ? (
-                                <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-blue-100 text-[#0B3979] text-3xl font-bold">
-                                    {user?.displayName?.charAt(0) || 'U'}
-                                </div>
-                            )}
-                        </div>
+                        <PlanAvatar
+                            src={user?.photoURL}
+                            fallback={user?.displayName?.charAt(0) || 'U'}
+                            tone={planTone}
+                            label={planName}
+                            size="lg"
+                            className="mb-5 shadow-md"
+                        />
                         <h3 className="font-bold text-xl text-slate-900 mb-1">{user?.displayName || 'Lawlanes Student'}</h3>
                         <p className="text-slate-500 text-sm mb-6">{user?.email}</p>
 

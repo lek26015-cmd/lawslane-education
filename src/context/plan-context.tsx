@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useUser } from '@/firebase/provider';
+import type { PlanTone } from '@/components/plan-avatar';
 
 export type PlanId = 'free' | 'premium' | 'pro';
 
@@ -30,6 +31,9 @@ type PlanContextType = {
     setData: (data: EntitlementResponse) => void;
     refresh: () => Promise<void>;
 };
+
+/** สีวง/ป้ายรอบรูปโปรไฟล์ตามแพ็กเกจ (ดู src/components/plan-avatar.tsx) */
+export const PLAN_TONE: Record<PlanId, PlanTone> = { free: 'none', premium: 'plus', pro: 'gold' };
 
 const PlanContext = createContext<PlanContextType | undefined>(undefined);
 
@@ -88,6 +92,7 @@ export function usePlan() {
         ...ctx,
         planId: (data?.planId ?? 'free') as PlanId,
         planName: data?.planName ?? 'Free',
+        planTone: PLAN_TONE[(data?.planId ?? 'free') as PlanId] ?? 'none',
         expiresAt: data?.expiresAt ?? null,
         entitlements: data?.entitlements ?? null,
         // ระหว่างโหลดยังไม่รู้แพ็กเกจ — ถือว่าไม่มีโฆษณาไว้ก่อน สมาชิกที่จ่ายแล้วจะได้ไม่เห็นโฆษณาแวบขึ้นมา
