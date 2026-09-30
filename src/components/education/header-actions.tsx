@@ -3,7 +3,8 @@
 
 import Link from 'next/link';
 import { useUser as useAuthUser } from '@/firebase';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PlanAvatar, PlanBadge } from '@/components/plan-avatar';
+import { usePlan } from '@/context/plan-context';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,6 +24,7 @@ export function EducationHeaderActions({ transparent = false }: { transparent?: 
     const { auth } = useFirebase();
     const router = useRouter();
     const { toast } = useToast();
+    const { planTone, planName } = usePlan();
 
     const handleLogout = async () => {
         if (auth) {
@@ -60,19 +62,23 @@ export function EducationHeaderActions({ transparent = false }: { transparent?: 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className="relative h-9 w-9 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0B3979]/40">
-                    <Avatar className={`h-9 w-9 border ${transparent ? 'border-white/30' : 'border-slate-200'}`}>
-                        <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
-                        <AvatarFallback className="text-xs font-normal bg-blue-50 text-[#0B3979]">
-                            {user.displayName?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                    </Avatar>
+                <button className="relative rounded-full focus:outline-none focus:ring-2 focus:ring-[#0B3979]/40">
+                    <PlanAvatar
+                        src={user.photoURL}
+                        fallback={user.displayName?.charAt(0) || 'U'}
+                        tone={planTone}
+                        label={planName}
+                        size="sm"
+                    />
                 </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-52" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-semibold leading-none">{user.displayName}</p>
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold leading-none truncate">{user.displayName}</p>
+                            <PlanBadge tone={planTone} label={planName} />
+                        </div>
                         <p className="text-xs leading-none text-slate-500">
                             {user.email}
                         </p>
