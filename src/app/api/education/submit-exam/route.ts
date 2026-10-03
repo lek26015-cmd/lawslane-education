@@ -8,7 +8,8 @@ import { consumeExamAttempt, EntitlementError, getEntitlement } from '@/lib/plan
 
 // ตรวจข้อเขียนด้วย AI ทุกข้อพร้อมกันใช้เวลาได้หลายสิบวินาที — ค่าเริ่มต้นของ Vercel
 // ตัดฟังก์ชันทิ้งก่อน ผู้ใช้เห็นแค่ "เกิดข้อผิดพลาด" ทั้งที่ยังตรวจไม่เสร็จ
-export const maxDuration = 60;
+// บางชุดมีข้อเขียนถึง 80 ข้อ (ตรวจ production 2026-10-03) จึงเผื่อถึง 300 วินาที
+export const maxDuration = 300;
 
 interface SubmitAnswerInput {
     questionId: string;
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
         // only essay questions are graded concurrently — sequentially, 5 essays at
         // ~4s each was ~20s; grading them in groups instead of one-at-a-time cuts
         // that roughly by the group size. See LAWSLANE-PLAN-01 2.6.
-        const ESSAY_CONCURRENCY = 8;
+        const ESSAY_CONCURRENCY = 10;
         const gradedAnswers: any[] = new Array(questions.length);
         const essayJobs: { index: number; question: typeof questions[number]; submittedAnswer: SubmitAnswerInput }[] = [];
 
