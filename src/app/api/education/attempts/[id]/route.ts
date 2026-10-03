@@ -48,6 +48,7 @@ export async function GET(
             correctAnswers: data.correctAnswers || 0,
             timeSpentMinutes: data.timeSpentMinutes || 0,
             answers: data.answers || [],
+            aiGradingFailed: !!data.aiGradingFailed,
             completedAt: data.completedAt?.toDate?.()?.toISOString() || '',
             createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
         });

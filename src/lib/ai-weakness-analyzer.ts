@@ -1,7 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getGeminiModel } from './gemini';
 import { ExamAttempt } from './education-types';
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY || '');
 
 export interface WeaknessAnalysis {
     overallAssessment: string;
@@ -27,7 +25,7 @@ export async function analyzeWeaknesses(attempts: ExamAttempt[]): Promise<Weakne
         };
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = getGeminiModel();
 
     // Prepare data summary for AI
     const summary = attempts.map(a => ({

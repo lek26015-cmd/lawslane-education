@@ -12,6 +12,9 @@ import {
 } from '@/components/fat-icons';
 import { Loader2, ChevronLeft, ChevronRight, ChevronDown, Search } from 'lucide-react';
 import { GoogleAd } from '@/components/google-ad';
+import { ExamLimitBanner } from '@/components/education/upgrade-paywall';
+import { useExamLimit } from '@/hooks/use-exam-limit';
+import { usePlan } from '@/context/plan-context';
 
 interface Exam {
     id: string;
@@ -58,6 +61,8 @@ export default function ExamListingPage() {
     const [selectedYear, setSelectedYear] = useState('all');
     const [selectedSubject, setSelectedSubject] = useState('all');
     const gridTopRef = useRef<HTMLDivElement>(null);
+    const { data: plan } = usePlan();
+    const { used, dailyLimit, isPremium } = useExamLimit();
     const searchTimeoutRef = useRef<NodeJS.Timeout>(null);
 
     // Phase 1: Fetch summary
@@ -198,6 +203,9 @@ export default function ExamListingPage() {
                     </div>
                 </div>
             </section>
+
+            {/* สิทธิ์ทำข้อสอบวันนี้ — แสดงเมื่อล็อกอินและโหลดแพ็กเกจแล้ว */}
+            {plan && <ExamLimitBanner used={used} dailyLimit={dailyLimit} isPremium={isPremium} />}
 
             {/* ── Stats Cards ── */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

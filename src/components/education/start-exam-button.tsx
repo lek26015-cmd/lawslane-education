@@ -7,6 +7,8 @@ import { PlayCircle, Lock, AlertTriangle, Clock, Monitor, BookX, CheckCircle2, S
 import Link from 'next/link';
 import { useUser } from "@/firebase";
 import { usePathname, useRouter } from "next/navigation";
+import { useExamLimit } from "@/hooks/use-exam-limit";
+import { usePlan } from "@/context/plan-context";
 import {
     Dialog,
     DialogContent,
@@ -28,6 +30,18 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
     const router = useRouter();
     const [showRules, setShowRules] = useState(false);
     const [agreed, setAgreed] = useState(false);
+    const { planName, isPremium, used, dailyLimit, remaining } = useExamLimit();
+    const { data: plan } = usePlan();
+    // ชุดที่เปิดไปแล้ววันนี้ ทำซ้ำได้ไม่เสียสิทธิ์เพิ่ม (ดู consumeExamAttempt)
+    const alreadyCounted = !!plan?.usage.examIds.includes(examId);
+    const outOfQuota = !isPremium && !alreadyCounted && remaining <= 0;
+
+    // ข้อจำกัดตามแพ็กเกจ — เดิมผู้ใช้ไม่เห็นเลยจนกว่าจะโดน paywall
+    const quotaText = !plan ? null
+        : isPremium ? `แพ็กเกจ ${planName}: ทำข้อสอบได้ไม่จำกัด`
+        : alreadyCounted ? `ชุดนี้นับสิทธิ์ไปแล้ววันนี้ ทำซ้ำได้ไม่เสียสิทธิ์เพิ่ม (ใช้ไป ${used}/${dailyLimit} ชุด)`
+        : outOfQuota ? `ใช้สิทธิ์ทำข้อสอบครบ ${dailyLimit} ชุดของวันนี้แล้ว (แพ็กเกจ ${planName}) — สิทธิ์รีเซ็ตเที่ยงคืน`
+        : `แพ็กเกจ ${planName}: ทำข้อสอบได้วันละ ${dailyLimit} ชุด · เหลืออีก ${remaining} ชุดวันนี้`;
 
     if (isUserLoading) {
         return (
@@ -52,8 +66,22 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
         router.push(`/exams/${examId}/take`);
     };
 
+    if (outOfQuota) {
+        return (
+            <div className="flex flex-col items-center gap-3 text-center">
+                <p className="text-sm text-slate-600">{quotaText}</p>
+                <Link href="/pricing">
+                    <Button size="lg" className="h-14 px-8 text-lg bg-[#0B3979] hover:bg-[#082a5a]">
+                        ดูแพ็กเกจเพื่อทำข้อสอบเพิ่ม
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                </Link>
+            </div>
+        );
+    }
+
     return (
-        <>
+        <div className="flex flex-col items-center gap-3">
             <Button
                 size="lg"
                 className="h-14 px-8 text-lg bg-gradient-to-r from-[#0B3979] to-[#0B3979] hover:from-[#082a5a] hover:to-[#082a5a] shadow-lg shadow-blue-200"
@@ -65,6 +93,7 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
                 <PlayCircle className="mr-2 w-6 h-6" />
                 เริ่มทำข้อสอบทันที
             </Button>
+            {quotaText && <p className="text-sm text-slate-500 text-center">{quotaText}</p>}
 
             {/* Rules & Guidelines Modal */}
             <Dialog open={showRules} onOpenChange={setShowRules}>
@@ -99,6 +128,12 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
                                     <div className="text-[11px] text-slate-400">ผ่าน</div>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {quotaText && (
+                        <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-[#082a5a]">
+                            {quotaText}
                         </div>
                     )}
 
@@ -158,6 +193,6 @@ export function StartExamButton({ examId, totalQuestions, timeLimit, passingScor
                     </div>
                 </DialogContent>
             </Dialog>
-        </>
+        </div>
     );
 }

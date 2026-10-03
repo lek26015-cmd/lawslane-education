@@ -1,7 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY || '');
+import { getGeminiModel } from './gemini';
 
 export interface GradingResult {
     score: number;
@@ -20,18 +17,31 @@ export interface QuestionGradingInput {
 
 /**
  * Grade an essay answer using Gemini AI
+ *
+ * เรียก AI ไม่สำเร็จจะ throw — เดิมกลืน error แล้วคืน score 0 ทำให้ผู้ใช้ได้ 0 ทุกข้อ
+ * ตอนคีย์ใช้ไม่ได้ โดยไม่มีใครรู้ว่า AI ล่ม ให้ผู้เรียกตัดสินเองว่าจะแสดงผลอย่างไร
+ *
+ * ข้อสอบส่วนใหญ่ที่ได้มาจาก OCR ไม่มีธงคำตอบ — กรณีนั้นให้ AI ตรวจตามหลักกฎหมายไทย
+ * เอง (วินิจฉัยประเด็น อ้างตัวบท ให้เหตุผล) แทนที่จะเทียบกับธงว่างๆ แล้วให้ 0
  */
 export async function gradeEssayAnswer(input: QuestionGradingInput): Promise<GradingResult> {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = getGeminiModel({ json: true });
+    const hasModelAnswer = input.modelAnswer.trim().length > 0;
+
+    const reference = hasModelAnswer
+        ? `**ธงคำตอบ (คำตอบที่ถูกต้อง)**:
+${input.modelAnswer}`
+        : `**ธงคำตอบ**: ข้อนี้ไม่มีธงคำตอบ — ให้คุณวินิจฉัยเองตามกฎหมายไทยที่ใช้บังคับ
+ระบุประเด็นที่ข้อสอบต้องการ หลักกฎหมาย/มาตราที่เกี่ยวข้อง และข้อสรุปที่ถูกต้อง แล้วใช้เป็นเกณฑ์ตรวจ
+ถ้าข้อเท็จจริงตีความได้หลายทาง ให้คะแนนคำตอบที่ให้เหตุผลทางกฎหมายสมเหตุสมผล`;
 
     const prompt = `คุณเป็นผู้ตรวจข้อสอบกฎหมายผู้เชี่ยวชาญ กรุณาตรวจคำตอบนักศึกษาอย่างละเอียด
-
+${input.subject ? `\n**วิชา**: ${input.subject}\n` : ''}
 **คำถาม**: ${input.questionText}
 
-**ธงคำตอบ (คำตอบที่ถูกต้อง)**: 
-${input.modelAnswer}
+${reference}
 
-**คำตอบของนักศึกษา**: 
+**คำตอบของนักศึกษา**:
 ${input.studentAnswer}
 
 กรุณาวิเคราะห์และให้คะแนนคำตอบนักศึกษา โดย:
@@ -39,7 +49,7 @@ ${input.studentAnswer}
 2. ระบุจุดแข็งของคำตอบ
 3. ระบุจุดอ่อนที่ควรปรับปรุง
 4. ให้คำแนะนำเพิ่มเติม
-5. สรุป feedback โดยรวม
+5. สรุป feedback โดยรวม${hasModelAnswer ? '' : ' และสรุปแนวคำตอบที่ถูกต้องสั้นๆ ไว้ใน feedback ด้วย'}
 
 ตอบเป็น JSON format เท่านั้น:
 {
@@ -50,36 +60,24 @@ ${input.studentAnswer}
   "suggestions": ["คำแนะนำข้อ 1", "คำแนะนำข้อ 2"]
 }`;
 
-    try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
 
-        // Parse JSON from response
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]) as GradingResult;
-            return {
-                score: Math.min(100, Math.max(0, parsed.score || 0)),
-                feedback: parsed.feedback || 'ไม่สามารถวิเคราะห์ได้',
-                strengths: parsed.strengths || [],
-                weaknesses: parsed.weaknesses || [],
-                suggestions: parsed.suggestions || []
-            };
-        }
+    // Parse JSON from response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Invalid AI response format');
 
-        throw new Error('Invalid AI response format');
-    } catch (error) {
-        console.error('AI Grading Error:', error);
-        // Return a default response on error
-        return {
-            score: 0,
-            feedback: 'ไม่สามารถตรวจคำตอบด้วย AI ได้ในขณะนี้',
-            strengths: [],
-            weaknesses: [],
-            suggestions: ['กรุณาลองใหม่อีกครั้ง']
-        };
-    }
+    const parsed = JSON.parse(jsonMatch[0]) as Partial<GradingResult>;
+    const score = Number(parsed.score);
+    if (!Number.isFinite(score)) throw new Error('AI response has no score');
+
+    return {
+        score: Math.round(Math.min(100, Math.max(0, score))),
+        feedback: parsed.feedback || 'ไม่สามารถวิเคราะห์ได้',
+        strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+        weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
+        suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
+    };
 }
 
 /**
