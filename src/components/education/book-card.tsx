@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { BrandCover, ExamBookCover } from '@/components/education/brand-cover';
-import { isTemplateExamCover } from '@/lib/book-cover';
+import { displayBookTitle, isTemplateExamCover } from '@/lib/book-cover';
 import { isPlaceholderCover } from '@/lib/cover';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -101,15 +101,15 @@ export function BookCard({
 
                 {/* Title */}
                 <Link href={href} className="w-full">
-                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3.5rem] text-slate-900 group-hover:text-[#0B3979] transition-colors">
-                        {title}
+                    <h3 className="font-bold text-lg leading-snug mb-2 min-h-[3.5rem] text-slate-900 group-hover:text-[#0B3979] transition-colors">
+                        {displayBookTitle(title)}
                     </h3>
                 </Link>
 
                 {/* Description */}
                 {description && (
                     <p className="text-sm text-slate-500 mb-2 line-clamp-2">
-                        {description}
+                        {displayBookTitle(description)}
                     </p>
                 )}
 

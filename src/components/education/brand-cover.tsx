@@ -95,8 +95,13 @@ export function ExamBookCover({ title, description, isEbook = true, compact = fa
             <div className="relative z-10 flex items-start gap-[3cqw] px-[7%] pt-[9%] pr-[27%]">
                 <img src="/images/logo-lawslane-transparent-white.png" alt="" className="h-[15cqw] w-auto shrink-0 object-contain" />
                 <div className="min-w-0">
-                    {info.code && <div className="text-[10cqw] font-black leading-none tracking-tight">{info.code}</div>}
-                    <div className="mt-[1.5cqw] line-clamp-2 text-[5cqw] font-bold leading-tight">{info.subject}</div>
+                    {/* ไม่แสดงรหัสวิชา (ลูกค้าขอ 2026-10-03) — ชื่อวิชาเป็นหัวเรื่องเต็มๆ ย่อตัวอักษรตามความยาว */}
+                    <div
+                        className="font-black leading-tight"
+                        style={{ fontSize: info.subject.length > 45 ? '5cqw' : info.subject.length > 26 ? '6cqw' : info.subject.length > 14 ? '7.5cqw' : '9cqw' }}
+                    >
+                        {info.subject}
+                    </div>
                     <div className="mt-[2cqw] h-px w-full" style={{ background: gold }} />
                     <div className="mt-[1.5cqw] text-[3.4cqw] tracking-[0.15em] text-white/80">
                         รวมข้อสอบเก่า{info.year ? ` · ชั้นปี ${info.year}` : ''}

@@ -1,5 +1,5 @@
 import { Book } from "@/lib/education-types";
-import { isEbookBook, isTemplateExamCover } from "@/lib/book-cover";
+import { displayBookTitle, isEbookBook, isTemplateExamCover } from "@/lib/book-cover";
 import { ExamBookCover } from "@/components/education/brand-cover";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -56,7 +56,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                 {/* Right Column: Details */}
                 <div className="md:col-span-8 lg:col-span-9 space-y-6">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{book.title}</h1>
+                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{displayBookTitle(book.title)}</h1>
                         <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
                             <span className="bg-slate-100 px-3 py-1 rounded-full text-slate-700 font-medium">
                                 ผู้แต่ง: {book.author}
@@ -75,7 +75,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                     <div className="prose prose-slate max-w-none">
                         <h3 className="text-lg font-semibold">รายละเอียดหนังสือ</h3>
                         <p className="whitespace-pre-line text-slate-600 leading-relaxed">
-                            {book.description}
+                            {displayBookTitle(book.description || '')}
                         </p>
                     </div>
 
@@ -130,7 +130,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                                 </div>
                                 <div className="mt-2 px-0.5">
                                     <h3 className="font-medium text-sm leading-tight line-clamp-2 text-slate-800 group-hover:text-[#0B3979] transition-colors">
-                                        {relatedBook.title}
+                                        {displayBookTitle(relatedBook.title)}
                                     </h3>
                                     <p className="text-sm font-bold text-[#0B3979] mt-1">
                                         ฿{relatedBook.price.toLocaleString()}

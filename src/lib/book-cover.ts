@@ -128,3 +128,9 @@ export function examSubjectCode(...texts: (string | undefined)[]): string {
     const hay = texts.filter(Boolean).join(' ');
     return EXAM_ILLUSTRATION_RULES.find(([re]) => re.test(hay))?.[1] ?? 'law1004';
 }
+
+/** ชื่อหนังสือที่แสดงบนเว็บ — ตัดรหัสวิชา "LAW4105 (LAW4005)" ออก (ข้อมูลจริงยังเก็บไว้ครบ) */
+export function displayBookTitle(title: string): string {
+    // คงบรรทัดใหม่ไว้ (คำอธิบายหนังสือแสดงแบบ pre-line)
+    return title.replace(/[ \t]*LAW\d{4}([ \t]*\(LAW\d{4}\))?[ \t]*/gi, ' ').replace(/[ \t]+/g, ' ').trim();
+}
