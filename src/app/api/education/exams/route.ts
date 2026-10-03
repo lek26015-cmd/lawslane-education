@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { unstable_cache } from 'next/cache';
+import { examTypeOf, examLevelOf } from '@/lib/exam-labels';
 
 const CACHE_TTL_SECONDS = 30 * 60; // 30 minutes
 
@@ -156,7 +157,7 @@ async function fetchExamsFromFirestore(): Promise<any[]> {
         const allDocs: admin.firestore.QueryDocumentSnapshot[] = [];
         let query = db.collection('examSets')
             .select('title', 'subjectCode', 'category', 'subjectGroup', 'session',
-                    'totalQuestions', 'essayCount', 'status', 'createdAt')
+                    'totalQuestions', 'essayCount', 'multipleChoiceCount', 'suitableFor', 'status', 'createdAt')
             .orderBy('createdAt', 'desc')
             .limit(1000);
 
@@ -167,7 +168,7 @@ async function fetchExamsFromFirestore(): Promise<any[]> {
             const lastDoc = snap.docs[snap.docs.length - 1];
             snap = await db.collection('examSets')
                 .select('title', 'subjectCode', 'category', 'subjectGroup', 'session',
-                        'totalQuestions', 'essayCount', 'status', 'createdAt')
+                        'totalQuestions', 'essayCount', 'multipleChoiceCount', 'suitableFor', 'status', 'createdAt')
                 .orderBy('createdAt', 'desc')
                 .startAfter(lastDoc)
                 .limit(1000)
@@ -201,6 +202,8 @@ async function fetchExamsFromFirestore(): Promise<any[]> {
                 subjectGroup: group,
                 subjectCode: '',
                 session: data.session || '',
+                examType: examTypeOf(data),
+                level: examLevelOf(data),
             };
         });
 

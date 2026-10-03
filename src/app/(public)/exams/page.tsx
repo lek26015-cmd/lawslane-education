@@ -15,6 +15,7 @@ import { GoogleAd } from '@/components/google-ad';
 import { ExamLimitBanner } from '@/components/education/upgrade-paywall';
 import { useExamLimit } from '@/hooks/use-exam-limit';
 import { usePlan } from '@/context/plan-context';
+import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, type ExamType } from '@/lib/exam-labels';
 
 interface Exam {
     id: string;
@@ -24,6 +25,8 @@ interface Exam {
     subjectGroup: string;
     subjectCode: string;
     session: string;
+    examType?: ExamType;
+    level?: string;
 }
 
 interface PageResponse {
@@ -413,14 +416,19 @@ export default function ExamListingPage() {
                             <div
                                 className="rounded-2xl border border-slate-200 bg-white p-5 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 transition-all group"
                             >
-                                {/* Top: Icon & Category */}
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="h-10 w-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                        <FatExam size={20} className="text-[#0B3979]" />
-                                    </div>
-                                    <span className="rounded-md px-2 py-0.5 text-[10px] font-normal border bg-slate-50 text-slate-600 border-slate-200">
-                                        {exam.subjectGroup || (exam.category === 'other' ? 'ตั๋วทนาย' : exam.category)}
+                                {/* Top: ประเภทข้อสอบ (อัตนัย/ปรนัย) + ระดับ — ให้เห็นชัดตั้งแต่แรก */}
+                                <div className="flex flex-wrap items-center gap-2 mb-3">
+                                    <span className={`rounded-md px-2.5 py-1 text-xs font-medium border ${EXAM_TYPE_CLASS[exam.examType ?? 'essay']}`}>
+                                        {EXAM_TYPE_LABEL[exam.examType ?? 'essay']}
                                     </span>
+                                    {exam.level && (
+                                        <span className="rounded-md px-2.5 py-1 text-xs font-medium border bg-blue-50 text-[#082a5a] border-blue-200">
+                                            {exam.level}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="text-[11px] text-slate-500 mb-1 truncate">
+                                    {exam.subjectGroup || (exam.category === 'other' ? 'ตั๋วทนาย' : exam.category)}
                                 </div>
 
                                 {/* Title */}
@@ -440,10 +448,6 @@ export default function ExamListingPage() {
                                             <div className="text-[9px] text-slate-400 font-normal">ปีการศึกษา</div>
                                         </div>
                                     )}
-                                    <div>
-                                        <div className="text-xs font-normal text-[#082a5a]">ฟรี</div>
-                                        <div className="text-[9px] text-slate-400 font-normal">ราคา</div>
-                                    </div>
                                 </div>
 
                                 {/* Actions */}

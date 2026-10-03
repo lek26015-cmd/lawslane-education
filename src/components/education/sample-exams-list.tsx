@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight, FileText } from "lucide-react";
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
+import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, examLevelOf, examTypeOf } from '@/lib/exam-labels';
 
 async function getRecentExams() {
     try {
@@ -23,6 +24,8 @@ async function getRecentExams() {
                 category: data.category || '',
                 subjectCode: data.subjectCode || '',
                 session: data.session || '',
+                examType: examTypeOf(data),
+                level: examLevelOf(data),
             };
         });
     } catch (e) {
@@ -68,14 +71,14 @@ export async function SampleExamsList() {
                 >
                     <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-[#0B3979] flex items-center justify-center">
                         <FileText className="w-10 h-10 text-white/60" />
-                        <div className="absolute top-0 left-0 bg-[#0B3979] text-[10px] text-white px-2 py-0.5 font-bold">
-                            ฟรี
-                        </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-medium text-[#0B3979] bg-blue-50 px-2 py-0.5 rounded-full">
-                                {mapCategory(exam.category, exam.subjectCode)}
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className={`text-xs font-medium px-2 py-0.5 rounded-md border ${EXAM_TYPE_CLASS[exam.examType]}`}>
+                                {EXAM_TYPE_LABEL[exam.examType]}
+                            </span>
+                            <span className="text-xs font-medium text-[#0B3979] bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">
+                                {exam.level || mapCategory(exam.category, exam.subjectCode)}
                             </span>
                         </div>
                         <h3 className="font-bold text-slate-900 leading-tight mb-1 group-hover:text-[#082a5a] transition-colors line-clamp-2">
