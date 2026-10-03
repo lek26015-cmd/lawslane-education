@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChevronRight, FileText } from "lucide-react";
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
-import { examIllustrationUrl } from '@/lib/book-cover';
+import { ExamSubjectCover } from '@/components/education/exam-cover';
 import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, examLevelOf, examTypeOf } from '@/lib/exam-labels';
 
 async function getRecentExams() {
@@ -70,8 +70,8 @@ export async function SampleExamsList() {
                     href={`/exams/${exam.id}/take`}
                     className="group flex gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all"
                 >
-                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-slate-100">
-                        <img src={examIllustrationUrl(exam.title)} alt="" loading="lazy" className="h-full w-full object-cover" />
+                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                        <ExamSubjectCover subject={exam.title} size="sm" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">

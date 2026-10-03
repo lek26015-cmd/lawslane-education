@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import { MyExamDoneBadge } from "@/components/education/exam-done-badge";
 import { StartExamButton } from "@/components/education/start-exam-button";
 import { initAdmin } from "@/lib/firebase-admin";
-import { examIllustrationUrl } from "@/lib/book-cover";
+import { ExamSubjectCover } from "@/components/education/exam-cover";
 import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, examLevelOf, examTypeOf, type ExamType } from "@/lib/exam-labels";
 import * as admin from "firebase-admin";
 
@@ -61,12 +61,8 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
 
             <div className="bg-white border rounded-2xl p-8 shadow-sm overflow-hidden">
                 {/* ภาพปกตามหมวดวิชา */}
-                <div className="-mx-8 -mt-8 mb-6 aspect-[21/9] overflow-hidden bg-slate-100">
-                    <img
-                        src={examIllustrationUrl(exam.category, exam.title)}
-                        alt=""
-                        className="h-full w-full object-cover object-[center_40%]"
-                    />
+                <div className="-mx-8 -mt-8 mb-6 aspect-[21/6] overflow-hidden">
+                    <ExamSubjectCover subject={exam.title} size="lg" />
                 </div>
                 <div className="flex items-start justify-between mb-6">
                     <div>

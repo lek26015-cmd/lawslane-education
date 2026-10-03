@@ -17,7 +17,7 @@ import { useExamLimit } from '@/hooks/use-exam-limit';
 import { usePlan } from '@/context/plan-context';
 import { ExamDoneBadge } from '@/components/education/exam-done-badge';
 import { useMyExamStatus } from '@/hooks/use-my-exam-status';
-import { examIllustrationUrl } from '@/lib/book-cover';
+import { ExamSubjectCover } from '@/components/education/exam-cover';
 import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, type ExamType } from '@/lib/exam-labels';
 
 interface Exam {
@@ -420,14 +420,9 @@ export default function ExamListingPage() {
                             <div
                                 className="rounded-2xl border border-slate-200 bg-white p-5 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5 transition-all group"
                             >
-                                {/* ภาพปกตามหมวดวิชา (ภาพชุดเดียวกับปกหนังสือรวมข้อสอบ) */}
-                                <Link href={`/exams/${exam.id}`} className="-mx-5 -mt-5 mb-4 block aspect-[16/9] overflow-hidden rounded-t-2xl bg-slate-100">
-                                    <img
-                                        src={examIllustrationUrl(exam.subjectGroup, exam.title)}
-                                        alt=""
-                                        loading="lazy"
-                                        className="h-full w-full object-cover object-[center_40%] transition-transform duration-500 group-hover:scale-105"
-                                    />
+                                {/* ปกข้อสอบ: ชื่อวิชา + พื้นหลัง + ไอคอนประจำวิชา */}
+                                <Link href={`/exams/${exam.id}`} className="-mx-5 -mt-5 mb-4 block aspect-[16/7] overflow-hidden rounded-t-2xl">
+                                    <ExamSubjectCover subject={exam.subjectGroup || exam.title} title={exam.title} year={exam.category} />
                                 </Link>
 
                                 {/* Top: ประเภทข้อสอบ (อัตนัย/ปรนัย) + ระดับ — ให้เห็นชัดตั้งแต่แรก */}
@@ -441,9 +436,6 @@ export default function ExamListingPage() {
                                         </span>
                                     )}
                                     <ExamDoneBadge examId={exam.id} status={myExamStatus} />
-                                </div>
-                                <div className="text-[11px] text-slate-500 mb-1 truncate">
-                                    {exam.subjectGroup || (exam.category === 'other' ? 'ตั๋วทนาย' : exam.category)}
                                 </div>
 
                                 {/* Title */}

@@ -81,8 +81,7 @@ export function bookIllustrationUrl(code: string): string | null {
 }
 
 /**
- * ข้อสอบแต่ละชุดใช้ภาพของหนังสือวิชาเดียวกัน (ไม่ต้องสร้างภาพแยก 2,000 ชุด)
- * จับจากชื่อวิชา/หมวด — คำเฉพาะก่อนคำกว้าง
+ * จับคู่ข้อสอบกับวิชา (รหัสหนังสือ) จากชื่อวิชา/หมวด — คำเฉพาะก่อนคำกว้าง
  */
 const EXAM_ILLUSTRATION_RULES: [RegExp, string][] = [
     [/ที่ดิน/, 'law4008'],
@@ -124,8 +123,8 @@ const EXAM_ILLUSTRATION_RULES: [RegExp, string][] = [
     [/ทรัพย์/, 'law2001'],
 ];
 
-export function examIllustrationUrl(...texts: (string | undefined)[]): string {
+/** รหัสวิชาหนังสือที่ตรงกับข้อสอบชุดนี้ (ใช้เลือกไอคอน/สีปกข้อสอบ) */
+export function examSubjectCode(...texts: (string | undefined)[]): string {
     const hay = texts.filter(Boolean).join(' ');
-    const code = EXAM_ILLUSTRATION_RULES.find(([re]) => re.test(hay))?.[1] ?? 'law1004';
-    return `/images/book-covers/${code}.webp`;
+    return EXAM_ILLUSTRATION_RULES.find(([re]) => re.test(hay))?.[1] ?? 'law1004';
 }
