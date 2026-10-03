@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { isPlaceholderCover } from '@/lib/cover';
-import { bookIllustrationUrl, parseExamBook, SUBJECT_EN } from '@/lib/book-cover';
+import { bookIllustrationUrl, coverLines, parseExamBook, SUBJECT_EN } from '@/lib/book-cover';
 import { BookOpen, FileCheck2, Landmark, Scale } from 'lucide-react';
 
 export function BrandCover({ title, label, className = '' }: { title?: string; label?: string; className?: string }) {
@@ -64,6 +64,10 @@ export function ExamBookCover({ title, description, isEbook = true, compact = fa
     const illustration = bookIllustrationUrl(info.code);
     const en = SUBJECT_EN[info.code] ?? 'LAW';
     const gold = 'linear-gradient(180deg, #f3d98b, #c99a3a)';
+    const lines = coverLines(info.code, info.subject);
+    // ขนาดตัวอักษรตามบรรทัดที่ยาวที่สุด ให้ทุกบรรทัดพอดีความกว้าง (~75cqw) — อักษรไทยกว้างราว 0.55em
+    const longest = Math.max(...lines.map((l) => l.length));
+    const titleSize = Math.min(9, 75 / (longest * 0.55));
 
     return (
         <div
@@ -91,18 +95,16 @@ export function ExamBookCover({ title, description, isEbook = true, compact = fa
                 {isEbook && <span className="mt-[0.5cqw] rounded-sm bg-[#2a1d05] px-[1.2cqw] py-[0.3cqw] text-[2.6cqw] font-black tracking-wider text-[#f3d98b]">E-BOOK</span>}
             </div>
 
-            {/* หัวปก */}
-            <div className="relative z-10 flex items-start gap-[3cqw] px-[7%] pt-[9%] pr-[27%]">
-                <img src="/images/logo-lawslane-transparent-white.png" alt="" className="h-[15cqw] w-auto shrink-0 object-contain" />
-                <div className="min-w-0">
-                    {/* ไม่แสดงรหัสวิชา (ลูกค้าขอ 2026-10-03) — ชื่อวิชาเป็นหัวเรื่องเต็มๆ ย่อตัวอักษรตามความยาว */}
-                    <div
-                        className="font-black leading-tight"
-                        style={{ fontSize: info.subject.length > 45 ? '5cqw' : info.subject.length > 26 ? '6cqw' : info.subject.length > 14 ? '7.5cqw' : '9cqw' }}
-                    >
-                        {info.subject}
+            {/* หัวปก: โลโก้มุมซ้าย · ชื่อวิชาเต็มความกว้างใต้โลโก้ ขึ้นบรรทัดตามจุดที่กำหนด (ไม่ตัดกลางวลี) */}
+            <div className="relative z-10 px-[7%] pt-[8%]">
+                <img src="/images/logo-lawslane-transparent-white.png" alt="" className="h-[13cqw] w-auto object-contain" />
+                <div className="mt-[4cqw] pr-[18%]">
+                    <div className="font-black leading-[1.18]" style={{ fontSize: `${titleSize}cqw` }}>
+                        {lines.map((ln) => (
+                            <div key={ln} className="whitespace-nowrap">{ln}</div>
+                        ))}
                     </div>
-                    <div className="mt-[2cqw] h-px w-full" style={{ background: gold }} />
+                    <div className="mt-[2.5cqw] h-px w-full" style={{ background: gold }} />
                     <div className="mt-[1.5cqw] text-[3.4cqw] tracking-[0.15em] text-white/80">
                         รวมข้อสอบเก่า{info.year ? ` · ชั้นปี ${info.year}` : ''}
                     </div>
