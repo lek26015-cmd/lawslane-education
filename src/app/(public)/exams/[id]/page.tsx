@@ -19,6 +19,8 @@ async function getExam(id: string): Promise<Exam | null> {
     if (!doc.exists) return null;
 
     const data = doc.data()!;
+    // แบบร่างยังไม่เผยแพร่ — ทำเหมือนไม่มีชุดนี้
+    if (data.status === 'draft') return null;
     return {
         id: doc.id,
         title: data.title || '',

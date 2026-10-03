@@ -46,6 +46,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
         }
         const examData = examDoc.data()!;
+        if (examData.status === 'draft') {
+            return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
+        }
 
         // สิทธิ์ตามแพ็กเกจ (แอดมินตั้งที่หลังบ้าน) — ชุดที่เริ่มทำไปแล้ววันนี้ไม่นับซ้ำ
         // ด่านนี้กันการยิง API ตรงข้ามหน้าเริ่มทำข้อสอบ

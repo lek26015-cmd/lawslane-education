@@ -175,7 +175,9 @@ async function fetchExamsFromFirestore(): Promise<any[]> {
             allDocs.push(...snap.docs);
         }
 
-        const exams = allDocs.map(doc => {
+        // ชุดที่แอดมินตั้งเป็นแบบร่างต้องไม่โผล่บนเว็บ — เดิมเลือกฟิลด์ status มาแต่ไม่เคยกรอง
+        // (ไม่มี status = ชุดเก่าที่เผยแพร่อยู่แล้ว)
+        const exams = allDocs.filter(doc => doc.data().status !== 'draft').map(doc => {
             const data = doc.data();
             const rawCode = (data.subjectCode || '').toUpperCase();
             const inferred = inferSubjectFromTitle(data.title || '');

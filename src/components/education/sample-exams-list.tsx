@@ -8,12 +8,13 @@ async function getRecentExams() {
         const app = await initAdmin();
         if (!app) return [];
         const db = admin.firestore();
+        // เผื่อชุดแบบร่างไว้ — ดึงมาเกินแล้วตัดให้เหลือ 6
         const snap = await db.collection('examSets')
             .orderBy('createdAt', 'desc')
-            .limit(6)
+            .limit(12)
             .get();
         
-        return snap.docs.map(doc => {
+        return snap.docs.filter(doc => doc.data().status !== 'draft').slice(0, 6).map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
