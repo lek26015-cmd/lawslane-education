@@ -15,6 +15,8 @@ import { GoogleAd } from '@/components/google-ad';
 import { ExamLimitBanner } from '@/components/education/upgrade-paywall';
 import { useExamLimit } from '@/hooks/use-exam-limit';
 import { usePlan } from '@/context/plan-context';
+import { ExamDoneBadge } from '@/components/education/exam-done-badge';
+import { useMyExamStatus } from '@/hooks/use-my-exam-status';
 import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, type ExamType } from '@/lib/exam-labels';
 
 interface Exam {
@@ -66,6 +68,7 @@ export default function ExamListingPage() {
     const gridTopRef = useRef<HTMLDivElement>(null);
     const { data: plan } = usePlan();
     const { used, dailyLimit, isPremium } = useExamLimit();
+    const myExamStatus = useMyExamStatus();
     const searchTimeoutRef = useRef<NodeJS.Timeout>(null);
 
     // Phase 1: Fetch summary
@@ -426,6 +429,7 @@ export default function ExamListingPage() {
                                             {exam.level}
                                         </span>
                                     )}
+                                    <ExamDoneBadge examId={exam.id} status={myExamStatus} />
                                 </div>
                                 <div className="text-[11px] text-slate-500 mb-1 truncate">
                                     {exam.subjectGroup || (exam.category === 'other' ? 'ตั๋วทนาย' : exam.category)}

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, HelpCircle, CheckCircle, AlertTriangle, PlayCircle, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MyExamDoneBadge } from "@/components/education/exam-done-badge";
 import { StartExamButton } from "@/components/education/start-exam-button";
 import { initAdmin } from "@/lib/firebase-admin";
 import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, examLevelOf, examTypeOf, type ExamType } from "@/lib/exam-labels";
@@ -76,6 +77,9 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                                     {exam.session}
                                 </span>
                             )}
+                        </div>
+                        <div className="mb-4">
+                            <MyExamDoneBadge examId={exam.id} />
                         </div>
                         <h1 className="text-3xl font-bold text-slate-900 mb-4">{exam.title}</h1>
                         <p className="text-slate-600 text-lg leading-relaxed">
