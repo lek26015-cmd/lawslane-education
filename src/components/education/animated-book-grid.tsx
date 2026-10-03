@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Book } from "@/lib/education-types";
+import { isEbookBook } from "@/lib/book-cover";
 import { BookCard } from "@/components/education/book-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -149,7 +150,7 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
         // Filter by Type
         if (bookType !== 'all') {
             const isDigital = bookType === 'ebook';
-            result = result.filter(book => book.isDigital === isDigital);
+            result = result.filter(book => isEbookBook(book) === isDigital);
         }
 
         // Filter by Level
@@ -277,7 +278,7 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                                 author={book.author}
                                 level={book.level}
                                 pageCount={book.pageCount}
-                                isEbook={book.isDigital}
+                                isEbook={isEbookBook(book)}
                                 href={`/books/${book.id}`}
                                 footerExtra={book.isDigital ? <EbookDownloadButton book={book} /> : undefined}
                             />

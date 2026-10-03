@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { getAllBooks } from '@/lib/education-data-admin';
 import { BookCard } from './book-card';
+import { isEbookBook } from '@/lib/book-cover';
 
 
 export async function RecommendedBooksSection() {
@@ -55,7 +56,7 @@ export async function RecommendedBooksSection() {
                                                 idx === 2 ? { text: "ขายดี!!", color: "text-yellow-500", icon: "zap" } :
                                                     { text: "ยอดนิยม", color: "text-blue-500" }
                                     ]}
-                                    isEbook={book.isDigital}
+                                    isEbook={isEbookBook(book)}
                                     href={`/books/${book.id}`}
                                     author={book.author}
                                     description={book.description}

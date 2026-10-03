@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import Image, { StaticImageData } from 'next/image';
-import { BrandCover } from '@/components/education/brand-cover';
+import { BrandCover, ExamBookCover } from '@/components/education/brand-cover';
+import { isTemplateExamCover } from '@/lib/book-cover';
 import { isPlaceholderCover } from '@/lib/cover';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -45,6 +46,7 @@ export function BookCard({
     href = '#',
     footerExtra,
 }: BookCardProps) {
+    const examCover = isTemplateExamCover(coverUrl);
     // ส่วนลดคำนวณจากราคาจริง ไม่ใช่ค่าที่กรอกมือ — กันกรณี originalPrice ต่ำกว่า price
     const discountPercent =
         originalPrice && originalPrice > price
@@ -56,7 +58,9 @@ export function BookCard({
             {/* Image Section */}
             <Link href={href}>
                 <div className="relative aspect-[2/3] w-full bg-slate-100 overflow-hidden">
-                    {coverUrl && !(typeof coverUrl === 'string' && isPlaceholderCover(coverUrl)) ? (
+                    {examCover ? (
+                        <ExamBookCover title={title} description={description} isEbook={isEbook} />
+                    ) : coverUrl && !(typeof coverUrl === 'string' && isPlaceholderCover(coverUrl)) ? (
                         <Image
                             src={coverUrl}
                             alt={title}
@@ -69,7 +73,7 @@ export function BookCard({
                     ) : (
                         <BrandCover title={title} label={isEbook ? 'E-Book' : 'Book'} />
                     )}
-                    {isEbook && (
+                    {isEbook && !examCover && (
                         <Badge className="absolute top-2 right-2 bg-[#0B3979] hover:bg-[#082a5a]">E-Book</Badge>
                     )}
                     {discountPercent > 0 && (
