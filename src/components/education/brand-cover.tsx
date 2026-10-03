@@ -2,39 +2,9 @@
 
 import { useState } from 'react';
 import { isPlaceholderCover } from '@/lib/cover';
-import { coverIllustrationOf, examCoverTheme, parseExamBook, type CoverIllustration } from '@/lib/book-cover';
-import {
-    BookOpen, Briefcase, Building2, FileSignature, Gavel, Globe2, HandCoins, HardHat, Home,
-    Landmark, Library, Map, Receipt, Scale, ScrollText, Search, Shield, Users, type LucideIcon,
-} from 'lucide-react';
+import { bookIllustrationUrl, parseExamBook, SUBJECT_EN } from '@/lib/book-cover';
+import { BookOpen, FileCheck2, Landmark, Scale } from 'lucide-react';
 
-const ILLUSTRATION_ICON: Record<CoverIllustration, LucideIcon> = {
-    land: Map,
-    family: Users,
-    inheritance: ScrollText,
-    company: Building2,
-    insurance: Shield,
-    money: HandCoins,
-    tax: Receipt,
-    labor: HardHat,
-    globe: Globe2,
-    investigation: Search,
-    procedure: Briefcase,
-    criminal: Gavel,
-    court: Landmark,
-    constitution: Landmark,
-    philosophy: BookOpen,
-    history: Library,
-    ethics: Scale,
-    contract: FileSignature,
-    property: Home,
-    scale: Scale,
-};
-
-/**
- * ปกแบรนด์ Lawslane (พื้นกรมท่า + โลโก้ + ชื่อเรื่อง) — ใช้แทนเมื่อไม่มีปก, ปกเป็นภาพตัวอย่าง
- * (placehold.co / unsplash) หรือโหลดภาพไม่ขึ้น จะได้ไม่เหลือกล่องเทาว่างหรือภาพสต็อกที่ดูเป็นม็อคอัพ
- */
 export function BrandCover({ title, label, className = '' }: { title?: string; label?: string; className?: string }) {
     return (
         <div
@@ -70,69 +40,99 @@ export function CoverImage({
     return <img src={src!} alt={alt} loading="lazy" onError={() => setFailed(true)} className={`h-full w-full object-cover ${className}`} />;
 }
 
-const PATTERNS = [
-    // วงกลมซ้อน
-    'radial-gradient(circle at 85% 15%, rgba(255,255,255,.14) 0 22%, transparent 22.5%), radial-gradient(circle at 85% 15%, rgba(255,255,255,.08) 0 38%, transparent 38.5%)',
-    // เส้นทแยง
-    'repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 10px, transparent 10px 22px)',
-    // ตาราง
-    'linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px)',
-    // แถบตั้งฝั่งซ้าย (สันหนังสือ)
-    'linear-gradient(90deg, rgba(0,0,0,.25) 0 10%, rgba(255,255,255,.12) 10% 11%, transparent 11%)',
-];
+const YEAR_BG: Record<number, { from: string; to: string }> = {
+    1: { from: '#0d5c46', to: '#06281f' },
+    2: { from: '#0d3f8f', to: '#061a3d' },
+    3: { from: '#8c1d2c', to: '#3a0a12' },
+    4: { from: '#4b1f8f', to: '#1d0a3d' },
+};
 
 /**
- * ปกหนังสือรวมข้อสอบ — วาดจากรหัสวิชา/ชื่อวิชา แทนภาพ template ที่เหมือนกันทุกเล่ม
- * สีตามชั้นปี (ปี 1 เขียว · ปี 2 น้ำเงิน · ปี 3 แดง · ปี 4 ม่วง) ลายต่างกันตามรหัสวิชา
+ * ปกหนังสือรวมข้อสอบตามแบบที่ลูกค้าเลือก (2026-10-03): โลโก้ + รหัสวิชาตัวใหญ่ + ชื่อวิชา,
+ * ริบบิ้นทองชื่อวิชาภาษาอังกฤษ + E-BOOK, ภาพตัวละคร 3D ประจำวิชา, แถบล่างจุดเด่น + จำนวนชุดสีทอง
+ * ข้อความทั้งหมดวางด้วยโค้ด (AI เขียนภาษาไทยเพี้ยน) ใช้ container query ให้สัดส่วนเท่ากันทุกขนาดการ์ด
  */
 export function ExamBookCover({ title, description, isEbook = true, compact = false }: {
     title: string;
     description?: string;
     isEbook?: boolean;
-    /** การ์ดเล็ก (หนังสือที่เกี่ยวข้อง) — ย่อตัวอักษร */
+    /** การ์ดเล็ก (หนังสือที่เกี่ยวข้อง) — ซ่อนรายการจุดเด่น */
     compact?: boolean;
 }) {
     const info = parseExamBook(title, description);
-    const theme = examCoverTheme(info);
-    const Illustration = ILLUSTRATION_ICON[coverIllustrationOf(info.subject)];
+    const bg = YEAR_BG[info.year ?? 2] ?? YEAR_BG[2];
+    const illustration = bookIllustrationUrl(info.code);
+    const en = SUBJECT_EN[info.code] ?? 'LAW';
+    const gold = 'linear-gradient(180deg, #f3d98b, #c99a3a)';
 
     return (
         <div
-            className="relative flex h-full w-full flex-col overflow-hidden text-white"
-            style={{
-                backgroundColor: theme.from,
-                backgroundImage: `${PATTERNS[theme.pattern]}, linear-gradient(160deg, ${theme.from}, ${theme.to})`,
-                backgroundSize: theme.pattern === 2 ? '24px 24px, 24px 24px, auto' : undefined,
-            }}
+            className="@container relative h-full w-full overflow-hidden text-white"
+            style={{ background: `linear-gradient(165deg, ${bg.from}, ${bg.to})` }}
         >
-            {/* ภาพประกอบตามหมวดวิชา — ตัวใหญ่จางๆ มุมขวาล่าง + วงกลมสีเน้น */}
-            <div aria-hidden className={`absolute rounded-full ${compact ? '-bottom-6 -right-6 h-24 w-24' : '-bottom-10 -right-10 h-48 w-48'}`} style={{ backgroundColor: theme.accent, opacity: 0.18 }} />
-            <Illustration aria-hidden strokeWidth={1.25} className={`absolute text-white/25 ${compact ? 'bottom-7 right-2 h-14 w-14' : 'bottom-14 right-4 h-28 w-28'}`} />
-            {isEbook && (
-                <div className={`absolute right-0 top-0 z-10 rounded-bl-xl bg-white font-black tracking-wider text-slate-900 ${compact ? 'px-2 py-0.5 text-[9px]' : 'px-3 py-1 text-xs'}`}>
-                    E-BOOK
-                </div>
+            {/* ภาพตัวละคร — ชิดล่าง จางเข้าพื้นด้านบน */}
+            {illustration && (
+                <img
+                    src={illustration}
+                    alt=""
+                    loading="lazy"
+                    className="absolute inset-x-0 bottom-[12%] w-full object-cover"
+                    style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 85%, transparent 100%)' }}
+                />
             )}
-            <div className={`relative flex flex-1 flex-col ${compact ? 'gap-1 p-3' : 'gap-2 p-5'}`}>
-                <span className={`font-semibold uppercase tracking-[0.2em] text-white/70 ${compact ? 'text-[8px]' : 'text-[10px]'}`}>
-                    รวมข้อสอบเก่า{info.year ? ` · ชั้นปี ${info.year}` : ''}
-                </span>
-                {info.code && (
-                    <span className={`font-black leading-none tracking-tight ${compact ? 'text-xl' : 'text-4xl'}`} style={{ color: theme.accent }}>
-                        {info.code}
-                    </span>
-                )}
-                <span className={`line-clamp-4 font-bold leading-snug ${compact ? 'text-xs' : 'text-lg'}`}>
-                    {info.subject}
-                </span>
+
+            {/* ริบบิ้นทอง */}
+            <div
+                className="absolute right-[5%] top-0 z-10 flex w-[19%] flex-col items-center gap-[0.6cqw] pb-[5cqw] pt-[3cqw] text-center text-[#2a1d05]"
+                style={{ background: gold, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%)' }}
+            >
+                <Scale className="h-[6cqw] w-[6cqw]" strokeWidth={1.75} />
+                <span className="text-[2.6cqw] font-bold leading-tight tracking-wide">{en}</span>
+                {isEbook && <span className="mt-[0.5cqw] rounded-sm bg-[#2a1d05] px-[1.2cqw] py-[0.3cqw] text-[2.6cqw] font-black tracking-wider text-[#f3d98b]">E-BOOK</span>}
             </div>
-            <div className={`relative flex items-end justify-between bg-black/20 ${compact ? 'px-3 py-2' : 'px-5 py-3'}`}>
-                {info.sets ? (
-                    <span className={compact ? 'text-[10px]' : 'text-sm'}>
-                        <b className={compact ? 'text-sm' : 'text-2xl'}>{info.sets}</b> ชุด พร้อมธงคำตอบ
-                    </span>
+
+            {/* หัวปก */}
+            <div className="relative z-10 flex items-start gap-[3cqw] px-[7%] pt-[9%] pr-[27%]">
+                <img src="/images/logo-lawslane-transparent-white.png" alt="" className="h-[15cqw] w-auto shrink-0 object-contain" />
+                <div className="min-w-0">
+                    {info.code && <div className="text-[10cqw] font-black leading-none tracking-tight">{info.code}</div>}
+                    <div className="mt-[1.5cqw] line-clamp-2 text-[5cqw] font-bold leading-tight">{info.subject}</div>
+                    <div className="mt-[2cqw] h-px w-full" style={{ background: gold }} />
+                    <div className="mt-[1.5cqw] text-[3.4cqw] tracking-[0.15em] text-white/80">
+                        รวมข้อสอบเก่า{info.year ? ` · ชั้นปี ${info.year}` : ''}
+                    </div>
+                </div>
+            </div>
+
+            {/* แถบล่าง */}
+            <div
+                className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-[3cqw] px-[6%] pb-[4%] pt-[10%]"
+                style={{ background: `linear-gradient(to bottom, transparent, ${bg.to} 45%)` }}
+            >
+                {!compact ? (
+                    <ul className="space-y-[1.6cqw] text-[3cqw] leading-tight text-white/90">
+                        {[
+                            { Icon: BookOpen, text: 'ข้อสอบเก่าย้อนหลังหลายปี' },
+                            { Icon: FileCheck2, text: 'แนวข้อสอบพร้อมธงคำตอบ' },
+                            { Icon: Landmark, text: info.year ? `เหมาะสำหรับนักศึกษานิติศาสตร์ ชั้นปี ${info.year}` : 'เหมาะสำหรับนักศึกษานิติศาสตร์' },
+                        ].map(({ Icon, text }) => (
+                            <li key={text} className="flex items-center gap-[2cqw]">
+                                <span className="flex h-[6cqw] w-[6cqw] shrink-0 items-center justify-center rounded-full border border-[#f3d98b]/60">
+                                    <Icon className="h-[3.4cqw] w-[3.4cqw] text-[#f3d98b]" />
+                                </span>
+                                {text}
+                            </li>
+                        ))}
+                    </ul>
                 ) : <span />}
-                <img src="/images/logo-lawslane-transparent-white.png" alt="" className={`w-auto object-contain opacity-80 ${compact ? 'h-3' : 'h-5'}`} />
+                {info.sets ? (
+                    <div className="shrink-0 text-center">
+                        <div className="bg-clip-text text-[13cqw] font-black leading-none text-transparent" style={{ backgroundImage: gold }}>{info.sets}</div>
+                        <div className="mx-auto my-[1cqw] h-px w-full" style={{ background: gold }} />
+                        <div className="text-[3.6cqw] font-semibold">ชุดข้อสอบ</div>
+                        <div className="text-[2.6cqw] text-blue-100/70">LawsLane</div>
+                    </div>
+                ) : null}
             </div>
         </div>
     );

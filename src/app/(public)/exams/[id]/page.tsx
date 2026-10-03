@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { MyExamDoneBadge } from "@/components/education/exam-done-badge";
 import { StartExamButton } from "@/components/education/start-exam-button";
 import { initAdmin } from "@/lib/firebase-admin";
+import { examIllustrationUrl } from "@/lib/book-cover";
 import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, examLevelOf, examTypeOf, type ExamType } from "@/lib/exam-labels";
 import * as admin from "firebase-admin";
 
@@ -58,7 +59,15 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                 กลับไปหน้าคลังข้อสอบ
             </Link>
 
-            <div className="bg-white border rounded-2xl p-8 shadow-sm">
+            <div className="bg-white border rounded-2xl p-8 shadow-sm overflow-hidden">
+                {/* ภาพปกตามหมวดวิชา */}
+                <div className="-mx-8 -mt-8 mb-6 aspect-[21/9] overflow-hidden bg-slate-100">
+                    <img
+                        src={examIllustrationUrl(exam.category, exam.title)}
+                        alt=""
+                        className="h-full w-full object-cover object-[center_40%]"
+                    />
+                </div>
                 <div className="flex items-start justify-between mb-6">
                     <div>
                         {/* ประเภทข้อสอบ + ระดับ — ให้เห็นชัดก่อนเริ่มทำ (เดิมขึ้น "อื่นๆ" กับ "ระดับ: MEDIUM") */}

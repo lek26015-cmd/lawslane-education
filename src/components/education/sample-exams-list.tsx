@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight, FileText } from "lucide-react";
 import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
+import { examIllustrationUrl } from '@/lib/book-cover';
 import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, examLevelOf, examTypeOf } from '@/lib/exam-labels';
 
 async function getRecentExams() {
@@ -69,8 +70,8 @@ export async function SampleExamsList() {
                     href={`/exams/${exam.id}/take`}
                     className="group flex gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all"
                 >
-                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-[#0B3979] flex items-center justify-center">
-                        <FileText className="w-10 h-10 text-white/60" />
+                    <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-slate-100">
+                        <img src={examIllustrationUrl(exam.title)} alt="" loading="lazy" className="h-full w-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
