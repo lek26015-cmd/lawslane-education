@@ -14,6 +14,7 @@ import { CopyProtection } from '@/components/education/copy-protection';
 import { useExamLimit } from '@/hooks/use-exam-limit';
 import { useUser } from '@/firebase/provider';
 import { UpgradePaywall, ExamLimitBanner } from '@/components/education/upgrade-paywall';
+import { ExamPageImages } from '@/components/education/exam-page-images';
 
 interface Question {
     id: string;
@@ -38,6 +39,7 @@ interface Exam {
     totalQuestions: number;
     pageImages?: PageImage[];
     hasImages?: boolean;
+    scenarioText?: string;
 }
 
 // Strip leading question number prefixes like "ข้อ๑.", "ข้อ ๒.", "ข้อ1.", "ข้อที่ 3."
@@ -256,6 +258,19 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
 
             {/* Ad Banner */}
             <GoogleAd variant="banner" className="my-2" />
+
+            {/* ข้อเท็จจริงที่ใช้ร่วมกันทุกข้อ + ภาพหน้าข้อสอบต้นฉบับ */}
+            {(exam.scenarioText || exam.pageImages?.length) ? (
+                <div className="space-y-3">
+                    {exam.scenarioText && (
+                        <div className="bg-white rounded-xl border p-6 shadow-sm">
+                            <p className="text-sm font-medium text-slate-500 mb-3">ข้อเท็จจริง (ใช้ตอบทุกข้อ)</p>
+                            <p className="text-slate-900 whitespace-pre-wrap leading-relaxed">{exam.scenarioText}</p>
+                        </div>
+                    )}
+                    <ExamPageImages images={exam.pageImages || []} title="ดูหน้าข้อสอบต้นฉบับ" />
+                </div>
+            ) : null}
 
             {/* Current Question */}
             <div className="bg-white rounded-xl border p-6 shadow-sm">

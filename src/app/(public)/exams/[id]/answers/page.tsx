@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { AuthGuard } from '@/components/education/auth-guard';
 import { GoogleAd } from '@/components/google-ad';
 import { CopyProtection } from '@/components/education/copy-protection';
+import { ExamPageImages, type ExamPageImage } from '@/components/education/exam-page-images';
 
 interface Question {
     id: string;
@@ -25,6 +26,7 @@ interface Question {
     explanation: string;
     tags: string[];
     isAiGenerated?: boolean;
+    answerPageImages?: ExamPageImage[];
 }
 
 interface ExamAnswers {
@@ -34,6 +36,8 @@ interface ExamAnswers {
     subjectCode: string;
     session: string;
     totalQuestions: number;
+    scenarioText?: string;
+    pageImages?: ExamPageImage[];
     questions: Question[];
 }
 
@@ -162,6 +166,19 @@ function AnswerKeyPageContent({ params }: { params: Promise<{ id: string }> }) {
             {/* Ad Banner */}
             <GoogleAd variant="banner" className="my-2" />
 
+            {/* ข้อเท็จจริงที่ใช้ร่วมกันทุกข้อ */}
+            {(exam.scenarioText || exam.pageImages?.length) ? (
+                <div className="space-y-3">
+                    {exam.scenarioText && (
+                        <div className="bg-white rounded-xl border p-5">
+                            <p className="text-sm font-medium text-slate-500 mb-2">ข้อเท็จจริง (ใช้ตอบทุกข้อ)</p>
+                            <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{exam.scenarioText}</p>
+                        </div>
+                    )}
+                    <ExamPageImages images={exam.pageImages || []} title="ดูหน้าข้อสอบต้นฉบับ" />
+                </div>
+            ) : null}
+
             {/* Questions */}
             <div className="space-y-4">
                 {exam.questions.map((q, idx) => {
@@ -265,8 +282,20 @@ function AnswerKeyPageContent({ params }: { params: Promise<{ id: string }> }) {
                                             </div>
                                         )}
 
+                                        {/* ธงคำตอบต้นฉบับ — ข้อที่ต้องร่างตามแบบพิมพ์ ดูรูปแบบการจัดหน้าจากภาพ */}
+                                        {q.answerPageImages && q.answerPageImages.length > 0 && (
+                                            <div className="mx-5 mb-4">
+                                                <ExamPageImages
+                                                    images={q.answerPageImages}
+                                                    title="ธงคำตอบต้นฉบับ (รูปแบบเอกสารตามแบบพิมพ์)"
+                                                    tone="amber"
+                                                    defaultOpen
+                                                />
+                                            </div>
+                                        )}
+
                                         {/* No answer available */}
-                                        {!q.modelAnswer && q.type === 'ESSAY' && (
+                                        {!q.modelAnswer && !q.answerPageImages?.length && q.type === 'ESSAY' && (
                                             <div className="mx-5 mb-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
                                                 <p className="text-sm text-slate-500 italic">ยังไม่มีธงคำตอบสำหรับข้อนี้</p>
                                             </div>

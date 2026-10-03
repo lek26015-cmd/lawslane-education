@@ -58,12 +58,16 @@ export async function GET(
                 explanation: q.explanation || '',
                 tags: q.tags || [],
                 isAiGenerated: !!q.isAiGenerated,
+                answerPageImages: Array.isArray(q.answerPageImages) ? q.answerPageImages : [],
             };
         });
 
         // Batch anonymize all texts for consistent name mapping
+        // ชุดที่มีภาพต้นฉบับไม่แปลงชื่อ — ไม่งั้นชื่อในข้อความกับในภาพธงคำตอบจะไม่ตรงกัน
+        const pageImages = Array.isArray(data.pageImages) ? data.pageImages : [];
+        const hasOriginalImages = pageImages.length > 0 || questions.some(q => q.answerPageImages.length > 0);
         const allTexts = questions.flatMap(q => [q.text, q.modelAnswer]);
-        const anonymized = anonymizeExamTexts(allTexts, id);
+        const anonymized = hasOriginalImages ? allTexts : anonymizeExamTexts(allTexts, id);
         
         const anonymizedQuestions = questions.map((q, i) => ({
             ...q,
@@ -77,6 +81,8 @@ export async function GET(
             description: data.description || '',
             subjectCode: data.subjectCode || '',
             session: data.session || '',
+            scenarioText: formatExamText(data.scenarioText || ''),
+            pageImages,
             totalQuestions: anonymizedQuestions.length,
             questions: anonymizedQuestions,
         });
