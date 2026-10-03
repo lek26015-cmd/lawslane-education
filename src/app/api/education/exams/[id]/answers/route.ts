@@ -20,6 +20,10 @@ export async function GET(
         if (!doc.exists) return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
 
         const data = doc.data()!;
+
+        // แบบร่างยังไม่เผยแพร่ — ทำเหมือนไม่มีชุดนี้
+
+        if (data.status === 'draft') return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
         const qSnap = await doc.ref.collection('questions')
             .orderBy('orderIndex', 'asc')
             .get();

@@ -4,14 +4,19 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, HelpCircle, CheckCircle, AlertTriangle, PlayCircle, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MyExamDoneBadge } from "@/components/education/exam-done-badge";
 import { StartExamButton } from "@/components/education/start-exam-button";
 import { initAdmin } from "@/lib/firebase-admin";
+import { ExamSubjectCover } from "@/components/education/exam-cover";
+import { EXAM_TYPE_CLASS, EXAM_TYPE_LABEL, examLevelOf, examTypeOf, type ExamType } from "@/lib/exam-labels";
 import * as admin from "firebase-admin";
 
 // ดึงข้อสอบจริงจาก Firestore collection `examSets`
 // (mapping ชุดเดียวกับ /api/education/exams/[id] เพื่อให้หน้ารายละเอียด
 //  กับหน้าทำข้อสอบแสดงข้อมูลตรงกัน)
-async function getExam(id: string): Promise<Exam | null> {
+type ExamDetail = Exam & { examType: ExamType; level: string; essayCount: number; multipleChoiceCount: number; session: string };
+
+async function getExam(id: string): Promise<ExamDetail | null> {
     const app = await initAdmin();
     if (!app) return null;
 
@@ -19,11 +24,13 @@ async function getExam(id: string): Promise<Exam | null> {
     if (!doc.exists) return null;
 
     const data = doc.data()!;
+    // แบบร่างยังไม่เผยแพร่ — ทำเหมือนไม่มีชุดนี้
+    if (data.status === 'draft') return null;
     return {
         id: doc.id,
         title: data.title || '',
         description: data.description || data.instructions || '',
-        price: data.price ?? 0,
+        price: 0,
         durationMinutes: data.timeLimitMinutes || 180,
         passingScore: data.passingScore ?? 50,
         totalQuestions: data.totalQuestions || data.essayCount || 0,
@@ -31,7 +38,12 @@ async function getExam(id: string): Promise<Exam | null> {
         difficulty: data.difficulty || 'medium',
         createdAt: data.createdAt?.toDate?.() || new Date(),
         updatedAt: data.updatedAt?.toDate?.() || new Date(),
-    } as Exam;
+        examType: examTypeOf(data),
+        level: examLevelOf(data),
+        essayCount: Number(data.essayCount) || 0,
+        multipleChoiceCount: Number(data.multipleChoiceCount) || 0,
+        session: data.session || '',
+    } as ExamDetail;
 }
 
 export default async function ExamDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -47,16 +59,32 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                 กลับไปหน้าคลังข้อสอบ
             </Link>
 
-            <div className="bg-white border rounded-2xl p-8 shadow-sm">
+            <div className="bg-white border rounded-2xl p-8 shadow-sm overflow-hidden">
+                {/* ภาพปกตามหมวดวิชา */}
+                <div className="-mx-8 -mt-8 mb-6 aspect-[21/6] overflow-hidden">
+                    <ExamSubjectCover subject={exam.title} size="lg" />
+                </div>
                 <div className="flex items-start justify-between mb-6">
                     <div>
-                        <div className="flex gap-2 mb-4">
-                            <Badge className="bg-blue-100 text-[#082a5a] hover:bg-blue-200 border-none">
-                                {exam.category === 'license' ? 'ใบอนุญาตว่าความ' : 'อื่นๆ'}
-                            </Badge>
-                            <Badge variant="outline">
-                                ระดับ: {exam.difficulty.toUpperCase()}
-                            </Badge>
+                        {/* ประเภทข้อสอบ + ระดับ — ให้เห็นชัดก่อนเริ่มทำ (เดิมขึ้น "อื่นๆ" กับ "ระดับ: MEDIUM") */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            <span className={`rounded-lg px-3 py-1.5 text-sm font-medium border ${EXAM_TYPE_CLASS[exam.examType]}`}>
+                                ข้อสอบ{EXAM_TYPE_LABEL[exam.examType]}
+                                {exam.examType === 'mixed' && ` (ปรนัย ${exam.multipleChoiceCount} · อัตนัย ${exam.essayCount} ข้อ)`}
+                            </span>
+                            {exam.level && (
+                                <span className="rounded-lg px-3 py-1.5 text-sm font-medium border bg-blue-50 text-[#082a5a] border-blue-200">
+                                    {exam.level}
+                                </span>
+                            )}
+                            {exam.session && (
+                                <span className="rounded-lg px-3 py-1.5 text-sm border bg-white text-slate-600 border-slate-200">
+                                    {exam.session}
+                                </span>
+                            )}
+                        </div>
+                        <div className="mb-4">
+                            <MyExamDoneBadge examId={exam.id} />
                         </div>
                         <h1 className="text-3xl font-bold text-slate-900 mb-4">{exam.title}</h1>
                         <p className="text-slate-600 text-lg leading-relaxed">

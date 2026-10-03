@@ -29,15 +29,17 @@ export type WittayaEntitlements = {
     weaknessAnalysis: boolean;
     /** ไม่แสดงโฆษณา Google AdSense */
     adFree: boolean;
+    /** ดาวน์โหลด E-Book รวมข้อสอบได้ฟรี (ลูกค้ากำหนด 2026-10-03: เฉพาะ Pro) */
+    freeEbooks: boolean;
 };
 
 // ค่าเริ่มต้น = พฤติกรรมเดิมก่อนมีระบบนี้ (free ทำข้อสอบได้ 3 ชุด/วัน ที่เหลือเปิดหมด)
 // จะได้ไม่มีฟีเจอร์ไหนหายไปจากผู้ใช้ทันทีที่ deploy — แอดมินค่อยปรับเองที่หลังบ้าน
 // adFree: premium/pro ไม่เห็นโฆษณาตามที่หน้า pricing สัญญาไว้ ("ปิดโฆษณาทั้งหมด")
 export const DEFAULT_PLANS: Record<WittayaPlanId, WittayaEntitlements> = {
-    free: { examsPerDay: 3, aiGrading: true, weaknessAnalysis: true, adFree: false },
-    premium: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true },
-    pro: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true },
+    free: { examsPerDay: 3, aiGrading: true, weaknessAnalysis: true, adFree: false, freeEbooks: false },
+    premium: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true, freeEbooks: false },
+    pro: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true, freeEbooks: true },
 };
 
 const PLAN_NAMES: Record<WittayaPlanId, string> = { free: 'Free', premium: 'Premium', pro: 'Pro' };
@@ -66,6 +68,7 @@ function normalize(raw: any, fallback: WittayaEntitlements): WittayaEntitlements
         aiGrading: typeof raw?.aiGrading === 'boolean' ? raw.aiGrading : fallback.aiGrading,
         weaknessAnalysis: typeof raw?.weaknessAnalysis === 'boolean' ? raw.weaknessAnalysis : fallback.weaknessAnalysis,
         adFree: typeof raw?.adFree === 'boolean' ? raw.adFree : fallback.adFree,
+        freeEbooks: typeof raw?.freeEbooks === 'boolean' ? raw.freeEbooks : fallback.freeEbooks,
     };
 }
 

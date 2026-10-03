@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, CreditCard } from "lucide-react";
 import { Book } from '@/lib/education-types';
 import { useCart } from '@/context/cart-context';
+import { EbookProDownload } from '@/components/education/ebook-pro-download';
 
 interface BookPurchaseSectionProps {
     book: Book;
@@ -21,6 +22,21 @@ export function BookPurchaseSection({ book }: BookPurchaseSectionProps) {
         addItem(book);
         setIsOpen(true);
     };
+
+    // หนังสือรวมข้อสอบ = E-Book ฟรีเฉพาะสมาชิก Pro ไม่ขายผ่านตะกร้า
+    if (book.category === 'exam') {
+        return (
+            <div className="bg-white border rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div>
+                    <p className="text-sm text-slate-500 mb-1">E-Book (ไฟล์ PDF)</p>
+                    <div className="text-2xl font-bold text-amber-700">ฟรีสำหรับสมาชิก Pro</div>
+                </div>
+                <div className="w-full sm:w-auto sm:min-w-[260px]">
+                    <EbookProDownload bookId={book.id} size="lg" />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white border rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">

@@ -1,4 +1,6 @@
 import { Book } from "@/lib/education-types";
+import { displayBookTitle, isEbookBook, isTemplateExamCover } from "@/lib/book-cover";
+import { ExamBookCover } from "@/components/education/brand-cover";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -34,13 +36,19 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                 {/* Left Column: Image */}
                 <div className="md:col-span-4 lg:col-span-3">
                     <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-xl bg-slate-100 mb-6">
-                        <img
-                            src={book.coverUrl}
-                            alt={book.title}
-                            className="object-cover w-full h-full"
-                        />
-                        {book.isDigital && (
-                            <Badge className="absolute top-4 right-4 bg-blue-600 text-lg px-3 py-1">E-Book</Badge>
+                        {isTemplateExamCover(book.coverUrl) ? (
+                            <ExamBookCover title={book.title} description={book.description} isEbook={isEbookBook(book)} />
+                        ) : (
+                            <>
+                                <img
+                                    src={book.coverUrl}
+                                    alt={book.title}
+                                    className="object-cover w-full h-full"
+                                />
+                                {isEbookBook(book) && (
+                                    <Badge className="absolute top-4 right-4 bg-blue-600 text-lg px-3 py-1">E-Book</Badge>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
@@ -48,7 +56,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                 {/* Right Column: Details */}
                 <div className="md:col-span-8 lg:col-span-9 space-y-6">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{book.title}</h1>
+                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{displayBookTitle(book.title)}</h1>
                         <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
                             <span className="bg-slate-100 px-3 py-1 rounded-full text-slate-700 font-medium">
                                 ผู้แต่ง: {book.author}
@@ -67,7 +75,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                     <div className="prose prose-slate max-w-none">
                         <h3 className="text-lg font-semibold">รายละเอียดหนังสือ</h3>
                         <p className="whitespace-pre-line text-slate-600 leading-relaxed">
-                            {book.description}
+                            {displayBookTitle(book.description || '')}
                         </p>
                     </div>
 
@@ -87,7 +95,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                         )}
                         <div>
                             <p className="text-xs text-slate-400">รูปแบบ</p>
-                            <p className="font-medium">{book.isDigital ? "ไฟล์ PDF" : "เล่มจริง"}</p>
+                            <p className="font-medium">{isEbookBook(book) ? "E-Book (ไฟล์ PDF)" : "เล่มจริง"}</p>
                         </div>
                     </div>
 
@@ -107,21 +115,25 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                         {relatedBooks.map((relatedBook) => (
                             <Link key={relatedBook.id} href={`/books/${relatedBook.id}`} className="group">
                                 <div className="relative aspect-[2/3] w-full bg-slate-100 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
+                                    {isTemplateExamCover(relatedBook.coverUrl) ? (
+                                        <ExamBookCover title={relatedBook.title} description={relatedBook.description} isEbook={isEbookBook(relatedBook)} compact />
+                                    ) : (
                                     <img
                                         src={relatedBook.coverUrl}
                                         alt={relatedBook.title}
                                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                                     />
-                                    {relatedBook.isDigital && (
+                                    )}
+                                    {isEbookBook(relatedBook) && !isTemplateExamCover(relatedBook.coverUrl) && (
                                         <Badge className="absolute top-1.5 right-1.5 bg-blue-600 text-[10px] px-1.5 py-0.5 shadow-sm">E-Book</Badge>
                                     )}
                                 </div>
                                 <div className="mt-2 px-0.5">
                                     <h3 className="font-medium text-sm leading-tight line-clamp-2 text-slate-800 group-hover:text-[#0B3979] transition-colors">
-                                        {relatedBook.title}
+                                        {displayBookTitle(relatedBook.title)}
                                     </h3>
                                     <p className="text-sm font-bold text-[#0B3979] mt-1">
-                                        ฿{relatedBook.price.toLocaleString()}
+                                        {relatedBook.category === 'exam' ? 'ฟรีสำหรับสมาชิก Pro' : `฿${relatedBook.price.toLocaleString()}`}
                                     </p>
                                 </div>
                             </Link>

@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import Image, { StaticImageData } from 'next/image';
-import { BrandCover } from '@/components/education/brand-cover';
+import { BrandCover, ExamBookCover } from '@/components/education/brand-cover';
+import { displayBookTitle, isTemplateExamCover } from '@/lib/book-cover';
 import { isPlaceholderCover } from '@/lib/cover';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,8 @@ interface BookCardProps {
     href?: string;
     /** ปุ่มเพิ่มใต้ราคา เช่น ปุ่มดาวน์โหลดอีบุ๊กของผู้ที่ซื้อแล้ว */
     footerExtra?: React.ReactNode;
+    /** แสดงแทนราคา เช่น "ฟรีสำหรับสมาชิก Pro" */
+    priceLabel?: string;
 }
 
 export function BookCard({
@@ -44,7 +47,9 @@ export function BookCard({
     pageCount,
     href = '#',
     footerExtra,
+    priceLabel,
 }: BookCardProps) {
+    const examCover = isTemplateExamCover(coverUrl);
     // ส่วนลดคำนวณจากราคาจริง ไม่ใช่ค่าที่กรอกมือ — กันกรณี originalPrice ต่ำกว่า price
     const discountPercent =
         originalPrice && originalPrice > price
@@ -56,7 +61,9 @@ export function BookCard({
             {/* Image Section */}
             <Link href={href}>
                 <div className="relative aspect-[2/3] w-full bg-slate-100 overflow-hidden">
-                    {coverUrl && !(typeof coverUrl === 'string' && isPlaceholderCover(coverUrl)) ? (
+                    {examCover ? (
+                        <ExamBookCover title={title} description={description} isEbook={isEbook} />
+                    ) : coverUrl && !(typeof coverUrl === 'string' && isPlaceholderCover(coverUrl)) ? (
                         <Image
                             src={coverUrl}
                             alt={title}
@@ -69,7 +76,7 @@ export function BookCard({
                     ) : (
                         <BrandCover title={title} label={isEbook ? 'E-Book' : 'Book'} />
                     )}
-                    {isEbook && (
+                    {isEbook && !examCover && (
                         <Badge className="absolute top-2 right-2 bg-[#0B3979] hover:bg-[#082a5a]">E-Book</Badge>
                     )}
                     {discountPercent > 0 && (
@@ -97,15 +104,15 @@ export function BookCard({
 
                 {/* Title */}
                 <Link href={href} className="w-full">
-                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-2 min-h-[3.5rem] text-slate-900 group-hover:text-[#0B3979] transition-colors">
-                        {title}
+                    <h3 className="font-bold text-lg leading-snug mb-2 min-h-[3.5rem] text-slate-900 group-hover:text-[#0B3979] transition-colors">
+                        {displayBookTitle(title)}
                     </h3>
                 </Link>
 
                 {/* Description */}
                 {description && (
                     <p className="text-sm text-slate-500 mb-2 line-clamp-2">
-                        {description}
+                        {displayBookTitle(description)}
                     </p>
                 )}
 
@@ -129,7 +136,9 @@ export function BookCard({
               <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col items-start pt-4">
                     <div className="flex items-baseline gap-2">
-                        <span className="text-lg font-bold text-[#082a5a]">฿{price.toLocaleString()}</span>
+                        {priceLabel
+                            ? <span className="text-sm font-semibold text-amber-700">{priceLabel}</span>
+                            : <span className="text-lg font-bold text-[#082a5a]">฿{price.toLocaleString()}</span>}
                         {discountPercent > 0 && originalPrice && (
                             <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
                         )}

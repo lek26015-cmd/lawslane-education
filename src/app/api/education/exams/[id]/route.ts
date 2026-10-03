@@ -24,6 +24,10 @@ export async function GET(
         }
 
         const data = doc.data()!;
+
+        // แบบร่างยังไม่เผยแพร่ — ทำเหมือนไม่มีชุดนี้
+
+        if (data.status === 'draft') return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
         const result: any = {
             id: doc.id,
             title: data.title || '',

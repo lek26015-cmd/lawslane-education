@@ -35,6 +35,8 @@ interface ExamAttempt {
     passed: boolean;
     answers: AnswerResult[];
     completedAt: string;
+    /** AI ตรวจข้อเขียนล่มตอนส่ง — ข้อเขียนเป็น "ยังไม่ได้ตรวจ" และไม่นับในคะแนนรวม */
+    aiGradingFailed?: boolean;
 }
 
 export default function ExamResultPage({ params }: { params: Promise<{ id: string }> }) {
@@ -119,6 +121,14 @@ export default function ExamResultPage({ params }: { params: Promise<{ id: strin
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
+            {attempt.aiGradingFailed && (
+                <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                    ระบบ AI ตรวจข้อเขียนขัดข้องชั่วคราวระหว่างที่คุณส่งข้อสอบ ข้อเขียนจึงยังไม่ได้ตรวจและไม่นับในคะแนนรวม
+                    คำตอบของคุณถูกบันทึกไว้แล้ว — เทียบกับแนวคำตอบได้ที่{' '}
+                    <Link href={`/exams/${id}/answers`} className="underline">หน้าเฉลย</Link>
+                </div>
+            )}
+
             {/* Score Hero */}
             <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}

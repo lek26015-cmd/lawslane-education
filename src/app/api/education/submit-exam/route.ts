@@ -6,6 +6,11 @@ import { stripAnswerFromQuestion, formatExamText } from '@/lib/exam-utils';
 import { requireUser } from '@/lib/user-auth';
 import { consumeExamAttempt, EntitlementError, getEntitlement } from '@/lib/plan-entitlement';
 
+// ตรวจข้อเขียนด้วย AI ทุกข้อพร้อมกันใช้เวลาได้หลายสิบวินาที — ค่าเริ่มต้นของ Vercel
+// ตัดฟังก์ชันทิ้งก่อน ผู้ใช้เห็นแค่ "เกิดข้อผิดพลาด" ทั้งที่ยังตรวจไม่เสร็จ
+// บางชุดมีข้อเขียนถึง 80 ข้อ (ตรวจ production 2026-10-03) จึงเผื่อถึง 300 วินาที
+export const maxDuration = 300;
+
 interface SubmitAnswerInput {
     questionId: string;
     answer: string | number;
@@ -41,6 +46,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
         }
         const examData = examDoc.data()!;
+        if (examData.status === 'draft') {
+            return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
+        }
 
         // สิทธิ์ตามแพ็กเกจ (แอดมินตั้งที่หลังบ้าน) — ชุดที่เริ่มทำไปแล้ววันนี้ไม่นับซ้ำ
         // ด่านนี้กันการยิง API ตรงข้ามหน้าเริ่มทำข้อสอบ
@@ -76,13 +84,15 @@ export async function POST(request: NextRequest) {
                 options = q.choices.map((c: any) => typeof c === 'string' ? c : c.text || c);
                 hasRealChoices = true;
                 if (q.correctAnswer) {
-                    const match = q.correctAnswer.match(/\((\d+)\)/);
+                    const match = String(q.correctAnswer).match(/\((\d+)\)/);
                     if (match) correctOptionIndex = parseInt(match[1]) - 1;
                 }
             }
 
             const finalType = (rawType && hasRealChoices) ? 'MULTIPLE_CHOICE' : 'ESSAY';
-            const { question: cleanText } = stripAnswerFromQuestion(q.questionText || '');
+            // ธงคำตอบบางข้อติดมากับตัวคำถามจาก OCR — หน้าเฉลยใช้ extractedAnswer อยู่แล้ว
+            // ตอนตรวจต้องใช้ด้วย ไม่งั้น AI ได้ธงว่างทั้งที่ข้อนั้นมีเฉลย
+            const { question: cleanText, extractedAnswer } = stripAnswerFromQuestion(q.questionText || '');
 
             return {
                 id: qDoc.id,
@@ -90,7 +100,7 @@ export async function POST(request: NextRequest) {
                 type: finalType,
                 options,
                 correctOptionIndex,
-                correctAnswerText: q.modelAnswer || '',
+                correctAnswerText: formatExamText(q.modelAnswer || extractedAnswer || ''),
                 explanation: q.explanation || '',
                 subject: q.tags?.[0] || '',
             };
@@ -100,14 +110,19 @@ export async function POST(request: NextRequest) {
         // only essay questions are graded concurrently — sequentially, 5 essays at
         // ~4s each was ~20s; grading them in groups instead of one-at-a-time cuts
         // that roughly by the group size. See LAWSLANE-PLAN-01 2.6.
-        const ESSAY_CONCURRENCY = 4;
+        const ESSAY_CONCURRENCY = 10;
         const gradedAnswers: any[] = new Array(questions.length);
         const essayJobs: { index: number; question: typeof questions[number]; submittedAnswer: SubmitAnswerInput }[] = [];
 
         questions.forEach((question, index) => {
             const submittedAnswer = answers.find(a => a.questionId === question.id);
+            // หน้าทำข้อสอบส่งทุกข้อมา ข้อที่ไม่ได้ตอบเป็น '' — ไม่ต้องเสียค่า AI ตรวจคำตอบว่าง
+            const isBlank = !submittedAnswer
+                || submittedAnswer.answer === ''
+                || submittedAnswer.answer === null
+                || (typeof submittedAnswer.answer === 'string' && submittedAnswer.answer.trim() === '');
 
-            if (!submittedAnswer) {
+            if (isBlank) {
                 gradedAnswers[index] = {
                     questionId: question.id,
                     questionText: question.text,
@@ -123,7 +138,7 @@ export async function POST(request: NextRequest) {
 
             if (question.type === 'MULTIPLE_CHOICE') {
                 const result = gradeMultipleChoice(
-                    submittedAnswer.answer as number,
+                    Number(submittedAnswer.answer),
                     question.correctOptionIndex || 0,
                     question.explanation
                 );
@@ -166,6 +181,7 @@ export async function POST(request: NextRequest) {
             essayJobs.length = 0;
         }
 
+        let aiFailed = false;
         for (let i = 0; i < essayJobs.length; i += ESSAY_CONCURRENCY) {
             const group = essayJobs.slice(i, i + ESSAY_CONCURRENCY);
             await Promise.all(group.map(async ({ index, question, submittedAnswer }) => {
@@ -191,16 +207,18 @@ export async function POST(request: NextRequest) {
                     };
                 } catch (aiError) {
                     console.error('AI grading error:', aiError);
-                    // Fallback: give partial score if answer is not empty
-                    const hasAnswer = (submittedAnswer.answer as string)?.trim().length > 0;
+                    // AI ล่ม (คีย์ผิด/โควตาหมด/timeout) — ไม่เดาคะแนนให้ ทั้ง 0 และ 50 ไม่ยุติธรรม
+                    // ทำเป็น "ยังไม่ได้ตรวจ" และไม่นับในคะแนนรวม เหมือนแพ็กเกจที่ไม่รวม AI
+                    aiFailed = true;
                     gradedAnswers[index] = {
                         questionId: question.id,
                         questionText: question.text,
                         questionType: 'ESSAY',
                         studentAnswer: submittedAnswer.answer,
                         correctAnswer: question.correctAnswerText,
-                        aiScore: hasAnswer ? 50 : 0,
-                        aiFeedback: 'ไม่สามารถตรวจด้วย AI ได้ในขณะนี้ ให้คะแนนเบื้องต้น',
+                        aiScore: null,
+                        ungraded: true,
+                        aiFeedback: 'ระบบ AI ตรวจข้อเขียนขัดข้องชั่วคราว ข้อนี้จึงยังไม่ได้ตรวจและไม่นับในคะแนนรวม — เทียบคำตอบกับแนวคำตอบได้จากหน้าเฉลย',
                         subject: question.subject,
                     };
                 }
@@ -234,6 +252,7 @@ export async function POST(request: NextRequest) {
             timeSpentMinutes: validStart ? Math.round((Date.now() - validStart.getTime()) / 60000) : 0,
             // Firestore ไม่รับ undefined — ตัดฟิลด์ที่ไม่มีค่าทิ้ง
             answers: JSON.parse(JSON.stringify(gradedAnswers)),
+            ...(aiFailed ? { aiGradingFailed: true } : {}),
             startedAt: validStart,
             completedAt: admin.firestore.FieldValue.serverTimestamp(),
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -246,6 +265,7 @@ export async function POST(request: NextRequest) {
             maxScore: 100,
             passingScore,
             passed,
+            aiGradingFailed: aiFailed,
             answers: gradedAnswers
         });
 

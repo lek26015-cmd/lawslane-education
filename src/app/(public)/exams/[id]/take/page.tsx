@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Clock, Send, Loader2, CheckCircle, Circle, AlertCircle } from 'lucide-react';
@@ -58,9 +58,13 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
     const [startedAt] = useState(new Date().toISOString());
+    // กันส่งซ้ำ — ตัวจับเวลายังเดินระหว่างรอ AI ตรวจ ถ้าหมดเวลาตอนนั้นจะยิงส่งรอบสอง
+    const submittingRef = useRef(false);
+    // ให้ตัวจับเวลาเรียก handleSubmit ตัวล่าสุด (ที่เห็น answers ล่าสุด)
+    const submitRef = useRef<() => void>(() => {});
 
     const { user } = useUser();
-    const { used, dailyLimit, isLimitReached, recordExamAttempt } = useExamLimit();
+    const { used, dailyLimit, isPremium, isLimitReached, recordExamAttempt } = useExamLimit();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -70,7 +74,8 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
                     const data = await response.json();
                     setExam(data);
                     setQuestions(data.questions || []);
-                    setTimeLeft(data.durationMinutes * 60);
+                    const minutes = Number(data.durationMinutes) > 0 ? Number(data.durationMinutes) : 180;
+                    setTimeLeft(minutes * 60);
                 } else {
                     toast({ title: "ไม่พบข้อสอบ", variant: "destructive" });
                     router.push('/exams');
@@ -91,23 +96,18 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
     }, [exam, id, recordExamAttempt]);
 
 
-    // Timer
+    // Timer — นับถอยหลังอย่างเดียว ส่งอัตโนมัติแยกไว้อีก effect
+    // (เดิมเรียก handleSubmit ใน setState updater ซึ่ง React อาจเรียกซ้ำได้)
+    const timerRunning = !!exam && timeLeft > 0;
     useEffect(() => {
-        if (timeLeft <= 0 || !exam) return;
-
-        const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev <= 1) {
-                    clearInterval(timer);
-                    handleSubmit();
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
+        if (!timerRunning) return;
+        const timer = setInterval(() => setTimeLeft(prev => Math.max(0, prev - 1)), 1000);
         return () => clearInterval(timer);
-    }, [timeLeft, exam]);
+    }, [timerRunning]);
+
+    useEffect(() => {
+        if (exam && timeLeft === 0 && questions.length > 0) submitRef.current();
+    }, [exam, timeLeft, questions.length]);
 
     // Show paywall if limit reached (after all hooks)
     if (!isLoading && isLimitReached) {
@@ -125,6 +125,8 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
     };
 
     const handleSubmit = async () => {
+        if (submittingRef.current) return;
+        submittingRef.current = true;
         setIsSubmitting(true);
 
         try {
@@ -151,18 +153,29 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
             if (response.ok) {
                 const result = await response.json();
                 router.push(`/exams/${id}/result?attemptId=${result.attemptId}`);
-            } else if (response.status === 403) {
-                const body = await response.json().catch(() => ({}));
-                toast({ title: body.error || 'ใช้สิทธิ์ทำข้อสอบครบแล้ววันนี้', variant: "destructive" });
-                setIsSubmitting(false);
-            } else {
-                throw new Error('Submit failed');
+                return;
             }
+
+            // บอกสาเหตุจริง — เดิมทุกกรณีขึ้นแค่ "เกิดข้อผิดพลาด" ผู้ใช้/แอดมินไม่รู้ว่าพังตรงไหน
+            const body = await response.json().catch(() => ({}));
+            const description =
+                response.status === 403 ? (body.error || 'ใช้สิทธิ์ทำข้อสอบครบแล้ววันนี้')
+                : response.status === 401 ? 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่ คำตอบของคุณยังอยู่ในหน้านี้'
+                : response.status === 504 ? 'ระบบตรวจข้อสอบใช้เวลานานเกินไป กรุณากดส่งอีกครั้ง คำตอบของคุณยังอยู่ในหน้านี้'
+                : (body.error ? `${body.error} (${response.status})` : `เซิร์ฟเวอร์ตอบกลับ ${response.status} กรุณากดส่งอีกครั้ง`);
+            toast({ title: 'ส่งข้อสอบไม่สำเร็จ', description, variant: "destructive" });
         } catch (error) {
-            toast({ title: "เกิดข้อผิดพลาด", variant: "destructive" });
-            setIsSubmitting(false);
+            console.error('Submit exam error:', error);
+            toast({
+                title: 'ส่งข้อสอบไม่สำเร็จ',
+                description: 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วกดส่งอีกครั้ง คำตอบของคุณยังอยู่ในหน้านี้',
+                variant: "destructive",
+            });
         }
+        submittingRef.current = false;
+        setIsSubmitting(false);
     };
+    submitRef.current = handleSubmit;
 
     if (isLoading) {
         return (
@@ -212,6 +225,9 @@ function TakeExamPageContent({ params }: { params: Promise<{ id: string }> }) {
                     </div>
                 </div>
             </div>
+
+            {/* โควตาข้อสอบต่อวันตามแพ็กเกจ — เดิม component นี้มีอยู่แต่ไม่ได้แสดงที่ไหนเลย */}
+            <ExamLimitBanner used={used} dailyLimit={dailyLimit} isPremium={isPremium} />
 
             {/* Question Navigation */}
             <div className="bg-white rounded-xl border p-4">
