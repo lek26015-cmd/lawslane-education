@@ -65,6 +65,9 @@ export function ExamBookCover({ title, description, isEbook = true, compact = fa
     const en = SUBJECT_EN[info.code] ?? 'LAW';
     const gold = 'linear-gradient(180deg, #f3d98b, #c99a3a)';
     const lines = coverLines(info.code, info.subject);
+    // ริบบิ้นกว้าง 19% — คำอังกฤษยาวสุด (CONSTITUTIONAL, ADMINISTRATIVE) ต้องย่อให้อยู่ในกรอบ
+    const enWord = Math.max(...en.split(/\s+/).map((w) => w.length));
+    const enSize = Math.min(2.6, 15.5 / (enWord * 0.68));
     // ขนาดตัวอักษรตามบรรทัดที่ยาวที่สุด ให้ทุกบรรทัดพอดีความกว้าง (~75cqw) — อักษรไทยกว้างราว 0.55em
     const longest = Math.max(...lines.map((l) => l.length));
     const titleSize = Math.min(9, 75 / (longest * 0.55));
@@ -91,7 +94,7 @@ export function ExamBookCover({ title, description, isEbook = true, compact = fa
                 style={{ background: gold, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%)' }}
             >
                 <Scale className="h-[6cqw] w-[6cqw]" strokeWidth={1.75} />
-                <span className="text-[2.6cqw] font-bold leading-tight tracking-wide">{en}</span>
+                <span className="w-full px-[1cqw] font-bold leading-tight break-words" style={{ fontSize: `${enSize}cqw` }}>{en}</span>
                 {isEbook && <span className="mt-[0.5cqw] rounded-sm bg-[#2a1d05] px-[1.2cqw] py-[0.3cqw] text-[2.6cqw] font-black tracking-wider text-[#f3d98b]">E-BOOK</span>}
             </div>
 

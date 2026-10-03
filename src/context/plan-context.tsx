@@ -11,6 +11,7 @@ export type PlanEntitlements = {
     aiGrading: boolean;
     weaknessAnalysis: boolean;
     adFree: boolean;
+    freeEbooks?: boolean;
 };
 
 export type EntitlementResponse = {

@@ -133,7 +133,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ id:
                                         {displayBookTitle(relatedBook.title)}
                                     </h3>
                                     <p className="text-sm font-bold text-[#0B3979] mt-1">
-                                        ฿{relatedBook.price.toLocaleString()}
+                                        {relatedBook.category === 'exam' ? 'ฟรีสำหรับสมาชิก Pro' : `฿${relatedBook.price.toLocaleString()}`}
                                     </p>
                                 </div>
                             </Link>

@@ -28,6 +28,8 @@ interface BookCardProps {
     href?: string;
     /** ปุ่มเพิ่มใต้ราคา เช่น ปุ่มดาวน์โหลดอีบุ๊กของผู้ที่ซื้อแล้ว */
     footerExtra?: React.ReactNode;
+    /** แสดงแทนราคา เช่น "ฟรีสำหรับสมาชิก Pro" */
+    priceLabel?: string;
 }
 
 export function BookCard({
@@ -45,6 +47,7 @@ export function BookCard({
     pageCount,
     href = '#',
     footerExtra,
+    priceLabel,
 }: BookCardProps) {
     const examCover = isTemplateExamCover(coverUrl);
     // ส่วนลดคำนวณจากราคาจริง ไม่ใช่ค่าที่กรอกมือ — กันกรณี originalPrice ต่ำกว่า price
@@ -133,7 +136,9 @@ export function BookCard({
               <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col items-start pt-4">
                     <div className="flex items-baseline gap-2">
-                        <span className="text-lg font-bold text-[#082a5a]">฿{price.toLocaleString()}</span>
+                        {priceLabel
+                            ? <span className="text-sm font-semibold text-amber-700">{priceLabel}</span>
+                            : <span className="text-lg font-bold text-[#082a5a]">฿{price.toLocaleString()}</span>}
                         {discountPercent > 0 && originalPrice && (
                             <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
                         )}
