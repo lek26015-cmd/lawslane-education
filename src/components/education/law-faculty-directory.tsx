@@ -6,6 +6,7 @@ import { Search } from 'lucide-react';
 import {
     FACULTY_GROUP_LABELS,
     LAW_FACULTIES,
+    tcasFacultyUrl,
     type FacultyGroup,
 } from '@/lib/law-faculties';
 
@@ -75,16 +76,22 @@ export function LawFacultyDirectory() {
                         </div>
                         {f.tcas68Subjects ? (
                             <div className="mt-3">
-                                <p className="text-xs font-medium text-slate-500 mb-1.5">วิชาที่ใช้ รอบ 3 (TCAS68)</p>
+                                <p className="text-xs font-medium text-slate-500 mb-1.5">วิชาที่ใช้ รอบ 3 ปีก่อนหน้า (TCAS68)</p>
                                 <div className="flex flex-wrap gap-1">
                                     {f.tcas68Subjects.map((s) => (
                                         <span key={s} className="px-2 py-0.5 rounded-md bg-blue-50 text-[#0B3979] text-xs">{s}</span>
                                     ))}
                                 </div>
                             </div>
-                        ) : (
-                            <p className="text-xs text-slate-400 mt-3">ดูเกณฑ์ปีล่าสุดที่ TCAS</p>
-                        )}
+                        ) : null}
+                        <a
+                            href={tcasFacultyUrl(f)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block mt-3 text-xs text-[#0B3979] underline"
+                        >
+                            ดูเกณฑ์ปีล่าสุดที่ TCAS ↗
+                        </a>
                     </div>
                 ))}
                 {filtered.length === 0 && (

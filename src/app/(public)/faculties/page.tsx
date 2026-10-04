@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/education/page-header';
 import { LawFacultyDirectory } from '@/components/education/law-faculty-directory';
-import { LAW_FACULTIES, TCAS_LAW_URL } from '@/lib/law-faculties';
+import { LAW_FACULTIES, MYTCAS_URL, TCAS70_ROUND3, TCAS_LAW_URL } from '@/lib/law-faculties';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -20,6 +20,23 @@ export default function FacultiesPage() {
                 backLink="/"
                 backLabel="กลับหน้าหลัก"
             />
+            <section className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+                <h2 className="font-bold text-[#0B3979] mb-1">TCAS70 — สำหรับเข้าเรียนปีการศึกษา 2570</h2>
+                <p className="text-sm text-slate-600 mb-3">กำหนดการรอบ 3 Admission (รอบที่คนส่วนใหญ่ยื่นคะแนนสอบกลาง)</p>
+                <dl className="grid sm:grid-cols-3 gap-3 text-sm">
+                    {TCAS70_ROUND3.map((r) => (
+                        <div key={r.label} className="bg-white rounded-xl p-3 border border-blue-100">
+                            <dt className="text-xs text-slate-500">{r.label}</dt>
+                            <dd className="font-medium text-slate-900">{r.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+                <p className="text-xs text-slate-500 mt-3">
+                    เกณฑ์รายคณะของ TCAS70 ทยอยประกาศอยู่ จึงยังไม่แสดงในหน้านี้ กดดูที่การ์ดของแต่ละมหาวิทยาลัยด้านล่าง
+                    ส่วนกำหนดการรอบอื่นและรายละเอียดอย่างเป็นทางการดูที่{' '}
+                    <a href={MYTCAS_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">mytcas.com</a>
+                </p>
+            </section>
             <section className="grid md:grid-cols-2 gap-4">
                 <div className="bg-white border border-slate-200 rounded-2xl p-5">
                     <h2 className="font-bold text-slate-900 mb-3">TCAS มี 4 รอบ</h2>
@@ -53,7 +70,7 @@ export default function FacultiesPage() {
             <h2 className="text-xl font-bold text-slate-900">รายชื่อคณะนิติศาสตร์ทั้งหมด</h2>
             <LawFacultyDirectory />
             <p className="text-xs text-slate-500">
-                รายชื่อจากระบบ TCAS ทั้งหมด {LAW_FACULTIES.length} แห่ง วิชาที่แสดงเป็นข้อมูลรอบ 3 ปี TCAS68 เฉพาะมหาวิทยาลัยที่ตรวจข้อมูลได้ตรงกันหลายแหล่ง เกณฑ์ สัดส่วนคะแนน และจำนวนรับเปลี่ยนทุกปี
+                รายชื่อจากระบบ TCAS ทั้งหมด {LAW_FACULTIES.length} แห่ง วิชาที่แสดงเป็นข้อมูลรอบ 3 ของปี TCAS68 (ปีก่อนหน้า) เฉพาะมหาวิทยาลัยที่ตรวจข้อมูลได้ตรงกันหลายแหล่ง ใช้ดูแนวทางเท่านั้น เกณฑ์ สัดส่วนคะแนน และจำนวนรับเปลี่ยนทุกปี
                 โปรดตรวจรายละเอียดล่าสุดที่{' '}
                 <a href={TCAS_LAW_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">
                     tcas.in.th

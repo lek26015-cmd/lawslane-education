@@ -63,5 +63,20 @@ export const LAW_FACULTIES: LawFaculty[] = [
   { tcasId: 109, university: 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', group: 'private' },
 ];
 
+// ลิงก์หน้าคณะนิติศาสตร์ของแต่ละมหาวิทยาลัยบน tcas.in.th (Dek-D TCAS Starter ไม่ใช่เว็บทางการของ ทปอ.)
+// หน้านั้นอัปเดตตามปีล่าสุดเสมอ จึงใช้เป็นแหล่งเกณฑ์ปีปัจจุบันแทนการเก็บเกณฑ์ไว้ในโค้ด · ตรวจแล้ว 40/40 ลิงก์ตอบ 200 (2026-10-04)
+export function tcasFacultyUrl(f: LawFaculty): string {
+  return `https://tcas.in.th/search/faculty-group/${encodeURIComponent('กลุ่มคณะนิติศาสตร์')}.13/uni/${encodeURIComponent(f.university)}.${f.tcasId}/`;
+}
+
+// ปฏิทินรอบ 3 Admission ของ TCAS70 (ปีการศึกษา 2570) — ตรงกันทั้ง mytcas.com และเว็บข่าว/ติวอิสระ ตรวจเมื่อ 2026-10-04
+// รอบอื่นยังไม่ใส่เพราะสรุปจากแหล่งไม่สอดคล้องกัน ให้ดูที่ mytcas.com
+export const TCAS70_ROUND3 = [
+  { label: 'รับสมัคร', value: '7–11 พ.ค. 2570 (เพิ่มเติม 12–13 พ.ค.)' },
+  { label: 'ประกาศผล', value: '22 พ.ค. และ 27 พ.ค. 2570' },
+  { label: 'ยืนยันสิทธิ์', value: '22–23 พ.ค. 2570' },
+];
+export const MYTCAS_URL = 'https://www.mytcas.com/';
+
 export const TCAS_LAW_URL =
   'https://tcas.in.th/search/faculty-group/%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%84%E0%B8%93%E0%B8%B0%E0%B8%99%E0%B8%B4%E0%B8%95%E0%B8%B4%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C.13/';
