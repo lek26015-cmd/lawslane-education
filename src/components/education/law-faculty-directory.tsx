@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Image from 'next/image';
 import { Search } from 'lucide-react';
 import {
     FACULTY_GROUP_LABELS,
@@ -13,6 +12,22 @@ import {
 } from '@/lib/law-faculties';
 
 type Filter = 'all' | FacultyGroup;
+
+const MONOGRAM_STYLES: Record<FacultyGroup, string> = {
+    state: 'bg-blue-50 text-[#0B3979]',
+    rajabhat: 'bg-amber-50 text-amber-700',
+    private: 'bg-slate-100 text-slate-600',
+};
+
+// อักษรตัวแรกของชื่อที่แยกสถาบันได้ — ตัดคำนำหน้าทั่วไป (และ "ราชภัฏ") แล้วข้ามสระนำ เ แ โ ใ ไ
+// ใช้แทนโลโก้ จึงไม่ต้องใช้เครื่องหมายของมหาวิทยาลัย · ชื่อเต็มแสดงข้าง ๆ เสมอ จึงซ้ำกันได้
+function monogram(name: string): string {
+    const core = name
+        .replace(/^(มหาวิทยาลัย|วิทยาลัย|สถาบัน)/, '')
+        .replace(/^ราชภัฏ/, '')
+        .replace(/^[เแโใไ]+/, '');
+    return Array.from(core)[0] ?? Array.from(name)[0];
+}
 
 const STATUS_STYLES: Record<Tcas70Status, string> = {
     round3: 'bg-emerald-50 text-emerald-700',
@@ -69,13 +84,12 @@ export function LawFacultyDirectory() {
                 {filtered.map((f) => (
                     <div key={f.id} className="bg-white border border-slate-200 rounded-xl p-4">
                         <div className="flex items-center gap-3">
-                            <Image
-                                src={`/universities/${f.id}.png`}
-                                alt={`ตราสัญลักษณ์${f.university}`}
-                                width={48}
-                                height={48}
-                                className="w-12 h-12 object-contain shrink-0"
-                            />
+                            <div
+                                aria-hidden="true"
+                                className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-lg font-bold ${MONOGRAM_STYLES[f.group]}`}
+                            >
+                                {monogram(f.university)}
+                            </div>
                             <div className="min-w-0">
                                 <h3 className="text-sm">
                                     <span className="font-bold text-slate-900">คณะนิติศาสตร์</span>{' '}
