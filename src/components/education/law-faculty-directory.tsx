@@ -6,11 +6,19 @@ import { Search } from 'lucide-react';
 import {
     FACULTY_GROUP_LABELS,
     LAW_FACULTIES,
-    tcasFacultyUrl,
+    TCAS70_STATUS_LABELS,
+    tcasUniversityUrl,
+    type Tcas70Status,
     type FacultyGroup,
 } from '@/lib/law-faculties';
 
 type Filter = 'all' | FacultyGroup;
+
+const STATUS_STYLES: Record<Tcas70Status, string> = {
+    round3: 'bg-emerald-50 text-emerald-700',
+    listed: 'bg-slate-100 text-slate-600',
+    pending: 'bg-amber-50 text-amber-700',
+};
 
 export function LawFacultyDirectory() {
     const [query, setQuery] = useState('');
@@ -59,10 +67,10 @@ export function LawFacultyDirectory() {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filtered.map((f) => (
-                    <div key={f.tcasId} className="bg-white border border-slate-200 rounded-xl p-4">
+                    <div key={f.id} className="bg-white border border-slate-200 rounded-xl p-4">
                         <div className="flex items-center gap-3">
                             <Image
-                                src={`/universities/${f.tcasId}.png`}
+                                src={`/universities/${f.id}.png`}
                                 alt={`ตราสัญลักษณ์${f.university}`}
                                 width={48}
                                 height={48}
@@ -74,9 +82,12 @@ export function LawFacultyDirectory() {
                                 <p className="text-xs text-[#0B3979] mt-1">{FACULTY_GROUP_LABELS[f.group]}</p>
                             </div>
                         </div>
+                        <p className={`inline-block mt-3 px-2 py-0.5 rounded-md text-xs ${STATUS_STYLES[f.tcas70]}`}>
+                            TCAS70: {TCAS70_STATUS_LABELS[f.tcas70]}
+                        </p>
                         {f.tcas68Subjects ? (
                             <div className="mt-3">
-                                <p className="text-xs font-medium text-slate-500 mb-1.5">วิชาที่ใช้ รอบ 3 ปีก่อนหน้า (TCAS68)</p>
+                                <p className="text-xs font-medium text-slate-500 mb-1.5">วิชารอบ 3 ปีก่อนหน้า (TCAS68 · ไม่ใช่ข้อมูลทางการ)</p>
                                 <div className="flex flex-wrap gap-1">
                                     {f.tcas68Subjects.map((s) => (
                                         <span key={s} className="px-2 py-0.5 rounded-md bg-blue-50 text-[#0B3979] text-xs">{s}</span>
@@ -85,12 +96,12 @@ export function LawFacultyDirectory() {
                             </div>
                         ) : null}
                         <a
-                            href={tcasFacultyUrl(f)}
+                            href={tcasUniversityUrl(f)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-block mt-3 text-xs text-[#0B3979] underline"
                         >
-                            ดูเกณฑ์ปีล่าสุดที่ TCAS ↗
+                            ดูหลักสูตรและเกณฑ์ที่ mytcas ↗
                         </a>
                     </div>
                 ))}

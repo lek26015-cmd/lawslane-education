@@ -1,16 +1,25 @@
-// รายชื่อสถาบันที่เปิดสอนนิติศาสตร์ในระบบ TCAS (40 แห่ง)
-// ที่มา: https://tcas.in.th/search/faculty-group/กลุ่มคณะนิติศาสตร์.13/ — ตรวจเมื่อ 2026-10-04
-// โลโก้: public/universities/<tcasId>.png (200x200) ดาวน์โหลดจาก www0.dek-d.com/assets/admcal/images/2024/ เมื่อ 2026-10-04 · เป็นเครื่องหมายของแต่ละมหาวิทยาลัย ใช้เพื่อระบุสถาบันเท่านั้น
-// tcasId = รหัสมหาวิทยาลัยใน TCAS · ต้องตรวจซ้ำทุกปีการศึกษา (บางแห่งเปลี่ยนชื่อ/ปิด/เปิดใหม่)
+// รายชื่อสถาบันที่เปิดสอนนิติศาสตร์ — ใช้ข้อมูลทางการจาก mytcas.com (ทปอ.) เป็นหลัก
+// ที่มา: https://course.mytcas.com (ไฟล์ courses.json / rounds/<programId>.json ของระบบ) · ตรวจเมื่อ 2026-10-04
+// id = รหัสสถาบันของ mytcas (ใช้เป็นชื่อไฟล์โลโก้ public/universities/<id>.png ดาวน์โหลดจาก assets.mytcas.com/i/logo/)
+// โลโก้เป็นเครื่องหมายของแต่ละมหาวิทยาลัย ใช้เพื่อระบุสถาบันเท่านั้น
+// รายชื่อตั้งต้นมาจาก tcas.in.th (Dek-D ไม่ใช่เว็บทางการ) แล้วตรวจ/เพิ่มด้วยข้อมูลทางการ
+// ต้องตรวจซ้ำทุกปีการศึกษา — สถานะ tcas70 เป็นภาพ ณ วันที่ตรวจ ข้อมูลจริงเปลี่ยนตลอด ให้ดูที่ลิงก์ mytcas เสมอ
 
 export type FacultyGroup = 'state' | 'rajabhat' | 'private';
 
+// สถานะข้อมูลปี TCAS70 ในระบบทางการ ณ วันที่ตรวจ
+//  round3  = ประกาศเกณฑ์รอบ 3 แล้วอย่างน้อย 1 หลักสูตรนิติศาสตร์
+//  listed  = ขึ้นหลักสูตรนิติศาสตร์แล้ว แต่รอบ 3 ยังไม่ประกาศ
+//  pending = ยังไม่พบหลักสูตรนิติศาสตร์ในระบบทางการ (อาจยังไม่ส่งข้อมูล ไม่ได้แปลว่าไม่เปิดสอน)
+export type Tcas70Status = 'round3' | 'listed' | 'pending';
+
 export interface LawFaculty {
-  tcasId: number;
+  id: string;
   university: string;
   group: FacultyGroup;
-  // วิชาที่ใช้ในรอบ 3 Admission ปี TCAS68 เฉพาะที่ 2 แหล่ง (tcaster.net, admissionpremium.com) ตรงกัน
-  // ไม่ใส่สัดส่วน/คะแนนขั้นต่ำ เพราะแหล่งข้อมูลขัดกันและเปลี่ยนทุกปี — ต้องตรวจประกาศปีล่าสุดเสมอ
+  tcas70: Tcas70Status;
+  // วิชาที่ใช้ในรอบ 3 Admission ปี TCAS68 (ปีก่อนหน้า) เฉพาะที่ 2 แหล่งอิสระ (tcaster.net, admissionpremium.com) ตรงกัน
+  // ไม่ใช่ข้อมูลทางการ ไม่ใส่สัดส่วน/คะแนนขั้นต่ำ — ใช้ดูแนวทางเท่านั้น
   tcas68Subjects?: string[];
 }
 
@@ -20,63 +29,79 @@ export const FACULTY_GROUP_LABELS: Record<FacultyGroup, string> = {
   private: 'เอกชน / อื่น ๆ',
 };
 
+export const TCAS70_STATUS_LABELS: Record<Tcas70Status, string> = {
+  round3: 'ประกาศเกณฑ์รอบ 3 ปี 70 แล้ว',
+  listed: 'ขึ้นหลักสูตรปี 70 แล้ว · รอบ 3 ยังไม่ประกาศ',
+  pending: 'ยังไม่พบข้อมูลปี 70 ในระบบทางการ',
+};
+
 export const LAW_FACULTIES: LawFaculty[] = [
-  { tcasId: 1, university: 'จุฬาลงกรณ์มหาวิทยาลัย', group: 'state', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level คณิต 2 (หรือวิชาเลือกตามประกาศ)'] },
-  { tcasId: 2, university: 'มหาวิทยาลัยเกษตรศาสตร์', group: 'state', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาอังกฤษ','วิชาเลือกตามประกาศ'] },
-  { tcasId: 3, university: 'มหาวิทยาลัยขอนแก่น', group: 'state', tcas68Subjects: ['A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level คณิต 2'] },
-  { tcasId: 4, university: 'มหาวิทยาลัยเชียงใหม่', group: 'state' },
-  { tcasId: 9, university: 'มหาวิทยาลัยธรรมศาสตร์', group: 'state', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level วิชาเลือก'] },
-  { tcasId: 20, university: 'มหาวิทยาลัยศรีนครินทรวิโรฒ', group: 'state', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาอังกฤษ'] },
-  { tcasId: 23, university: 'มหาวิทยาลัยสวนดุสิต', group: 'state' },
-  { tcasId: 22, university: 'มหาวิทยาลัยสงขลานครินทร์', group: 'state' },
-  { tcasId: 24, university: 'มหาวิทยาลัยอุบลราชธานี', group: 'state' },
-  { tcasId: 13, university: 'มหาวิทยาลัยบูรพา', group: 'state' },
-  { tcasId: 12, university: 'มหาวิทยาลัยนเรศวร', group: 'state', tcas68Subjects: ['GPAX','TGAT','A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level คณิต'] },
-  { tcasId: 16, university: 'มหาวิทยาลัยมหาสารคาม', group: 'state' },
-  { tcasId: 5, university: 'มหาวิทยาลัยทักษิณ', group: 'state' },
-  { tcasId: 19, university: 'มหาวิทยาลัยวลัยลักษณ์', group: 'state' },
-  { tcasId: 18, university: 'มหาวิทยาลัยแม่ฟ้าหลวง', group: 'state' },
-  { tcasId: 10, university: 'มหาวิทยาลัยนครพนม', group: 'state' },
-  { tcasId: 14, university: 'มหาวิทยาลัยพะเยา', group: 'state' },
-  { tcasId: 37, university: 'มหาวิทยาลัยกาฬสินธุ์', group: 'state' },
-  { tcasId: 96, university: 'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', group: 'state' },
-  { tcasId: 72, university: 'มหาวิทยาลัยราชภัฏชัยภูมิ', group: 'rajabhat' },
-  { tcasId: 46, university: 'มหาวิทยาลัยราชภัฏเชียงใหม่', group: 'rajabhat' },
-  { tcasId: 44, university: 'มหาวิทยาลัยราชภัฏนครราชสีมา', group: 'rajabhat' },
-  { tcasId: 43, university: 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', group: 'rajabhat' },
-  { tcasId: 36, university: 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์', group: 'rajabhat' },
-  { tcasId: 31, university: 'มหาวิทยาลัยราชภัฏสวนสุนันทา', group: 'rajabhat' },
-  { tcasId: 42, university: 'มหาวิทยาลัยราชภัฏอุบลราชธานี', group: 'rajabhat' },
-  { tcasId: 29, university: 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', group: 'rajabhat' },
-  { tcasId: 78, university: 'มหาวิทยาลัยราชภัฏจันทรเกษม', group: 'rajabhat' },
-  { tcasId: 79, university: 'มหาวิทยาลัยเกษมบัณฑิต', group: 'private' },
-  { tcasId: 80, university: 'มหาวิทยาลัยสยาม', group: 'private' },
-  { tcasId: 57, university: 'มหาวิทยาลัยศรีปทุม', group: 'private' },
-  { tcasId: 58, university: 'มหาวิทยาลัยหอการค้าไทย', group: 'private' },
-  { tcasId: 61, university: 'มหาวิทยาลัยรังสิต', group: 'private' },
-  { tcasId: 62, university: 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', group: 'private' },
-  { tcasId: 64, university: 'มหาวิทยาลัยธุรกิจบัณฑิตย์', group: 'private' },
-  { tcasId: 97, university: 'มหาวิทยาลัยหาดใหญ่', group: 'private' },
-  { tcasId: 99, university: 'มหาวิทยาลัยปทุมธานี', group: 'private' },
-  { tcasId: 102, university: 'วิทยาลัยนครราชสีมา', group: 'private' },
-  { tcasId: 103, university: 'วิทยาลัยนอร์ทเทิร์น', group: 'private' },
-  { tcasId: 109, university: 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', group: 'private' },
+  { id: '001', university: 'จุฬาลงกรณ์มหาวิทยาลัย', group: 'state', tcas70: 'listed', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level คณิต 2 (หรือวิชาเลือกตามประกาศ)'] },
+  { id: '002', university: 'มหาวิทยาลัยเกษตรศาสตร์', group: 'state', tcas70: 'listed', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาอังกฤษ','วิชาเลือกตามประกาศ'] },
+  { id: '003', university: 'มหาวิทยาลัยขอนแก่น', group: 'state', tcas70: 'listed', tcas68Subjects: ['A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level คณิต 2'] },
+  { id: '004', university: 'มหาวิทยาลัยเชียงใหม่', group: 'state', tcas70: 'listed' },
+  { id: '005', university: 'มหาวิทยาลัยธรรมศาสตร์', group: 'state', tcas70: 'listed', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level วิชาเลือก'] },
+  { id: '006', university: 'มหาวิทยาลัยมหิดล', group: 'state', tcas70: 'listed' },
+  { id: '009', university: 'มหาวิทยาลัยศรีนครินทรวิโรฒ', group: 'state', tcas70: 'listed', tcas68Subjects: ['TGAT','A-Level สังคม','A-Level ภาษาอังกฤษ'] },
+  { id: '010', university: 'มหาวิทยาลัยสงขลานครินทร์', group: 'state', tcas70: 'listed' },
+  { id: '018', university: 'มหาวิทยาลัยอุบลราชธานี', group: 'state', tcas70: 'round3' },
+  { id: '019', university: 'มหาวิทยาลัยบูรพา', group: 'state', tcas70: 'listed' },
+  { id: '020', university: 'มหาวิทยาลัยนเรศวร', group: 'state', tcas70: 'listed', tcas68Subjects: ['GPAX','TGAT','A-Level สังคม','A-Level ภาษาไทย','A-Level ภาษาอังกฤษ','A-Level คณิต'] },
+  { id: '021', university: 'มหาวิทยาลัยมหาสารคาม', group: 'state', tcas70: 'listed' },
+  { id: '022', university: 'มหาวิทยาลัยทักษิณ', group: 'state', tcas70: 'listed' },
+  { id: '023', university: 'มหาวิทยาลัยวลัยลักษณ์', group: 'state', tcas70: 'listed' },
+  { id: '024', university: 'มหาวิทยาลัยแม่ฟ้าหลวง', group: 'state', tcas70: 'listed' },
+  { id: '026', university: 'มหาวิทยาลัยนครพนม', group: 'state', tcas70: 'round3' },
+  { id: '027', university: 'มหาวิทยาลัยพะเยา', group: 'state', tcas70: 'pending' },
+  { id: '028', university: 'มหาวิทยาลัยกาฬสินธุ์', group: 'state', tcas70: 'round3' },
+  { id: '037', university: 'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย', group: 'state', tcas70: 'pending' },
+  { id: '165', university: 'มหาวิทยาลัยสวนดุสิต', group: 'state', tcas70: 'listed' },
+  { id: '142', university: 'มหาวิทยาลัยราชภัฏชัยภูมิ', group: 'rajabhat', tcas70: 'pending' },
+  { id: '144', university: 'มหาวิทยาลัยราชภัฏเชียงใหม่', group: 'rajabhat', tcas70: 'pending' },
+  { id: '146', university: 'มหาวิทยาลัยราชภัฏธนบุรี', group: 'rajabhat', tcas70: 'round3' },
+  { id: '148', university: 'มหาวิทยาลัยราชภัฏนครราชสีมา', group: 'rajabhat', tcas70: 'pending' },
+  { id: '150', university: 'มหาวิทยาลัยราชภัฏพระนคร', group: 'rajabhat', tcas70: 'listed' },
+  { id: '152', university: 'มหาวิทยาลัยราชภัฏพิบูลสงคราม', group: 'rajabhat', tcas70: 'round3' },
+  { id: '153', university: 'มหาวิทยาลัยราชภัฏวไลยอลงกรณ์ ในพระบรมราชูปถัมภ์', group: 'rajabhat', tcas70: 'round3' },
+  { id: '166', university: 'มหาวิทยาลัยราชภัฏสวนสุนันทา', group: 'rajabhat', tcas70: 'listed' },
+  { id: '171', university: 'มหาวิทยาลัยราชภัฏอุบลราชธานี', group: 'rajabhat', tcas70: 'round3' },
+  { id: '172', university: 'มหาวิทยาลัยราชภัฏนครสวรรค์', group: 'rajabhat', tcas70: 'listed' },
+  { id: '174', university: 'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา', group: 'rajabhat', tcas70: 'round3' },
+  { id: '177', university: 'มหาวิทยาลัยราชภัฏจันทรเกษม', group: 'rajabhat', tcas70: 'round3' },
+  { id: '054', university: 'มหาวิทยาลัยศรีปทุม', group: 'private', tcas70: 'round3' },
+  { id: '056', university: 'มหาวิทยาลัยหอการค้าไทย', group: 'private', tcas70: 'round3' },
+  { id: '068', university: 'มหาวิทยาลัยรังสิต', group: 'private', tcas70: 'pending' },
+  { id: '073', university: 'มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ', group: 'private', tcas70: 'pending' },
+  { id: '103', university: 'มหาวิทยาลัยธุรกิจบัณฑิตย์', group: 'private', tcas70: 'round3' },
+  { id: '130', university: 'มหาวิทยาลัยหาดใหญ่', group: 'private', tcas70: 'round3' },
+  { id: '180', university: 'มหาวิทยาลัยเกษมบัณฑิต', group: 'private', tcas70: 'pending' },
+  { id: '181', university: 'มหาวิทยาลัยสยาม', group: 'private', tcas70: 'listed' },
+  { id: '911', university: 'มหาวิทยาลัยปทุมธานี', group: 'private', tcas70: 'round3' },
+  { id: '916', university: 'วิทยาลัยนครราชสีมา', group: 'private', tcas70: 'round3' },
+  { id: '917', university: 'วิทยาลัยนอร์ทเทิร์น', group: 'private', tcas70: 'round3' },
+  { id: '921', university: 'มหาวิทยาลัยอัสสัมชัญ', group: 'private', tcas70: 'listed' },
+  { id: '922', university: 'มหาวิทยาลัยวงษ์ชวลิตกุล', group: 'private', tcas70: 'round3' },
+  { id: '923', university: 'มหาวิทยาลัยเซาธ์อีสท์บางกอก', group: 'private', tcas70: 'listed' },
 ];
 
-// ลิงก์หน้าคณะนิติศาสตร์ของแต่ละมหาวิทยาลัยบน tcas.in.th (Dek-D TCAS Starter ไม่ใช่เว็บทางการของ ทปอ.)
-// หน้านั้นอัปเดตตามปีล่าสุดเสมอ จึงใช้เป็นแหล่งเกณฑ์ปีปัจจุบันแทนการเก็บเกณฑ์ไว้ในโค้ด · ตรวจแล้ว 40/40 ลิงก์ตอบ 200 (2026-10-04)
-export function tcasFacultyUrl(f: LawFaculty): string {
-  return `https://tcas.in.th/search/faculty-group/${encodeURIComponent('กลุ่มคณะนิติศาสตร์')}.13/uni/${encodeURIComponent(f.university)}.${f.tcasId}/`;
+// หน้าสถาบันบน course.mytcas.com (ระบบข้อมูลหลักสูตรทางการของ ทปอ.) — แสดงทุกคณะ ให้เลือกคณะนิติศาสตร์เอง
+export function tcasUniversityUrl(f: LawFaculty): string {
+  return `https://course.mytcas.com/universities/${f.id}`;
 }
 
-// ปฏิทินรอบ 3 Admission ของ TCAS70 (ปีการศึกษา 2570) — ตรงกันทั้ง mytcas.com และเว็บข่าว/ติวอิสระ ตรวจเมื่อ 2026-10-04
-// รอบอื่นยังไม่ใส่เพราะสรุปจากแหล่งไม่สอดคล้องกัน ให้ดูที่ mytcas.com
+// สรุปภาพรวมข้อมูลทางการ ณ 2026-10-04 (นับจาก courses.json + rounds/*.json)
+export const TCAS70_SNAPSHOT = {
+  asOf: '4 ต.ค. 2569',
+  universitiesWithLaw: 38,
+  universitiesRound3Announced: 17,
+};
+
+// ปฏิทินรอบ 3 Admission ของ TCAS70 (ปีการศึกษา 2570) จาก mytcas.com — ตรงกับเว็บข่าว/ติวอิสระ ตรวจเมื่อ 2026-10-04
+// รอบอื่นยังไม่ใส่ เพราะสรุปจากแหล่งไม่สอดคล้องกัน ให้ดูที่ mytcas.com
 export const TCAS70_ROUND3 = [
   { label: 'รับสมัคร', value: '7–11 พ.ค. 2570 (เพิ่มเติม 12–13 พ.ค.)' },
   { label: 'ประกาศผล', value: '22 พ.ค. และ 27 พ.ค. 2570' },
   { label: 'ยืนยันสิทธิ์', value: '22–23 พ.ค. 2570' },
 ];
 export const MYTCAS_URL = 'https://www.mytcas.com/';
-
-export const TCAS_LAW_URL =
-  'https://tcas.in.th/search/faculty-group/%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1%E0%B8%84%E0%B8%93%E0%B8%B0%E0%B8%99%E0%B8%B4%E0%B8%95%E0%B8%B4%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C.13/';
+export const MYTCAS_COURSE_URL = 'https://course.mytcas.com/universities';

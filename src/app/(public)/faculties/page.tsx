@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/education/page-header';
 import { LawFacultyDirectory } from '@/components/education/law-faculty-directory';
-import { LAW_FACULTIES, MYTCAS_URL, TCAS70_ROUND3, TCAS_LAW_URL } from '@/lib/law-faculties';
+import { LAW_FACULTIES, MYTCAS_COURSE_URL, MYTCAS_URL, TCAS70_ROUND3, TCAS70_SNAPSHOT } from '@/lib/law-faculties';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -32,9 +32,12 @@ export default function FacultiesPage() {
                     ))}
                 </dl>
                 <p className="text-xs text-slate-500 mt-3">
-                    เกณฑ์รายคณะของ TCAS70 ทยอยประกาศอยู่ จึงยังไม่แสดงในหน้านี้ กดดูที่การ์ดของแต่ละมหาวิทยาลัยด้านล่าง
-                    ส่วนกำหนดการรอบอื่นและรายละเอียดอย่างเป็นทางการดูที่{' '}
+                    ข้อมูลทางการ ณ {TCAS70_SNAPSHOT.asOf}: {TCAS70_SNAPSHOT.universitiesWithLaw} สถาบันขึ้นหลักสูตรนิติศาสตร์ปี 70 แล้ว
+                    และประกาศเกณฑ์รอบ 3 แล้ว {TCAS70_SNAPSHOT.universitiesRound3Announced} สถาบัน (ส่วนใหญ่ใช้ GPAX) มหาวิทยาลัยรัฐขนาดใหญ่ส่วนมากยังไม่ประกาศ
+                    ดูรายละเอียดและกำหนดการรอบอื่นอย่างเป็นทางการที่{' '}
                     <a href={MYTCAS_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">mytcas.com</a>
+                    {' '}และ{' '}
+                    <a href={MYTCAS_COURSE_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">ระบบข้อมูลหลักสูตร</a>
                 </p>
             </section>
             <section className="grid md:grid-cols-2 gap-4">
@@ -70,12 +73,11 @@ export default function FacultiesPage() {
             <h2 className="text-xl font-bold text-slate-900">รายชื่อคณะนิติศาสตร์ทั้งหมด</h2>
             <LawFacultyDirectory />
             <p className="text-xs text-slate-500">
-                รายชื่อจากระบบ TCAS ทั้งหมด {LAW_FACULTIES.length} แห่ง วิชาที่แสดงเป็นข้อมูลรอบ 3 ของปี TCAS68 (ปีก่อนหน้า) เฉพาะมหาวิทยาลัยที่ตรวจข้อมูลได้ตรงกันหลายแหล่ง ใช้ดูแนวทางเท่านั้น เกณฑ์ สัดส่วนคะแนน และจำนวนรับเปลี่ยนทุกปี
-                โปรดตรวจรายละเอียดล่าสุดที่{' '}
-                <a href={TCAS_LAW_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">
-                    tcas.in.th
-                </a>{' '}
-                หรือประกาศของแต่ละมหาวิทยาลัย
+                รายชื่อและสถานะอ้างอิงข้อมูลหลักสูตรของ{' '}
+                <a href={MYTCAS_COURSE_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">mytcas.com (ทปอ.)</a>{' '}
+                ณ {TCAS70_SNAPSHOT.asOf} สถาบันที่ติดป้าย "ยังไม่พบข้อมูลปี 70" อาจยังไม่ส่งข้อมูล ไม่ได้แปลว่าไม่เปิดสอน
+                ส่วนวิชาที่แสดงเป็นของรอบ 3 ปี TCAS68 (ปีก่อนหน้า) จากเว็บอิสระที่ตรวจตรงกันหลายแหล่ง ไม่ใช่ข้อมูลทางการ ใช้ดูแนวทางเท่านั้น
+                เกณฑ์ สัดส่วนคะแนน และจำนวนรับเปลี่ยนทุกปี โปรดตรวจประกาศปีล่าสุดของแต่ละมหาวิทยาลัยก่อนสมัคร
             </p>
         </div>
     );
