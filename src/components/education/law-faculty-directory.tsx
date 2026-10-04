@@ -77,8 +77,10 @@ export function LawFacultyDirectory() {
                                 className="w-12 h-12 object-contain shrink-0"
                             />
                             <div className="min-w-0">
-                                <h3 className="font-bold text-slate-900 text-sm">คณะนิติศาสตร์</h3>
-                                <p className="text-slate-700 text-sm">{f.university}</p>
+                                <h3 className="text-sm">
+                                    <span className="font-bold text-slate-900">คณะนิติศาสตร์</span>{' '}
+                                    <span className="block text-slate-700">{f.university}</span>
+                                </h3>
                                 <p className="text-xs text-[#0B3979] mt-1">{FACULTY_GROUP_LABELS[f.group]}</p>
                             </div>
                         </div>

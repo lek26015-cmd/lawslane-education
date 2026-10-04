@@ -139,3 +139,39 @@ export function ArticleJsonLd({ title, description, author, publishedAt, url }: 
         />
     );
 }
+
+export function FacultyDirectoryJsonLd({ url, name, items }: {
+    url: string;
+    name: string;
+    items: { name: string; url: string }[];
+}) {
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'หน้าหลัก', item: SITE_URL },
+                    { '@type': 'ListItem', position: 2, name, item: url },
+                ],
+            },
+            {
+                '@type': 'ItemList',
+                name: 'คณะนิติศาสตร์ที่เปิดสอนในประเทศไทย',
+                numberOfItems: items.length,
+                itemListElement: items.map((it, i) => ({
+                    '@type': 'ListItem',
+                    position: i + 1,
+                    item: { '@type': 'CollegeOrUniversity', name: it.name, url: it.url },
+                })),
+            },
+        ],
+    };
+
+    return (
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+    );
+}

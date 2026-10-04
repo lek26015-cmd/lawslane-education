@@ -92,6 +92,7 @@ export function tcasUniversityUrl(f: LawFaculty): string {
 // สรุปภาพรวมข้อมูลทางการ ณ 2026-10-04 (นับจาก courses.json + rounds/*.json)
 export const TCAS70_SNAPSHOT = {
   asOf: '4 ต.ค. 2569',
+  asOfISO: '2026-10-04',
   universitiesWithLaw: 38,
   universitiesRound3Announced: 17,
 };

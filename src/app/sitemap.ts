@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { TCAS70_SNAPSHOT } from '@/lib/law-faculties';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://wittaya.lawslane.com';
 
@@ -25,6 +26,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         {
             url: `${SITE_URL}/courses`,
             lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: `${SITE_URL}/faculties`,
+            lastModified: new Date(TCAS70_SNAPSHOT.asOfISO),
             changeFrequency: 'weekly',
             priority: 0.8,
         },
