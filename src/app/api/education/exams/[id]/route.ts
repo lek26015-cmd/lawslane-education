@@ -42,6 +42,8 @@ export async function GET(
             examLevel: data.examLevel || '',
             pageImages: data.pageImages || [],
             hasImages: data.hasImages || false,
+            // ข้อเท็จจริงที่ใช้ร่วมกันทุกข้อ (ข้อสอบภาคปฏิบัติ/อัตนัยสภาทนายความ)
+            scenarioText: formatExamText(data.scenarioText || ''),
             createdAt: data.createdAt?.toDate?.() || new Date(),
             updatedAt: data.updatedAt?.toDate?.() || new Date(),
         };
@@ -91,8 +93,8 @@ export async function GET(
             result.totalQuestions = result.questions.length;
         }
 
-        // Batch anonymize question texts
-        if (result.questions) {
+        // Batch anonymize question texts — ยกเว้นชุดที่มีภาพต้นฉบับ (ชื่อในข้อความต้องตรงกับในภาพ)
+        if (result.questions && !result.pageImages.length) {
             const allTexts = result.questions.map((q: any) => q.text);
             const anonymized = anonymizeExamTexts(allTexts, id);
             result.questions = result.questions.map((q: any, i: number) => ({
