@@ -31,6 +31,7 @@ export default function EducationNavigation({ transparent = false }: { transpare
 
     const NAV_LINKS = [
         { href: "/exams", label: "คลังข้อสอบ" },
+        { href: "/faculties", label: "เตรียมสอบเข้านิติ" },
         { href: "/books", label: "หนังสือ" },
         { href: "/courses", label: "คอร์สเรียน" },
         { href: "/articles", label: "บทความ" },

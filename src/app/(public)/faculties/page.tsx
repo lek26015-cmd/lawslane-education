@@ -1,0 +1,138 @@
+import { FacultyDirectoryJsonLd } from '@/components/seo/json-ld';
+import { PageHeader } from '@/components/education/page-header';
+import { LawFacultyDirectory } from '@/components/education/law-faculty-directory';
+import { LAW_FACULTIES, MYTCAS_COURSE_URL, tcasUniversityUrl, MYTCAS_URL, TCAS70_ROUND3, TCAS70_SNAPSHOT } from '@/lib/law-faculties';
+import type { Metadata } from 'next';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://wittaya.lawslane.com';
+const PAGE_URL = `${SITE_URL}/faculties`;
+const PAGE_TITLE = 'เตรียมสอบเข้านิติศาสตร์ TCAS70 รวมคณะนิติทุกมหาวิทยาลัย';
+const PAGE_DESCRIPTION = `คู่มือเตรียมสอบเข้าคณะนิติศาสตร์ TCAS70: กำหนดการรอบ 3 Admission วิชาที่ใช้ TGAT / A-Level และรายชื่อ ${LAW_FACULTIES.length} มหาวิทยาลัยที่เปิดสอนนิติศาสตร์ พร้อมลิงก์ข้อมูลทางการ`;
+
+export const metadata: Metadata = {
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    keywords: [
+        'เตรียมสอบเข้านิติศาสตร์', 'TCAS70', 'TCAS นิติศาสตร์', 'คณะนิติศาสตร์', 'แอดมิชชันนิติศาสตร์',
+        'Admission นิติศาสตร์', 'TGAT A-Level นิติศาสตร์', 'มหาวิทยาลัยที่เปิดสอนนิติศาสตร์', 'เกณฑ์เข้านิติศาสตร์',
+    ],
+    alternates: { canonical: '/faculties' },
+    openGraph: {
+        type: 'website',
+        locale: 'th_TH',
+        url: PAGE_URL,
+        siteName: 'Lawslane Wittaya',
+        title: PAGE_TITLE,
+        description: PAGE_DESCRIPTION,
+        images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'เตรียมสอบเข้านิติศาสตร์ TCAS70 — Lawslane Wittaya' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: PAGE_TITLE,
+        description: PAGE_DESCRIPTION,
+        images: ['/og-image.png'],
+    },
+};
+
+const FAQ = [
+    {
+        q: 'แอดมิชชัน (Admission) กับ TCAS ต่างกันอย่างไร',
+        a: 'TCAS คือระบบรับเข้ามหาวิทยาลัยที่ใช้ในปัจจุบัน แบ่งเป็น 4 รอบ ส่วน "แอดมิชชัน" เดิมเป็นชื่อระบบสอบรวมก่อนมี TCAS ปัจจุบันคำนี้ยังใช้เรียกรอบที่ 3 (Admission) ซึ่งใช้คะแนนสอบกลางอย่าง TGAT และ A-Level',
+    },
+    {
+        q: 'สมัครคณะนิติศาสตร์รอบ 3 ใช้คะแนนอะไรบ้าง',
+        a: 'ขึ้นกับแต่ละมหาวิทยาลัย ที่พบบ่อยคือ TGAT และ A-Level สังคมศึกษา ภาษาไทย ภาษาอังกฤษ บางแห่งเพิ่มคณิตศาสตร์ ส่วนมหาวิทยาลัยที่ประกาศปี 70 แล้วหลายแห่ง (โดยเฉพาะเอกชนและราชภัฏ) ใช้ GPAX เป็นหลัก ควรดูประกาศของมหาวิทยาลัยที่หมายตา',
+    },
+    {
+        q: 'ดูเกณฑ์ TCAS70 ของคณะนิติศาสตร์ได้ที่ไหน',
+        a: 'ดูที่ระบบข้อมูลหลักสูตรของ mytcas.com (ทปอ.) และประกาศของแต่ละมหาวิทยาลัย เกณฑ์ทยอยประกาศ มหาวิทยาลัยรัฐขนาดใหญ่หลายแห่งยังไม่ประกาศรอบ 3 ในช่วงนี้ กดลิงก์ในการ์ดของแต่ละสถาบันด้านล่างเพื่อดูข้อมูลล่าสุด',
+    },
+];
+
+export default function FacultiesPage() {
+    return (
+        <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
+            <FacultyDirectoryJsonLd
+                url={PAGE_URL}
+                name="เตรียมสอบเข้านิติศาสตร์"
+                items={LAW_FACULTIES.map((f) => ({ name: `คณะนิติศาสตร์ ${f.university}`, url: tcasUniversityUrl(f) }))}
+            />
+            <PageHeader
+                title="เตรียมสอบเข้านิติศาสตร์"
+                description="TCAS รอบการรับสมัคร วิชาที่ต้องเตรียม และคณะนิติศาสตร์ทุกแห่งในไทย"
+                icon="GraduationCap"
+                theme="sky"
+                backLink="/"
+                backLabel="กลับหน้าหลัก"
+            />
+            <section className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+                <h2 className="font-bold text-[#0B3979] mb-1">TCAS70 — สำหรับเข้าเรียนปีการศึกษา 2570</h2>
+                <p className="text-sm text-slate-600 mb-3">กำหนดการรอบ 3 Admission (รอบที่คนส่วนใหญ่ยื่นคะแนนสอบกลาง)</p>
+                <dl className="grid sm:grid-cols-3 gap-3 text-sm">
+                    {TCAS70_ROUND3.map((r) => (
+                        <div key={r.label} className="bg-white rounded-xl p-3 border border-blue-100">
+                            <dt className="text-xs text-slate-500">{r.label}</dt>
+                            <dd className="font-medium text-slate-900">{r.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+                <p className="text-xs text-slate-500 mt-3">
+                    ข้อมูลทางการ ณ {TCAS70_SNAPSHOT.asOf}: {TCAS70_SNAPSHOT.universitiesWithLaw} สถาบันขึ้นหลักสูตรนิติศาสตร์ปี 70 แล้ว
+                    และประกาศเกณฑ์รอบ 3 แล้ว {TCAS70_SNAPSHOT.universitiesRound3Announced} สถาบัน (ส่วนใหญ่ใช้ GPAX) มหาวิทยาลัยรัฐขนาดใหญ่ส่วนมากยังไม่ประกาศ
+                    ดูรายละเอียดและกำหนดการรอบอื่นอย่างเป็นทางการที่{' '}
+                    <a href={MYTCAS_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">mytcas.com</a>
+                    {' '}และ{' '}
+                    <a href={MYTCAS_COURSE_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">ระบบข้อมูลหลักสูตร</a>
+                </p>
+            </section>
+            <section className="grid md:grid-cols-2 gap-4">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5">
+                    <h2 className="font-bold text-slate-900 mb-3">TCAS มี 4 รอบ</h2>
+                    <ol className="space-y-2 text-sm text-slate-700 list-decimal pl-5">
+                        <li><b>Portfolio</b> — ส่งแฟ้มสะสมผลงาน</li>
+                        <li><b>โควตา</b> — ตามพื้นที่/โรงเรียน/คุณสมบัติเฉพาะ</li>
+                        <li><b>Admission</b> — ใช้คะแนนสอบกลาง (รอบที่คนส่วนใหญ่ยื่น)</li>
+                        <li><b>รับตรงอิสระ</b> — มหาวิทยาลัยคัดเลือกเอง</li>
+                    </ol>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-2xl p-5">
+                    <h2 className="font-bold text-slate-900 mb-3">คะแนนที่คณะนิติศาสตร์มักใช้</h2>
+                    <ul className="space-y-2 text-sm text-slate-700 list-disc pl-5">
+                        <li><b>TGAT</b> — ความถนัดทั่วไป (ภาษาอังกฤษ, การคิดอย่างมีเหตุผล, สมรรถนะการทำงาน)</li>
+                        <li><b>A-Level</b> — สังคมศึกษา, ภาษาไทย, ภาษาอังกฤษ และบางแห่งใช้คณิตศาสตร์</li>
+                        <li><b>GPAX</b> — บางมหาวิทยาลัยใช้หรือกำหนดขั้นต่ำ</li>
+                    </ul>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 md:col-span-2">
+                    <h2 className="font-bold text-slate-900 mb-3">แนวทางเตรียมตัว</h2>
+                    <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-700 list-disc pl-5">
+                        <li>ดูเกณฑ์ปีล่าสุดของคณะที่หมายตาก่อน แล้วเลือกวิชาที่ต้องเน้น</li>
+                        <li>ฝึกอ่านจับใจความและเขียนภาษาไทย เพราะวิชากฎหมายต้องอ่านเยอะ</li>
+                        <li>สังคมศึกษา: เน้นหน้าที่พลเมือง รัฐธรรมนูญ และกฎหมายเบื้องต้น</li>
+                        <li>ภาษาอังกฤษ: ฝึกอ่านบทความยาวให้ทันเวลา</li>
+                        <li>ฝึกข้อสอบ TGAT ส่วนการคิดอย่างมีเหตุผลให้คล่อง</li>
+                        <li>เลือกคณะหลายลำดับให้ครอบคลุมทั้งเสี่ยงและปลอดภัย</li>
+                    </ul>
+                </div>
+            </section>
+            <h2 className="text-xl font-bold text-slate-900">รายชื่อคณะนิติศาสตร์ทั้งหมด</h2>
+            <LawFacultyDirectory />
+            <section className="space-y-3">
+                <h2 className="text-xl font-bold text-slate-900">คำถามที่พบบ่อย</h2>
+                {FAQ.map((item) => (
+                    <div key={item.q} className="bg-white border border-slate-200 rounded-2xl p-5">
+                        <h3 className="font-bold text-slate-900 mb-1.5">{item.q}</h3>
+                        <p className="text-sm text-slate-700 leading-relaxed">{item.a}</p>
+                    </div>
+                ))}
+            </section>
+            <p className="text-xs text-slate-500">
+                รายชื่อและสถานะอ้างอิงข้อมูลหลักสูตรของ{' '}
+                <a href={MYTCAS_COURSE_URL} target="_blank" rel="noopener noreferrer" className="underline text-[#0B3979]">mytcas.com (ทปอ.)</a>{' '}
+                ณ {TCAS70_SNAPSHOT.asOf} สถาบันที่ติดป้าย "ยังไม่พบข้อมูลปี 70" อาจยังไม่ส่งข้อมูล ไม่ได้แปลว่าไม่เปิดสอน
+                ส่วนวิชาที่แสดงเป็นของรอบ 3 ปี TCAS68 (ปีก่อนหน้า) จากเว็บอิสระที่ตรวจตรงกันหลายแหล่ง ไม่ใช่ข้อมูลทางการ ใช้ดูแนวทางเท่านั้น
+                เกณฑ์ สัดส่วนคะแนน และจำนวนรับเปลี่ยนทุกปี โปรดตรวจประกาศปีล่าสุดของแต่ละมหาวิทยาลัยก่อนสมัคร
+            </p>
+        </div>
+    );
+}

@@ -70,6 +70,7 @@ export default function PublicLayout({
                             <h3 className="font-semibold text-white mb-4">เตรียมสอบ</h3>
                             <ul className="space-y-2 text-sm">
                                 <li><Link href="/exams" className="hover:text-white transition-colors">คลังข้อสอบ</Link></li>
+                                <li><Link href="/faculties" className="hover:text-white transition-colors">เตรียมสอบเข้านิติศาสตร์</Link></li>
                                 <li><Link href="/books" className="hover:text-white transition-colors">หนังสือเตรียมสอบ</Link></li>
                                 <li><Link href="/articles" className="hover:text-white transition-colors">บทความ</Link></li>
                                 <li><Link href="/my-learning" className="hover:text-white transition-colors">การเรียนรู้ของฉัน</Link></li>
