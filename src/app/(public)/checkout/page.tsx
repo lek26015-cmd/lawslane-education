@@ -1,5 +1,7 @@
 'use client';
 
+import { CartItemThumb, isDigitalCartItem } from '@/components/education/cart-item-thumb';
+import { displayBookTitle } from '@/lib/book-cover';
 import React, { useState, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/context/cart-context'; // Adjust path if needed
@@ -93,15 +95,7 @@ function CheckoutContent() {
     // Check if shipping is required (Physical Books). 
     // Logic: It is a book if type is BOOK or undefined, AND it's not explicitly digital in originalItem.
     // ADDED: Fallback check if title contains "คอร์ส", "Course", "E-Book" -> treat as digital (no shipping).
-    const requiresShipping = effectiveItems.some(item => {
-        // REMOVED 'Exam' and 'ข้อสอบ' because physical books often contain these words (e.g. "รวมข้อสอบ")
-        const isDigitalKeyword = /คอร์ส|Course|E-Book|e-book|ebook/i.test(item.title);
-        const isDigitalType = item.type === 'COURSE' || item.type === 'EXAM';
-        const isDigitalFlag = (item.originalItem as any)?.isDigital;
-
-        // It requires shipping if it is NOT digital
-        return !(isDigitalKeyword || isDigitalType || isDigitalFlag);
-    });
+    const requiresShipping = effectiveItems.some(item => !isDigitalCartItem(item));
 
     const handleSubmit = async () => {
         // Validation
@@ -257,15 +251,11 @@ function CheckoutContent() {
                                     {effectiveItems.map((item) => (
                                         <div key={item.id} className="flex gap-4 p-4 bg-white hover:bg-slate-50/50 transition-colors">
                                             <div className="w-16 h-24 bg-slate-100 rounded-md overflow-hidden flex-shrink-0 shadow-sm">
-                                                <img
-                                                    src={item.coverUrl}
-                                                    alt={item.title}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                                <CartItemThumb item={item} />
                                             </div>
                                             <div className="flex-1 flex flex-col justify-between py-1">
                                                 <div>
-                                                    <h4 className="font-medium text-slate-900 line-clamp-2 text-sm leading-snug">{item.title}</h4>
+                                                    <h4 className="font-medium text-slate-900 line-clamp-2 text-sm leading-snug">{displayBookTitle(item.title)}</h4>
                                                     <p className="text-xs text-slate-500 mt-1">
                                                         จำนวน: {item.quantity} {
                                                             (item.type === 'COURSE' || /คอร์ส|Course|E-Book|e-book|ebook/i.test(item.title))

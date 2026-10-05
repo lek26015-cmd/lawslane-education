@@ -1,5 +1,7 @@
 'use client';
 
+import { CartItemThumb } from '@/components/education/cart-item-thumb';
+import { displayBookTitle } from '@/lib/book-cover';
 import { useState, useEffect } from "react";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
@@ -129,7 +131,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                 <div key={index} className="flex gap-4 py-4 first:pt-0 last:pb-0">
                                     <div className="h-20 w-16 bg-slate-100 rounded overflow-hidden flex-shrink-0">
                                         {item.coverUrl ? (
-                                            <img src={item.coverUrl} alt={item.title} className="w-full h-full object-cover" />
+                                            <CartItemThumb item={item} />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-slate-200">
                                                 <Package className="w-5 h-5 text-slate-400" />
@@ -137,7 +139,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-medium text-slate-900">{item.title}</h4>
+                                        <h4 className="font-medium text-slate-900">{displayBookTitle(item.title)}</h4>
                                         <p className="text-sm text-slate-500 mt-1">
                                             {item.type === 'BOOK' ? 'หนังสือ' : 'ข้อสอบ'}
                                         </p>
@@ -153,10 +155,11 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                     <span className="text-slate-500">ยอดรวมสินค้า</span>
                                     <span>฿{order.totalAmount.toLocaleString()}</span>
                                 </div>
+                                {order.shippingInfo?.address && (
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-slate-500">ค่าจัดส่ง</span>
-                                    <span className="text-green-600 font-medium">ฟรี</span>
-                                </div>
+                                        <span className="text-slate-500">ค่าจัดส่ง</span>
+                                        <span className="text-green-600 font-medium">ฟรี</span>
+                                    </div>                                )}
                                 <Separator className="my-2" />
                                 <div className="flex justify-between font-bold text-lg">
                                     <span>ยอดสุทธิ</span>
@@ -168,23 +171,26 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 </div>
 
                 <div className="space-y-6">
+                    {/* E-Book ไม่มีการจัดส่ง (shippingInfo เป็น null) — ไม่แสดงการ์ดที่อยู่ */}
+                    {order.shippingInfo?.address && (
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">ที่อยู่จัดส่ง</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm space-y-3">
-                            <div className="flex items-start gap-2">
-                                <MapPin className="h-4 w-4 text-slate-400 mt-0.5 shrink-0" />
-                                <div>
-                                    <p className="font-medium text-slate-900">{order.shippingInfo?.name}</p>
-                                    <p className="text-slate-500 mt-1 leading-relaxed">
-                                        {order.shippingInfo?.address}
-                                    </p>
-                                    <p className="text-slate-500 mt-1">{order.shippingInfo?.phone}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                          <CardHeader>
+                              <CardTitle className="text-base">ที่อยู่จัดส่ง</CardTitle>
+                          </CardHeader>
+                          <CardContent className="text-sm space-y-3">
+                              <div className="flex items-start gap-2">
+                                  <MapPin className="h-4 w-4 text-slate-400 mt-0.5 shrink-0" />
+                                  <div>
+                                      <p className="font-medium text-slate-900">{order.shippingInfo?.name}</p>
+                                      <p className="text-slate-500 mt-1 leading-relaxed">
+                                          {order.shippingInfo?.address}
+                                      </p>
+                                      <p className="text-slate-500 mt-1">{order.shippingInfo?.phone}</p>
+                                  </div>
+                              </div>
+                          </CardContent>
+                      </Card>
+                    )}
 
                     <Card>
                         <CardHeader>

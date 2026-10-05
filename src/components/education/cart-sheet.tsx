@@ -19,6 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, Trash2, ShoppingCart, ArrowRight, X } from "lucide-react";
 import { useCart } from '@/context/cart-context';
+import { CartItemThumb, isDigitalCartItem } from '@/components/education/cart-item-thumb';
+import { displayBookTitle } from '@/lib/book-cover';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -48,15 +50,11 @@ export function CartSheet() {
             {items.map(item => (
                 <div key={item.id} className="flex gap-4 p-3 bg-white rounded-lg border border-slate-100 shadow-sm">
                     <div className="relative w-16 h-24 bg-slate-100 rounded-md overflow-hidden flex-shrink-0">
-                        <img
-                            src={item.coverUrl}
-                            alt={item.title}
-                            className="object-cover w-full h-full"
-                        />
+                        <CartItemThumb item={item} />
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                         <div>
-                            <h4 className="font-medium text-slate-900 line-clamp-2 text-sm">{item.title}</h4>
+                            <h4 className="font-medium text-slate-900 line-clamp-2 text-sm">{displayBookTitle(item.title)}</h4>
                             <p className="text-xs text-slate-500 mt-1">฿{item.price.toLocaleString()}</p>
                         </div>
                         <div className="flex items-center justify-between">
@@ -94,6 +92,8 @@ export function CartSheet() {
         </div>
     );
 
+    // ตะกร้า E-Book ล้วนไม่มีการจัดส่ง — ไม่แสดงค่าจัดส่ง
+    const allDigital = items.length > 0 && items.every(isDigitalCartItem);
     const CartSummary = () => (
         <div className="space-y-4 border-t pt-4">
             <div className="space-y-2">
@@ -101,10 +101,12 @@ export function CartSheet() {
                     <span>จำนวน ({items.reduce((sum, item) => sum + item.quantity, 0)} เล่ม)</span>
                     <span>฿{totalPrice.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-slate-600">
-                    <span>ค่าจัดส่ง</span>
-                    <span className="text-green-600 font-medium">ฟรี</span>
-                </div>
+                {!allDigital && (
+                    <div className="flex justify-between text-slate-600">
+                        <span>ค่าจัดส่ง</span>
+                        <span className="text-green-600 font-medium">ฟรี</span>
+                    </div>
+                )}
                 <div className="flex justify-between text-lg font-bold pt-2 border-t">
                     <span>ยอดรวมสุทธิ</span>
                     <span className="text-[#082a5a]">฿{totalPrice.toLocaleString()}</span>
