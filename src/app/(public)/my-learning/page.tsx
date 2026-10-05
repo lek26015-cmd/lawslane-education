@@ -18,7 +18,9 @@ import type { Article } from '@/lib/types';
 import { PlanStatusCard } from '@/components/education/plan-status-card';
 import { PlanAvatar } from '@/components/plan-avatar';
 import { usePlan } from '@/context/plan-context';
-import { CoverImage, BrandCover } from '@/components/education/brand-cover';
+import { CoverImage, ExamBookCover } from '@/components/education/brand-cover';
+import { ExamSubjectCover } from '@/components/education/exam-cover';
+import { isTemplateExamCover } from '@/lib/book-cover';
 
 interface SubjectPerformance {
     subject: string;
@@ -281,17 +283,24 @@ export default function MyLearningPage() {
                             ebooks.filter(item => item.type !== 'COURSE' && !item.title?.toLowerCase().includes('course') && !item.title?.includes('คอร์ส')).map((book) => (
                                 <div key={book.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all group">
                                     <div className="aspect-[3/4] relative bg-slate-100 overflow-hidden">
-                                        <CoverImage
-                                            src={book.coverUrl}
-                                            alt={book.title}
-                                            label="E-Book"
-                                            className="group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                        <div className="absolute top-3 right-3">
-                                            <span className="bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
-                                                {book.type === 'COURSE' ? 'Coming Soon' : 'E-BOOK'}
-                                            </span>
-                                        </div>
+                                        {isTemplateExamCover(book.coverUrl) ? (
+                                            // ปกหนังสือรวมข้อสอบ — วาดด้วยโค้ดแบบเดียวกับหน้า /books (ริบบิ้น E-BOOK อยู่ในปกแล้ว)
+                                            <ExamBookCover title={book.title} description={book.description} isEbook />
+                                        ) : (
+                                            <>
+                                                <CoverImage
+                                                    src={book.coverUrl}
+                                                    alt={book.title}
+                                                    label="E-Book"
+                                                    className="group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                                <div className="absolute top-3 right-3">
+                                                    <span className="bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20">
+                                                        {book.type === 'COURSE' ? 'Coming Soon' : 'E-BOOK'}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                     <div className="p-5">
                                         <h4 className="font-bold text-slate-900 line-clamp-2 mb-2 min-h-[3rem]">
@@ -414,7 +423,7 @@ export default function MyLearningPage() {
                                 return (
                                     <Card key={exam.id} className="hover:shadow-md transition-shadow overflow-hidden group">
                                         <div className="h-32 w-full relative">
-                                            <BrandCover title={title} label="Exam" className="!gap-2 !p-4" />
+                                            <ExamSubjectCover subject={title} title={title} size="sm" />
                                             <div className="absolute top-2 right-2">
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${exam.status === 'PASS' || exam.passed ? 'bg-emerald-500 text-white' : 'bg-white/90 text-slate-700'
                                                     }`}>
