@@ -31,15 +31,17 @@ export type WittayaEntitlements = {
     adFree: boolean;
     /** ดาวน์โหลด E-Book รวมข้อสอบได้ฟรี (ลูกค้ากำหนด 2026-10-03: เฉพาะ Pro) */
     freeEbooks: boolean;
+    /** จำนวนเล่ม E-Book ที่ดาวน์โหลดฟรีได้ต่อสัปดาห์ (ไทย จันทร์–อาทิตย์) — null = ไม่จำกัด · ใช้เมื่อ freeEbooks เปิด */
+    ebooksPerWeek: number | null;
 };
 
 // ค่าเริ่มต้น = พฤติกรรมเดิมก่อนมีระบบนี้ (free ทำข้อสอบได้ 3 ชุด/วัน ที่เหลือเปิดหมด)
 // จะได้ไม่มีฟีเจอร์ไหนหายไปจากผู้ใช้ทันทีที่ deploy — แอดมินค่อยปรับเองที่หลังบ้าน
 // adFree: premium/pro ไม่เห็นโฆษณาตามที่หน้า pricing สัญญาไว้ ("ปิดโฆษณาทั้งหมด")
 export const DEFAULT_PLANS: Record<WittayaPlanId, WittayaEntitlements> = {
-    free: { examsPerDay: 3, aiGrading: true, weaknessAnalysis: true, adFree: false, freeEbooks: false },
-    premium: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true, freeEbooks: false },
-    pro: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true, freeEbooks: true },
+    free: { examsPerDay: 3, aiGrading: true, weaknessAnalysis: true, adFree: false, freeEbooks: false, ebooksPerWeek: null },
+    premium: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true, freeEbooks: false, ebooksPerWeek: null },
+    pro: { examsPerDay: null, aiGrading: true, weaknessAnalysis: true, adFree: true, freeEbooks: true, ebooksPerWeek: 3 },
 };
 
 const PLAN_NAMES: Record<WittayaPlanId, string> = { free: 'Free', premium: 'Premium', pro: 'Pro' };
@@ -61,10 +63,14 @@ function isPlanId(v: unknown): v is WittayaPlanId {
 /** อ่านค่าจากเอกสาร — ฟิลด์ที่หายหรือชนิดผิดตกไปใช้ค่าเริ่มต้นของแพ็กเกจนั้น */
 function normalize(raw: any, fallback: WittayaEntitlements): WittayaEntitlements {
     const perDay = raw?.examsPerDay;
+    const perWeek = raw?.ebooksPerWeek;
     return {
         examsPerDay: perDay === null ? null
             : typeof perDay === 'number' && Number.isFinite(perDay) && perDay >= 0 ? Math.floor(perDay)
             : fallback.examsPerDay,
+        ebooksPerWeek: perWeek === null ? null
+            : typeof perWeek === 'number' && Number.isFinite(perWeek) && perWeek >= 0 ? Math.floor(perWeek)
+            : fallback.ebooksPerWeek,
         aiGrading: typeof raw?.aiGrading === 'boolean' ? raw.aiGrading : fallback.aiGrading,
         weaknessAnalysis: typeof raw?.weaknessAnalysis === 'boolean' ? raw.weaknessAnalysis : fallback.weaknessAnalysis,
         adFree: typeof raw?.adFree === 'boolean' ? raw.adFree : fallback.adFree,
@@ -155,4 +161,70 @@ export async function consumeExamAttempt(
         }, { merge: true });
         return { day, used: next.length, limit, examIds: next };
     });
+}
+
+/** วันจันทร์ของสัปดาห์ปัจจุบันตามเวลาไทย เช่น "2026-10-05" — โควตา E-Book รีเซ็ตเที่ยงคืนเข้าวันจันทร์ */
+export function currentUsageWeek(now = new Date()): string {
+    const th = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    const sinceMonday = (th.getUTCDay() + 6) % 7;
+    return new Date(th.getTime() - sinceMonday * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+export type EbookUsage = {
+    week: string;
+    used: number;
+    limit: number | null;
+    bookIds: string[];
+};
+
+export async function getEbookUsage(db: admin.firestore.Firestore, uid: string, limit: number | null): Promise<EbookUsage> {
+    const week = currentUsageWeek();
+    const snap = await db.collection('ebookUsage').doc(`${uid}_${week}`).get();
+    const bookIds: string[] = snap.data()?.bookIds ?? [];
+    return { week, used: bookIds.length, limit, bookIds };
+}
+
+/**
+ * ใช้สิทธิ์ดาวน์โหลด E-Book ฟรี 1 เล่ม — เล่มเดิมในสัปดาห์เดียวกันโหลดซ้ำได้ ไม่นับเพิ่ม
+ * เกินลิมิต throw EntitlementError('ebook_quota', …, 429)
+ */
+export async function consumeEbookDownload(
+    db: admin.firestore.Firestore,
+    uid: string,
+    bookId: string,
+    limit: number | null,
+): Promise<EbookUsage> {
+    const week = currentUsageWeek();
+    const ref = db.collection('ebookUsage').doc(`${uid}_${week}`);
+    return db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        const bookIds: string[] = snap.data()?.bookIds ?? [];
+        if (bookIds.includes(bookId)) return { week, used: bookIds.length, limit, bookIds };
+        if (limit !== null && bookIds.length >= limit) {
+            throw new EntitlementError(
+                'ebook_quota',
+                `ดาวน์โหลด E-Book ฟรีครบ ${limit} เล่มของสัปดาห์นี้แล้ว — สิทธิ์รีเซ็ตเที่ยงคืนเข้าวันจันทร์ (เวลาไทย)`,
+                429,
+            );
+        }
+        const next = [...bookIds, bookId];
+        tx.set(ref, { uid, week, bookIds: next, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        return { week, used: next.length, limit, bookIds: next };
+    });
+}
+
+const PAID_ORDER_STATUSES = ['PAID', 'COMPLETED', 'SHIPPING', 'DELIVERED'];
+
+/** หนังสือที่ผู้ใช้ซื้อแล้ว (ออเดอร์ที่แอดมินยืนยันสลิปแล้ว) — ดาวน์โหลดได้ไม่นับโควตา Pro */
+export async function getOwnedBookIds(db: admin.firestore.Firestore, uid: string): Promise<string[]> {
+    const snap = await db.collection('orders').where('userId', '==', uid).limit(200).get();
+    const ids = new Set<string>();
+    for (const doc of snap.docs) {
+        const order = doc.data();
+        if (!PAID_ORDER_STATUSES.includes(order.status) || !Array.isArray(order.items)) continue;
+        for (const item of order.items) {
+            if (item?.type === 'BOOK' && typeof item.id === 'string') ids.add(item.id);
+        }
+    }
+    return [...ids];
 }

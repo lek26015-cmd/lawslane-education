@@ -6,6 +6,7 @@ import { ShoppingCart, CreditCard } from "lucide-react";
 import { Book } from '@/lib/education-types';
 import { useCart } from '@/context/cart-context';
 import { EbookProDownload } from '@/components/education/ebook-pro-download';
+import { usePlan } from '@/context/plan-context';
 
 interface BookPurchaseSectionProps {
     book: Book;
@@ -23,27 +24,23 @@ export function BookPurchaseSection({ book }: BookPurchaseSectionProps) {
         setIsOpen(true);
     };
 
-    // หนังสือรวมข้อสอบ = E-Book ฟรีเฉพาะสมาชิก Pro ไม่ขายผ่านตะกร้า
-    if (book.category === 'exam') {
-        return (
-            <div className="bg-white border rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div>
-                    <p className="text-sm text-slate-500 mb-1">E-Book (ไฟล์ PDF)</p>
-                    <div className="text-2xl font-bold text-amber-700">ฟรีสำหรับสมาชิก Pro</div>
-                </div>
-                <div className="w-full sm:w-auto sm:min-w-[260px]">
-                    <EbookProDownload bookId={book.id} size="lg" />
-                </div>
-            </div>
-        );
-    }
+    const isExam = book.category === 'exam';
+    const { data: plan } = usePlan();
+    const owned = !!plan?.ownedBookIds?.includes(book.id);
 
     return (
         <div className="bg-white border rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
-                <p className="text-sm text-slate-500 mb-1">ราคาจำหน่าย</p>
+                <p className="text-sm text-slate-500 mb-1">{isExam ? 'E-Book (ไฟล์ PDF) · ราคาจำหน่าย' : 'ราคาจำหน่าย'}</p>
                 <div className="text-4xl font-bold text-[#082a5a]">฿{book.price.toLocaleString()}</div>
             </div>
+            {isExam && (
+                <div className="w-full sm:w-auto sm:min-w-[260px] order-last sm:order-none">
+                    <EbookProDownload bookId={book.id} size="lg" hideBuy />
+                    <p className="mt-1.5 text-center text-xs text-slate-500">สมาชิก Pro ดาวน์โหลดฟรี 3 เล่ม/สัปดาห์</p>
+                </div>
+            )}
+            {!owned && (
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <Button
                     size="lg"
@@ -63,6 +60,7 @@ export function BookPurchaseSection({ book }: BookPurchaseSectionProps) {
                     ซื้อเลย
                 </Button>
             </div>
+            )}
         </div>
     );
 }

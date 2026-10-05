@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as admin from 'firebase-admin';
 import { initAdmin } from '@/lib/firebase-admin';
 import { requireUser } from '@/lib/user-auth';
-import { consumeExamAttempt, EntitlementError, getEntitlement, getExamUsage } from '@/lib/plan-entitlement';
+import { consumeExamAttempt, EntitlementError, getEbookUsage, getEntitlement, getExamUsage, getOwnedBookIds } from '@/lib/plan-entitlement';
 
 const NO_STORE = { 'Cache-Control': 'private, no-store' };
 
@@ -14,8 +14,12 @@ export async function GET(request: NextRequest) {
 
     const db = admin.firestore();
     const entitlement = await getEntitlement(db, uid);
-    const usage = await getExamUsage(db, uid, entitlement.entitlements.examsPerDay);
-    return NextResponse.json({ ...entitlement, usage }, { headers: NO_STORE });
+    const [usage, ebookUsage, ownedBookIds] = await Promise.all([
+        getExamUsage(db, uid, entitlement.entitlements.examsPerDay),
+        getEbookUsage(db, uid, entitlement.entitlements.ebooksPerWeek),
+        getOwnedBookIds(db, uid).catch(() => [] as string[]),
+    ]);
+    return NextResponse.json({ ...entitlement, usage, ebookUsage, ownedBookIds }, { headers: NO_STORE });
 }
 
 // POST { examId } — เริ่มทำข้อสอบ: ใช้สิทธิ์ 1 ชุด (ชุดเดิมในวันเดียวกันไม่นับซ้ำ)

@@ -282,7 +282,7 @@ export function AnimatedBookGrid({ books }: AnimatedBookGridProps) {
                                 isEbook={isEbookBook(book)}
                                 href={`/books/${book.id}`}
                                 footerExtra={book.category === 'exam' ? <EbookProDownload bookId={book.id} /> : book.isDigital ? <EbookDownloadButton book={book} /> : undefined}
-                                priceLabel={book.category === 'exam' ? 'ฟรีสำหรับสมาชิก Pro' : undefined}
+                                priceNote={book.category === 'exam' ? 'สมาชิก Pro โหลดฟรี' : undefined}
                             />
                         </motion.div>
                     ))}
