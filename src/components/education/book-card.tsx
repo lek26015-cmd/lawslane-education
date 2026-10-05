@@ -104,7 +104,7 @@ export function BookCard({
 
                 {/* Title */}
                 <Link href={href} className="w-full">
-                    <h3 className="font-bold text-lg leading-snug mb-2 min-h-[3.5rem] text-slate-900 group-hover:text-[#0B3979] transition-colors">
+                    <h3 className="font-bold text-base sm:text-lg leading-snug mb-2 line-clamp-2 text-slate-900 group-hover:text-[#0B3979] transition-colors">
                         {displayBookTitle(title)}
                     </h3>
                 </Link>
