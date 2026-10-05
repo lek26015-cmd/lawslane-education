@@ -71,20 +71,34 @@ export function ExamBookCover({ title, description, isEbook = true, compact = fa
     // ขนาดตัวอักษรตามบรรทัดที่ยาวที่สุด ให้ทุกบรรทัดพอดีความกว้าง (~75cqw) — อักษรไทยกว้างราว 0.55em
     const longest = Math.max(...lines.map((l) => l.length));
     const titleSize = Math.min(9, 75 / (longest * 0.55));
+    // ภาพตัวละครต้องไม่ทับชื่อวิชา: ประมาณก้นบล็อกชื่อ (cqw) แล้วจัดภาพให้หัวตัวละครอยู่ใต้ชื่อ
+    // (ภาพจัตุรัส หัวเริ่มราว 12% จากขอบบน · ก้นภาพต้องไม่ลงเกินรายการฟีเจอร์ด้านล่าง) — สูตรเดียวกับปก E-Book ใน PDF
+    const titleBottom = 33.5 + lines.length * titleSize * 1.18;
+    const artW = Math.max(55, Math.min(100, (124 - titleBottom) / 0.96));
+    const artTop = titleBottom - 0.04 * artW;
+    const artMask = 'linear-gradient(to bottom, transparent 0%, black 6%, black 88%, transparent 100%), linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)';
 
     return (
         <div
             className="@container relative h-full w-full overflow-hidden text-white"
             style={{ background: `linear-gradient(165deg, ${bg.from}, ${bg.to})` }}
         >
-            {/* ภาพตัวละคร — ชิดล่าง จางเข้าพื้นด้านบน */}
+            {/* ภาพตัวละคร — อยู่ใต้ชื่อวิชา จางเข้าพื้นทุกด้าน */}
             {illustration && (
                 <img
                     src={illustration}
                     alt=""
                     loading="lazy"
-                    className="absolute inset-x-0 bottom-[12%] w-full object-cover"
-                    style={{ maskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 22%, black 85%, transparent 100%)' }}
+                    className="absolute object-cover"
+                    style={{
+                        left: `${(100 - artW) / 2}cqw`,
+                        top: `${artTop}cqw`,
+                        width: `${artW}cqw`,
+                        maskImage: artMask,
+                        WebkitMaskImage: artMask,
+                        maskComposite: 'intersect',
+                        WebkitMaskComposite: 'source-in',
+                    }}
                 />
             )}
 
