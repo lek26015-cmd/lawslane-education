@@ -155,10 +155,11 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                     <span className="text-slate-500">ยอดรวมสินค้า</span>
                                     <span>฿{order.totalAmount.toLocaleString()}</span>
                                 </div>
+                                {order.shippingInfo?.address && (
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-slate-500">ค่าจัดส่ง</span>
-                                    <span className="text-green-600 font-medium">ฟรี</span>
-                                </div>
+                                        <span className="text-slate-500">ค่าจัดส่ง</span>
+                                        <span className="text-green-600 font-medium">ฟรี</span>
+                                    </div>                                )}
                                 <Separator className="my-2" />
                                 <div className="flex justify-between font-bold text-lg">
                                     <span>ยอดสุทธิ</span>
@@ -170,23 +171,26 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 </div>
 
                 <div className="space-y-6">
+                    {/* E-Book ไม่มีการจัดส่ง (shippingInfo เป็น null) — ไม่แสดงการ์ดที่อยู่ */}
+                    {order.shippingInfo?.address && (
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base">ที่อยู่จัดส่ง</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm space-y-3">
-                            <div className="flex items-start gap-2">
-                                <MapPin className="h-4 w-4 text-slate-400 mt-0.5 shrink-0" />
-                                <div>
-                                    <p className="font-medium text-slate-900">{order.shippingInfo?.name}</p>
-                                    <p className="text-slate-500 mt-1 leading-relaxed">
-                                        {order.shippingInfo?.address}
-                                    </p>
-                                    <p className="text-slate-500 mt-1">{order.shippingInfo?.phone}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                          <CardHeader>
+                              <CardTitle className="text-base">ที่อยู่จัดส่ง</CardTitle>
+                          </CardHeader>
+                          <CardContent className="text-sm space-y-3">
+                              <div className="flex items-start gap-2">
+                                  <MapPin className="h-4 w-4 text-slate-400 mt-0.5 shrink-0" />
+                                  <div>
+                                      <p className="font-medium text-slate-900">{order.shippingInfo?.name}</p>
+                                      <p className="text-slate-500 mt-1 leading-relaxed">
+                                          {order.shippingInfo?.address}
+                                      </p>
+                                      <p className="text-slate-500 mt-1">{order.shippingInfo?.phone}</p>
+                                  </div>
+                              </div>
+                          </CardContent>
+                      </Card>
+                    )}
 
                     <Card>
                         <CardHeader>

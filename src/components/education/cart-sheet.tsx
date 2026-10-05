@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, Trash2, ShoppingCart, ArrowRight, X } from "lucide-react";
 import { useCart } from '@/context/cart-context';
-import { CartItemThumb } from '@/components/education/cart-item-thumb';
+import { CartItemThumb, isDigitalCartItem } from '@/components/education/cart-item-thumb';
 import { displayBookTitle } from '@/lib/book-cover';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
@@ -92,6 +92,8 @@ export function CartSheet() {
         </div>
     );
 
+    // ตะกร้า E-Book ล้วนไม่มีการจัดส่ง — ไม่แสดงค่าจัดส่ง
+    const allDigital = items.length > 0 && items.every(isDigitalCartItem);
     const CartSummary = () => (
         <div className="space-y-4 border-t pt-4">
             <div className="space-y-2">
@@ -99,10 +101,12 @@ export function CartSheet() {
                     <span>จำนวน ({items.reduce((sum, item) => sum + item.quantity, 0)} เล่ม)</span>
                     <span>฿{totalPrice.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-slate-600">
-                    <span>ค่าจัดส่ง</span>
-                    <span className="text-green-600 font-medium">ฟรี</span>
-                </div>
+                {!allDigital && (
+                    <div className="flex justify-between text-slate-600">
+                        <span>ค่าจัดส่ง</span>
+                        <span className="text-green-600 font-medium">ฟรี</span>
+                    </div>
+                )}
                 <div className="flex justify-between text-lg font-bold pt-2 border-t">
                     <span>ยอดรวมสุทธิ</span>
                     <span className="text-[#082a5a]">฿{totalPrice.toLocaleString()}</span>

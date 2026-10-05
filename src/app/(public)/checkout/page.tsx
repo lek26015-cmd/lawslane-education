@@ -1,6 +1,6 @@
 'use client';
 
-import { CartItemThumb } from '@/components/education/cart-item-thumb';
+import { CartItemThumb, isDigitalCartItem } from '@/components/education/cart-item-thumb';
 import { displayBookTitle } from '@/lib/book-cover';
 import React, { useState, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -95,15 +95,7 @@ function CheckoutContent() {
     // Check if shipping is required (Physical Books). 
     // Logic: It is a book if type is BOOK or undefined, AND it's not explicitly digital in originalItem.
     // ADDED: Fallback check if title contains "คอร์ส", "Course", "E-Book" -> treat as digital (no shipping).
-    const requiresShipping = effectiveItems.some(item => {
-        // REMOVED 'Exam' and 'ข้อสอบ' because physical books often contain these words (e.g. "รวมข้อสอบ")
-        const isDigitalKeyword = /คอร์ส|Course|E-Book|e-book|ebook/i.test(item.title);
-        const isDigitalType = item.type === 'COURSE' || item.type === 'EXAM';
-        const isDigitalFlag = (item.originalItem as any)?.isDigital;
-
-        // It requires shipping if it is NOT digital
-        return !(isDigitalKeyword || isDigitalType || isDigitalFlag);
-    });
+    const requiresShipping = effectiveItems.some(item => !isDigitalCartItem(item));
 
     const handleSubmit = async () => {
         // Validation
