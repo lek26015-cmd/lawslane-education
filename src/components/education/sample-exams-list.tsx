@@ -10,13 +10,23 @@ async function getRecentExams() {
         const app = await initAdmin();
         if (!app) return [];
         const db = admin.firestore();
-        // เผื่อชุดแบบร่างไว้ — ดึงมาเกินแล้วตัดให้เหลือ 6
-        const snap = await db.collection('examSets')
-            .orderBy('createdAt', 'desc')
-            .limit(12)
-            .get();
-        
-        return snap.docs.filter(doc => doc.data().status !== 'draft').slice(0, 6).map(doc => {
+        // ชุดแบบร่างอาจมีเยอะ (เช่นนำเข้าทีละหลายสิบชุด) — ดึงทีละหน้าแล้วกรอง จนครบ 6 ชุดที่เผยแพร่แล้ว
+        // (ใช้ where status != draft ไม่ได้ เพราะชุดเก่าไม่มีฟิลด์ status)
+        const PAGE = 50;
+        const MAX_PAGES = 10;
+        const published: FirebaseFirestore.QueryDocumentSnapshot[] = [];
+        let last: FirebaseFirestore.QueryDocumentSnapshot | undefined;
+        for (let i = 0; i < MAX_PAGES && published.length < 6; i++) {
+            let q = db.collection('examSets').orderBy('createdAt', 'desc').limit(PAGE);
+            if (last) q = q.startAfter(last);
+            const snap = await q.get();
+            if (snap.empty) break;
+            published.push(...snap.docs.filter(doc => doc.data().status !== 'draft'));
+            last = snap.docs[snap.docs.length - 1];
+            if (snap.size < PAGE) break;
+        }
+
+        return published.slice(0, 6).map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
