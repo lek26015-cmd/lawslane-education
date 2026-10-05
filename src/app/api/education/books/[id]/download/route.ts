@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as admin from 'firebase-admin';
 import { requireUser } from '@/lib/user-auth';
-import { consumeEbookDownload, EntitlementError, getEntitlement } from '@/lib/plan-entitlement';
+import { consumeEbookDownload, EntitlementError, getEntitlement, getOwnedBookIds } from '@/lib/plan-entitlement';
 
 /**
- * ลิงก์ดาวน์โหลด E-Book รวมข้อสอบ — ให้เฉพาะแพ็กเกจที่มีสิทธิ์ freeEbooks (ค่าเริ่มต้น: Pro)
+ * ลิงก์ดาวน์โหลด E-Book รวมข้อสอบ — ผู้ที่ซื้อเล่มนั้นแล้ว (ออเดอร์ที่ยืนยันสลิปแล้ว) หรือแพ็กเกจที่มีสิทธิ์ freeEbooks (ค่าเริ่มต้น: Pro)
  *
  * ไฟล์เก็บใน Firebase Storage แบบไม่เปิดสาธารณะ (books/{id}.ebookPath ไม่ส่งออกทาง API หนังสือ)
  * จำกัดจำนวนเล่มต่อสัปดาห์ตามสิทธิ์ ebooksPerWeek (ค่าเริ่มต้น Pro = 3 เล่ม · เล่มเดิมในสัปดาห์เดียวกันไม่นับซ้ำ)
@@ -17,14 +17,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     try {
         const { id } = await params;
         const db = admin.firestore();
-        const [bookSnap, entitlement] = await Promise.all([db.collection('books').doc(id).get(), getEntitlement(db, uid)]);
+        const [bookSnap, entitlement, ownedIds] = await Promise.all([
+            db.collection('books').doc(id).get(),
+            getEntitlement(db, uid),
+            getOwnedBookIds(db, uid),
+        ]);
+        const owned = ownedIds.includes(id);
         const book = bookSnap.data();
         if (!bookSnap.exists || !book?.ebookPath) {
             return NextResponse.json({ error: 'E-Book เล่มนี้ยังไม่พร้อมให้ดาวน์โหลด' }, { status: 404 });
         }
-        if (!entitlement.entitlements.freeEbooks) {
+        if (!owned && !entitlement.entitlements.freeEbooks) {
             return NextResponse.json(
-                { error: 'ดาวน์โหลด E-Book ได้เฉพาะสมาชิก Pro', code: 'plan_required' },
+                { error: 'E-Book เล่มนี้ซื้อได้เล่มละ 199 บาท หรือดาวน์โหลดฟรีสำหรับสมาชิก Pro', code: 'plan_required' },
                 { status: 403 },
             );
         }
@@ -39,12 +44,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         });
 
         // ใช้โควตาหลังสร้างลิงก์สำเร็จ — ถ้าเกินลิมิตจะไม่ส่งลิงก์ออกไป
-        const usage = await consumeEbookDownload(db, uid, id, entitlement.entitlements.ebooksPerWeek);
+        // เล่มที่ซื้อแล้วโหลดได้ไม่จำกัดและไม่กินโควตา Pro · เล่มฟรีของ Pro นับโควตาต่อสัปดาห์
+        const usage = owned ? null : await consumeEbookDownload(db, uid, id, entitlement.entitlements.ebooksPerWeek);
 
         await db.collection('ebookDownloads').add({
             uid,
             bookId: id,
             planId: entitlement.planId,
+            via: owned ? 'purchase' : 'plan',
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
         }).catch(() => undefined);
 

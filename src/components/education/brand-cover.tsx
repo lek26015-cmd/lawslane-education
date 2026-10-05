@@ -74,9 +74,10 @@ export function ExamBookCover({ title, description, isEbook = true, compact = fa
     // ภาพตัวละครต้องไม่ทับชื่อวิชา: ประมาณก้นบล็อกชื่อ (cqw) แล้วจัดภาพให้หัวตัวละครอยู่ใต้ชื่อ
     // (ภาพจัตุรัส หัวเริ่มราว 12% จากขอบบน · ก้นภาพต้องไม่ลงเกินรายการฟีเจอร์ด้านล่าง) — สูตรเดียวกับปก E-Book ใน PDF
     const titleBottom = 33.5 + lines.length * titleSize * 1.18;
-    const artW = Math.max(55, Math.min(100, (124 - titleBottom) / 0.96));
+    const artW = Math.max(55, Math.min(100, (128 - titleBottom) / 0.96));
     const artTop = titleBottom - 0.04 * artW;
-    const artMask = 'linear-gradient(to bottom, transparent 0%, black 6%, black 88%, transparent 100%), linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)';
+    // เฟดขอบกว้าง (ซ้าย-ขวา 25%) ให้พื้นหลังภาพกลืนกับพื้นปก — ขอบสี่เหลี่ยมของภาพจะไม่โผล่
+    const artMask = 'linear-gradient(to bottom, transparent 0%, black 8%, black 86%, transparent 100%), linear-gradient(to right, transparent 0%, black 26%, black 74%, transparent 100%)';
 
     return (
         <div

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { BrandCover, ExamBookCover } from '@/components/education/brand-cover';
-import { displayBookTitle, isTemplateExamCover } from '@/lib/book-cover';
+import { displayBookTitle, isTemplateExamCover, parseExamBook } from '@/lib/book-cover';
 import { isPlaceholderCover } from '@/lib/cover';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,8 @@ interface BookCardProps {
     footerExtra?: React.ReactNode;
     /** แสดงแทนราคา เช่น "ฟรีสำหรับสมาชิก Pro" */
     priceLabel?: string;
+    /** บรรทัดเล็กใต้ราคา เช่น "สมาชิก Pro โหลดฟรี" */
+    priceNote?: string;
 }
 
 export function BookCard({
@@ -48,6 +50,7 @@ export function BookCard({
     href = '#',
     footerExtra,
     priceLabel,
+    priceNote,
 }: BookCardProps) {
     const examCover = isTemplateExamCover(coverUrl);
     // ส่วนลดคำนวณจากราคาจริง ไม่ใช่ค่าที่กรอกมือ — กันกรณี originalPrice ต่ำกว่า price
@@ -104,8 +107,9 @@ export function BookCard({
 
                 {/* Title */}
                 <Link href={href} className="w-full">
-                    <h3 className="font-bold text-lg leading-snug mb-2 min-h-[3.5rem] text-slate-900 group-hover:text-[#0B3979] transition-colors">
-                        {displayBookTitle(title)}
+                    <h3 className="font-bold text-base sm:text-lg leading-snug mb-2 line-clamp-2 text-slate-900 group-hover:text-[#0B3979] transition-colors">
+                        {/* รวมข้อสอบ: ใช้ชื่อวิชาแบบสั้นเหมือนบนปก (ป.พ.พ. ว่าด้วย…) ชื่อเต็มอยู่ในหน้ารายละเอียด */}
+                        {examCover ? (parseExamBook(title).subject || displayBookTitle(title)) : displayBookTitle(title)}
                     </h3>
                 </Link>
 
@@ -133,7 +137,7 @@ export function BookCard({
 
             {/* Footer: Price & Action */}
             <CardFooter className="p-4 pt-0 mt-auto border-t border-slate-50/50 flex flex-col gap-2">
-              <div className="flex items-center justify-between w-full">
+              <div className="flex flex-wrap items-center justify-between gap-x-2 w-full">
                 <div className="flex flex-col items-start pt-4">
                     <div className="flex items-baseline gap-2">
                         {priceLabel
@@ -143,13 +147,14 @@ export function BookCard({
                             <span className="text-xs text-slate-400 line-through">฿{originalPrice.toLocaleString()}</span>
                         )}
                     </div>
+                    {priceNote ? <span className="text-[11px] font-medium text-amber-700">{priceNote}</span> : null}
                     {pageCount ? (
                         <span className="text-[11px] text-slate-400">{pageCount.toLocaleString()} หน้า</span>
                     ) : null}
                 </div>
-                <Link href={href} className="pt-4">
+                <Link href={href} className="pt-2 sm:pt-4 w-full sm:w-auto">
                     <Button
-                        variant="outline" size="sm" className="border-blue-200 text-[#082a5a] hover:bg-blue-50"
+                        variant="outline" size="sm" className="w-full sm:w-auto border-blue-200 text-[#082a5a] hover:bg-blue-50"
                     >
                         ดูรายละเอียด
                     </Button>

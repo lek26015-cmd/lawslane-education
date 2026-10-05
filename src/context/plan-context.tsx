@@ -22,6 +22,8 @@ export type EntitlementResponse = {
     entitlements: PlanEntitlements;
     usage: { day: string; used: number; limit: number | null; examIds: string[] };
     /** โควตาดาวน์โหลด E-Book ฟรีของสัปดาห์นี้ (มีเมื่อโหลดจาก GET) */
+    /** หนังสือที่ซื้อแล้ว (ออเดอร์ยืนยันแล้ว) */
+    ownedBookIds?: string[];
     ebookUsage?: { week: string; used: number; limit: number | null; bookIds: string[] };
     allowed?: boolean;
     code?: string;

@@ -212,3 +212,19 @@ export async function consumeEbookDownload(
         return { week, used: next.length, limit, bookIds: next };
     });
 }
+
+const PAID_ORDER_STATUSES = ['PAID', 'COMPLETED', 'SHIPPING', 'DELIVERED'];
+
+/** หนังสือที่ผู้ใช้ซื้อแล้ว (ออเดอร์ที่แอดมินยืนยันสลิปแล้ว) — ดาวน์โหลดได้ไม่นับโควตา Pro */
+export async function getOwnedBookIds(db: admin.firestore.Firestore, uid: string): Promise<string[]> {
+    const snap = await db.collection('orders').where('userId', '==', uid).limit(200).get();
+    const ids = new Set<string>();
+    for (const doc of snap.docs) {
+        const order = doc.data();
+        if (!PAID_ORDER_STATUSES.includes(order.status) || !Array.isArray(order.items)) continue;
+        for (const item of order.items) {
+            if (item?.type === 'BOOK' && typeof item.id === 'string') ids.add(item.id);
+        }
+    }
+    return [...ids];
+}
