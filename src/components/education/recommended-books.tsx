@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { getAllBooks } from '@/lib/education-data-admin';
 import { BookCard } from './book-card';
 import { isEbookBook } from '@/lib/book-cover';
+import { EbookProDownload } from './ebook-pro-download';
 
 
 export async function RecommendedBooksSection() {
@@ -48,7 +49,7 @@ export async function RecommendedBooksSection() {
                                     title={book.title}
                                     coverUrl={book.coverUrl}
                                     price={book.price}
-                                    originalPrice={Math.round(book.price * 1.2)}
+                                    originalPrice={book.category === 'exam' ? undefined : Math.round(book.price * 1.2)}
                                     rating={4.5 + (idx % 5) / 10}
                                     badges={[
                                         idx === 0 ? { text: "แนะนำ NEW!!", color: "text-green-600", icon: "thumbs-up" } :
@@ -61,6 +62,9 @@ export async function RecommendedBooksSection() {
                                     author={book.author}
                                     description={book.description}
                                     level={book.level}
+                                    // รวมข้อสอบ: ฟรีเฉพาะ Pro (เหมือนหน้า /books) — เดิมหน้าแรกโชว์ ฿0
+                                    priceLabel={book.category === 'exam' ? 'ฟรีสำหรับสมาชิก Pro' : undefined}
+                                    footerExtra={book.category === 'exam' ? <EbookProDownload bookId={book.id} /> : undefined}
                                 />
                             </div>
                         ))}
