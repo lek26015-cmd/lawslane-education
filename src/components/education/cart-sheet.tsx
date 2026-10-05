@@ -19,6 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, Trash2, ShoppingCart, ArrowRight, X } from "lucide-react";
 import { useCart } from '@/context/cart-context';
+import { CartItemThumb } from '@/components/education/cart-item-thumb';
+import { displayBookTitle } from '@/lib/book-cover';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -48,15 +50,11 @@ export function CartSheet() {
             {items.map(item => (
                 <div key={item.id} className="flex gap-4 p-3 bg-white rounded-lg border border-slate-100 shadow-sm">
                     <div className="relative w-16 h-24 bg-slate-100 rounded-md overflow-hidden flex-shrink-0">
-                        <img
-                            src={item.coverUrl}
-                            alt={item.title}
-                            className="object-cover w-full h-full"
-                        />
+                        <CartItemThumb item={item} />
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                         <div>
-                            <h4 className="font-medium text-slate-900 line-clamp-2 text-sm">{item.title}</h4>
+                            <h4 className="font-medium text-slate-900 line-clamp-2 text-sm">{displayBookTitle(item.title)}</h4>
                             <p className="text-xs text-slate-500 mt-1">฿{item.price.toLocaleString()}</p>
                         </div>
                         <div className="flex items-center justify-between">

@@ -1,5 +1,7 @@
 'use client';
 
+import { CartItemThumb } from '@/components/education/cart-item-thumb';
+import { displayBookTitle } from '@/lib/book-cover';
 import { useState, useEffect } from "react";
 import { useUser } from "@/firebase";
 import { useRouter } from "next/navigation";
@@ -129,7 +131,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                 <div key={index} className="flex gap-4 py-4 first:pt-0 last:pb-0">
                                     <div className="h-20 w-16 bg-slate-100 rounded overflow-hidden flex-shrink-0">
                                         {item.coverUrl ? (
-                                            <img src={item.coverUrl} alt={item.title} className="w-full h-full object-cover" />
+                                            <CartItemThumb item={item} />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-slate-200">
                                                 <Package className="w-5 h-5 text-slate-400" />
@@ -137,7 +139,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-medium text-slate-900">{item.title}</h4>
+                                        <h4 className="font-medium text-slate-900">{displayBookTitle(item.title)}</h4>
                                         <p className="text-sm text-slate-500 mt-1">
                                             {item.type === 'BOOK' ? 'หนังสือ' : 'ข้อสอบ'}
                                         </p>

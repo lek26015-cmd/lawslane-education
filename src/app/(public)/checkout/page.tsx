@@ -1,5 +1,7 @@
 'use client';
 
+import { CartItemThumb } from '@/components/education/cart-item-thumb';
+import { displayBookTitle } from '@/lib/book-cover';
 import React, { useState, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/context/cart-context'; // Adjust path if needed
@@ -257,15 +259,11 @@ function CheckoutContent() {
                                     {effectiveItems.map((item) => (
                                         <div key={item.id} className="flex gap-4 p-4 bg-white hover:bg-slate-50/50 transition-colors">
                                             <div className="w-16 h-24 bg-slate-100 rounded-md overflow-hidden flex-shrink-0 shadow-sm">
-                                                <img
-                                                    src={item.coverUrl}
-                                                    alt={item.title}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                                <CartItemThumb item={item} />
                                             </div>
                                             <div className="flex-1 flex flex-col justify-between py-1">
                                                 <div>
-                                                    <h4 className="font-medium text-slate-900 line-clamp-2 text-sm leading-snug">{item.title}</h4>
+                                                    <h4 className="font-medium text-slate-900 line-clamp-2 text-sm leading-snug">{displayBookTitle(item.title)}</h4>
                                                     <p className="text-xs text-slate-500 mt-1">
                                                         จำนวน: {item.quantity} {
                                                             (item.type === 'COURSE' || /คอร์ส|Course|E-Book|e-book|ebook/i.test(item.title))
