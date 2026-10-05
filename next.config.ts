@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // ฟอนต์ไทยสำหรับประทับลายน้ำ E-Book ตอนดาวน์โหลด (อ่านด้วย fs — ต้องบอกให้รวมใน bundle ของ route)
+  outputFileTracingIncludes: {
+    '/api/education/books/[id]/download': ['./src/assets/fonts/**'],
+  },
   images: {
     // placehold.co เสิร์ฟ placeholder เป็น SVG จึงยังต้องเปิดไว้
     // แต่ต้องคู่กับ 2 ค่าด้านล่างเสมอ ไม่งั้น SVG ที่ถูกอัปโหลดมาจะรันสคริปต์ได้
