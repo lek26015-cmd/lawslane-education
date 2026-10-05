@@ -73,7 +73,7 @@ const tiers = [
         features: [
             { text: 'ทุกอย่างใน Premium', included: true },
             { text: 'คอร์สเรียนทุกคอร์สฟรี', included: true },
-            { text: 'E-Book ดาวน์โหลดฟรีทุกเล่ม', included: true },
+            { text: 'ดาวน์โหลด E-Book ฟรี 3 เล่มต่อสัปดาห์', included: true },
             { text: 'Mock Exam จับเวลาเหมือนสอบจริง', included: true },
             { text: 'ใบรับรองผ่านข้อสอบ (Certificate)', included: true },
             { text: 'สิทธิ์เข้าถึงฟีเจอร์ใหม่ก่อนใคร', included: true },

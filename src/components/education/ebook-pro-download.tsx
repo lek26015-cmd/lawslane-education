@@ -9,7 +9,7 @@ import { usePlan } from '@/context/plan-context';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * ปุ่มดาวน์โหลด E-Book รวมข้อสอบ — ฟรีเฉพาะสมาชิก Pro (สิทธิ์ freeEbooks)
+ * ปุ่มดาวน์โหลด E-Book รวมข้อสอบ — ฟรีเฉพาะสมาชิก Pro (สิทธิ์ freeEbooks) จำกัดเล่มต่อสัปดาห์ตาม ebooksPerWeek (ค่าเริ่มต้น 3)
  * สิทธิ์ตัดสินที่ server (/api/education/books/[id]/download) ฝั่งนี้แค่เลือกปุ่มที่แสดง
  */
 export function EbookProDownload({ bookId, size = 'sm', className = '' }: {
@@ -18,7 +18,7 @@ export function EbookProDownload({ bookId, size = 'sm', className = '' }: {
     className?: string;
 }) {
     const { user } = useUser();
-    const { data } = usePlan();
+    const { data, refresh } = usePlan();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const canDownload = !!data?.entitlements.freeEbooks;
@@ -55,6 +55,7 @@ export function EbookProDownload({ bookId, size = 'sm', className = '' }: {
             const body = await res.json().catch(() => ({}));
             if (!res.ok || !body.url) throw new Error(body.error || 'ดาวน์โหลดไม่สำเร็จ');
             window.location.href = body.url;
+            refresh();
         } catch (e) {
             toast({ title: 'ดาวน์โหลดไม่สำเร็จ', description: (e as Error).message, variant: 'destructive' });
         } finally {
@@ -62,10 +63,23 @@ export function EbookProDownload({ bookId, size = 'sm', className = '' }: {
         }
     };
 
+    const eu = data?.ebookUsage;
+    const alreadyHave = !!eu?.bookIds.includes(bookId);
+    const quotaLeft = eu && eu.limit !== null ? Math.max(0, eu.limit - eu.used) : null;
+    const quotaFull = quotaLeft === 0 && !alreadyHave;
+
+    if (quotaFull) {
+        return (
+            <Button disabled variant="outline" size="sm" className={`w-full border-amber-300 text-amber-700 ${h} ${className}`}>
+                <Lock className="mr-1.5 h-3.5 w-3.5" /> ครบ {eu?.limit} เล่มของสัปดาห์นี้แล้ว (รีเซ็ตเที่ยงคืนเข้าวันจันทร์)
+            </Button>
+        );
+    }
+
     return (
         <Button onClick={download} disabled={loading} size="sm" className={`w-full bg-[#0B3979] hover:bg-[#082a5a] ${h} ${className}`}>
             {loading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />}
-            ดาวน์โหลด E-Book (Pro)
+            ดาวน์โหลด E-Book (Pro){quotaLeft !== null && !alreadyHave ? ` · เหลือ ${quotaLeft}/${eu?.limit} เล่มสัปดาห์นี้` : ''}
         </Button>
     );
 }
