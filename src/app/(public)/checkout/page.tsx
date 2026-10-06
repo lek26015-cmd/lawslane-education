@@ -364,7 +364,6 @@ function CheckoutContent() {
                                             </div>
                                             <div>
                                                 <p className="font-semibold text-lg text-slate-900">ธนาคารกสิกรไทย</p>
-                                                <p className="text-slate-500">สาขาเซ็นทรัลพลาซา แกรนด์ พระราม 9</p>
                                             </div>
                                         </div>
 
@@ -372,13 +371,13 @@ function CheckoutContent() {
                                             <p className="text-sm text-slate-500 mb-1">เลขที่บัญชี</p>
                                             <div className="flex items-center justify-between">
                                                 <span className="font-mono text-2xl font-bold text-slate-800 tracking-wider">
-                                                    012-3-45678-9
+                                                    240-1-25028-2
                                                 </span>
-                                                <Button variant="ghost" size="sm" className="h-8 hover:bg-slate-100 text-[#0B3979]" onClick={() => handleCopy('012-3-45678-9')}>
+                                                <Button variant="ghost" size="sm" className="h-8 hover:bg-slate-100 text-[#0B3979]" onClick={() => handleCopy('240-1-25028-2')}>
                                                     <Copy className="w-4 h-4 mr-1" /> คัดลอก
                                                 </Button>
                                             </div>
-                                            <p className="text-sm font-medium text-slate-700 mt-2">ชื่อบัญชี: บจก. ลอว์เลนส์ เอ็ดดูเคชั่น</p>
+                                            <p className="text-sm font-medium text-slate-700 mt-2">ชื่อบัญชี: ร้าน ลอว์เลน โดย นาย วิศรุต บุ่งอุทุม</p>
                                         </div>
 
                                         <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100">
