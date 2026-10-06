@@ -74,15 +74,15 @@ export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrder
                                         </div>
                                         <div>
                                             <p className="font-medium text-slate-900">ธนาคารกสิกรไทย</p>
-                                            <p className="text-sm text-slate-500">บจก. ลอว์เลนส์ เอ็ดดูเคชั่น</p>
+                                            <p className="text-sm text-slate-500">ร้าน ลอว์เลน โดย นาย วิศรุต บุ่งอุทุม</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-100">
                                     <span className="font-mono text-lg font-bold text-slate-700 tracking-wider">
-                                        012-3-45678-9
+                                        240-1-25028-2
                                     </span>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-200" onClick={() => handleCopy('012-3-45678-9')}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-200" onClick={() => handleCopy('240-1-25028-2')}>
                                         <Copy className="w-4 h-4 text-slate-500" />
                                     </Button>
                                 </div>
@@ -115,7 +115,7 @@ export function BookOrderDialog({ book, trigger, open, onOpenChange }: BookOrder
                                 แจ้งโอนเงินผ่าน LINE OA
                             </Button>
                             <p className="text-xs text-slate-400 mt-3">
-                                หรือแจ้งผ่าน Email: support@lawslane.com
+                                หรือแจ้งผ่าน Email: lawslanelawyer@gmail.com
                             </p>
                         </div>
                     </div>
