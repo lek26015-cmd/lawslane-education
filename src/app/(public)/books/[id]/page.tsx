@@ -10,7 +10,8 @@ import { notFound } from "next/navigation";
 import { BookPurchaseSection } from "@/components/education/book-purchase-section";
 import { getBookById, getAllBooks } from "@/lib/education-data-admin";
 
-export const revalidate = 300;
+// 1 วัน · บทความ/หนังสือแก้ไม่บ่อย ถี่กว่านี้กิน ISR Writes เกินโควตา Vercel Hobby
+export const revalidate = 86400;
 
 export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

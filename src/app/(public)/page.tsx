@@ -17,7 +17,8 @@ import { HeroFadeIn, SectionFadeIn } from '@/components/education/fade-in';
 import { SilkBackground } from '@/components/silk-background';
 import type { Metadata } from 'next';
 
-export const revalidate = 300;
+// 1 ชั่วโมง · ถี่กว่านี้กิน ISR Writes เกินโควตา Vercel Hobby
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'หน้าแรก — คลังข้อสอบทนายความ หนังสือเตรียมสอบ',

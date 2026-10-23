@@ -7,7 +7,8 @@ import { ChevronLeft, Calendar, Facebook, Twitter, Link as LinkIcon } from 'luci
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-export const revalidate = 300;
+// 1 วัน · บทความ/หนังสือแก้ไม่บ่อย ถี่กว่านี้กิน ISR Writes เกินโควตา Vercel Hobby
+export const revalidate = 86400;
 
 export default async function ArticleDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
