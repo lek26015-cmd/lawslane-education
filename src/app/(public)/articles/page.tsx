@@ -10,7 +10,8 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import type { Metadata } from 'next';
 
-export const revalidate = 300;
+// 1 ชั่วโมง · ถี่กว่านี้กิน ISR Writes เกินโควตา Vercel Hobby
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
     title: 'บทความกฎหมาย — เทคนิคสอบ เกร็ดความรู้ ข่าวกฎหมาย',

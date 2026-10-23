@@ -4,7 +4,8 @@ import { getAllBooks } from "@/lib/education-data-admin";
 import { GoogleAd } from '@/components/google-ad';
 import type { Metadata } from 'next';
 
-export const revalidate = 300;
+// 1 ชั่วโมง · ถี่กว่านี้กิน ISR Writes เกินโควตา Vercel Hobby
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
     title: 'หนังสือเตรียมสอบทนาย — คู่มือสอบ สรุปย่อ รวมข้อสอบเก่า',
