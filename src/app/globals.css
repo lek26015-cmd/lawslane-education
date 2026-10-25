@@ -32,6 +32,26 @@
   --radius-xl: 0.875rem;
 }
 
+/* แบบพิมพ์ศาลในธงคำตอบ — TH Sarabun New (GPL + font exception, public/fonts/thsarabunnew-LICENSE.txt)
+   ใช้ @font-face แทน next/font/local เพราะตัวเรนเดอร์เป็น client component */
+@font-face {
+  font-family: 'TH Sarabun New';
+  src: url('/fonts/thsarabunnew-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'TH Sarabun New';
+  src: url('/fonts/thsarabunnew-bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+.font-th-sarabun { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; }
+/* หัวเรื่องในแบบพิมพ์ต้องเป็นฟอนต์เดียวกับเนื้อความ ไม่ใช่ฟอนต์หัวเรื่องของเว็บ */
+.font-th-sarabun :is(h1, h2, h3, h4, h5, h6) { font-family: inherit; }
+
 html,
 body {
   /* clip แทน hidden: hidden ทั้ง html และ body ทำให้ body กลายเป็นกล่องเลื่อน → header แบบ sticky ไม่ติดด้านบน */
