@@ -3,6 +3,7 @@ import { initAdmin } from '@/lib/firebase-admin';
 import * as admin from 'firebase-admin';
 import { stripAnswerFromQuestion, formatExamText } from '@/lib/exam-utils';
 import { anonymizeExamTexts } from '@/lib/name-anonymizer';
+import { parseCourtForm } from '@/lib/court-form';
 
 // Public "ดูเฉลย" feature — students can view model answers without logging in
 // (linked directly from /exams listing), so this intentionally has no auth guard.
@@ -59,6 +60,8 @@ export async function GET(
                 tags: q.tags || [],
                 isAiGenerated: !!q.isAiGenerated,
                 answerPageImages: Array.isArray(q.answerPageImages) ? q.answerPageImages : [],
+                // ธงที่เป็นแบบพิมพ์ศาล — ข้อมูลเสียคืน undefined แล้วหน้าเว็บแสดงแบบเดิม
+                legalForm: parseCourtForm(q.legalForm),
             };
         });
 

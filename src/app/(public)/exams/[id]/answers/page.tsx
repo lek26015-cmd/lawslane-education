@@ -13,6 +13,8 @@ import { AuthGuard } from '@/components/education/auth-guard';
 import { GoogleAd } from '@/components/google-ad';
 import { CopyProtection } from '@/components/education/copy-protection';
 import { ExamPageImages, type ExamPageImage } from '@/components/education/exam-page-images';
+import { CourtFormDocument } from '@/components/education/court-form-document';
+import type { CourtForm } from '@/lib/court-form';
 
 interface Question {
     id: string;
@@ -27,6 +29,7 @@ interface Question {
     tags: string[];
     isAiGenerated?: boolean;
     answerPageImages?: ExamPageImage[];
+    legalForm?: CourtForm;
 }
 
 interface ExamAnswers {
@@ -260,8 +263,19 @@ function AnswerKeyPageContent({ params }: { params: Promise<{ id: string }> }) {
                                             </div>
                                         )}
 
+                                        {/* ธงคำตอบที่เป็นแบบพิมพ์ศาล — แสดงเป็นหน้า A4 แทนข้อความล้วน */}
+                                        {q.legalForm && (
+                                            <div className="mx-5 mb-4 rounded-xl border border-amber-200 bg-slate-100 p-3 sm:p-5">
+                                                <div className="mb-3 flex items-center gap-2">
+                                                    <Lightbulb className="w-4 h-4 text-amber-600" />
+                                                    <span className="text-sm font-semibold text-amber-800">ธงคำตอบ (ตามแบบพิมพ์ศาล)</span>
+                                                </div>
+                                                <CourtFormDocument form={q.legalForm} />
+                                            </div>
+                                        )}
+
                                         {/* Model Answer */}
-                                        {q.modelAnswer && (
+                                        {q.modelAnswer && !q.legalForm && (
                                             <div className={`mx-5 mb-4 p-4 rounded-xl border ${
                                                 q.isAiGenerated
                                                     ? 'bg-purple-50 border-purple-200'
@@ -289,7 +303,7 @@ function AnswerKeyPageContent({ params }: { params: Promise<{ id: string }> }) {
                                                     images={q.answerPageImages}
                                                     title="ธงคำตอบต้นฉบับ (รูปแบบเอกสารตามแบบพิมพ์)"
                                                     tone="amber"
-                                                    defaultOpen
+                                                    defaultOpen={!q.legalForm}
                                                 />
                                             </div>
                                         )}
